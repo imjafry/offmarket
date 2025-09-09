@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Play, Home, Users, Award } from 'lucide-react';
+import { ArrowRight, Play, Home, Users, Award, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
@@ -9,24 +9,103 @@ import { featuredProperties } from '@/data/mockProperties';
 
 export const HomePage: React.FC = () => {
   const { t } = useTranslation();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Handle hash navigation for smooth scrolling
+  React.useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const element = document.getElementById(hash.substring(1));
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }, 100);
+      }
+    }
+  }, []);
+
+  // Hero images for carousel
+  const heroImages = [
+    '/src/assets/property-hero.jpg',
+    'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+    'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2053&q=80',
+    'https://htmldemo.net/tm/haven/haven/img/slider/2.jpg',
+    'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'
+  ];
+
+  // Auto-advance carousel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 5000); // Change image every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [heroImages.length]);
+
+  const nextImage = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === 0 ? heroImages.length - 1 : prevIndex - 1
+    );
+  };
 
   return (
     <div className="min-h-screen">
-      {/* Hero Video Section */}
+      {/* Hero Image Carousel Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Video Background */}
+        {/* Image Carousel Background */}
         <div className="absolute inset-0 z-0">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
+          <motion.img
+            key={currentImageIndex}
+            src={heroImages[currentImageIndex]}
+            alt="Luxury Property"
             className="w-full h-full object-cover"
-          >
-            <source src="/placeholder-video.mp4" type="video/mp4" />
-          </video>
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+          />
           <div className="absolute inset-0 bg-black/40"></div>
         </div>
+
+        {/* Carousel Navigation */}
+        <button
+          onClick={prevImage}
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-all duration-300 group"
+        >
+          <ChevronLeft className="h-6 w-6 text-white group-hover:scale-110 transition-transform" />
+        </button>
+        
+        <button
+          onClick={nextImage}
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-all duration-300 group"
+        >
+          <ChevronRight className="h-6 w-6 text-white group-hover:scale-110 transition-transform" />
+        </button>
+
+        {/* Carousel Dots */}
+        {/* <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2">
+          {heroImages.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentImageIndex(index)}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                index === currentImageIndex 
+                  ? 'bg-white scale-125' 
+                  : 'bg-white/50 hover:bg-white/70'
+              }`}
+            />
+          ))}
+        </div> */}
         
         {/* Hero Content */}
         <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-6">
@@ -64,7 +143,7 @@ export const HomePage: React.FC = () => {
               className="bg-white/20 border-white/30 text-white hover:bg-white/30 px-8 py-4 text-lg backdrop-blur-sm"
             >
               <Play className="mr-2 h-5 w-5" />
-              {t('language') === 'fr' ? 'Voir la vidéo' : 'Watch Video'}
+              {t('language') === 'fr' ? 'Voir la galerie' : 'View Gallery'}
             </Button>
           </motion.div>
         </div>
@@ -123,7 +202,7 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* Services Section */}
-      <section className="section-padding bg-background">
+      <section id="services-section" className="section-padding bg-background">
         <div className="container-custom">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}

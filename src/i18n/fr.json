@@ -2,6 +2,7 @@
   "navigation": {
     "home": "Accueil",
     "properties": "Propriétés",
+    "services": "Services",
     "contact": "Contact",
     "login": "Connexion",
     "admin": "Admin"

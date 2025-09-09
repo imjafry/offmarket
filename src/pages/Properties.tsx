@@ -3,25 +3,33 @@ import { Search, SlidersHorizontal, Grid3X3, List, Filter } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useProperties } from '@/contexts/PropertyContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PropertyCard } from '@/components/PropertyCard';
 import { PropertyListCard } from '@/components/PropertyListCard';
-import { mockProperties } from '@/data/mockProperties';
 
 export const PropertiesPage: React.FC = () => {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
+  const { properties } = useProperties();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCity, setSelectedCity] = useState('all');
   const [selectedRooms, setSelectedRooms] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
+  const [selectedType, setSelectedType] = useState('all');
+  const [priceRange, setPriceRange] = useState({ min: '', max: '' });
+  const [surfaceRange, setSurfaceRange] = useState({ min: '', max: '' });
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
 
+  // Get all unique features for filter options
+  const allFeatures = Array.from(new Set(properties.flatMap(p => p.features)));
+
   // Filter properties based on search criteria
-  const filteredProperties = mockProperties.filter(property => {
+  const filteredProperties = properties.filter(property => {
     const matchesSearch = property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          property.neighborhood.toLowerCase().includes(searchTerm.toLowerCase());
@@ -32,8 +40,29 @@ export const PropertiesPage: React.FC = () => {
                         (selectedRooms === '3-4' && property.rooms >= 3 && property.rooms <= 4) ||
                         (selectedRooms === '5+' && property.rooms >= 5);
     const matchesStatus = !selectedStatus || selectedStatus === 'all' || property.status === selectedStatus;
+    const matchesType = !selectedType || selectedType === 'all' || property.propertyType === selectedType;
     
-    return matchesSearch && matchesCity && matchesRooms && matchesStatus;
+    // Price range filter
+    const matchesPrice = !priceRange.min && !priceRange.max || (() => {
+      if (!property.price) return true;
+      const price = parseFloat(property.price.replace(/[^\d]/g, ''));
+      const min = priceRange.min ? parseFloat(priceRange.min) : 0;
+      const max = priceRange.max ? parseFloat(priceRange.max) : Infinity;
+      return price >= min && price <= max;
+    })();
+    
+    // Surface range filter
+    const matchesSurface = !surfaceRange.min && !surfaceRange.max || (() => {
+      const min = surfaceRange.min ? parseFloat(surfaceRange.min) : 0;
+      const max = surfaceRange.max ? parseFloat(surfaceRange.max) : Infinity;
+      return property.surface >= min && property.surface <= max;
+    })();
+    
+    // Features filter
+    const matchesFeatures = selectedFeatures.length === 0 || 
+                           selectedFeatures.every(feature => property.features.includes(feature));
+    
+    return matchesSearch && matchesCity && matchesRooms && matchesStatus && matchesType && matchesPrice && matchesSurface && matchesFeatures;
   });
 
   return (
@@ -140,6 +169,24 @@ export const PropertiesPage: React.FC = () => {
                   </SelectContent>
                 </Select>
 
+                <Select value={selectedType} onValueChange={setSelectedType}>
+                  <SelectTrigger className="w-[150px]">
+                    <SelectValue placeholder="Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tous les types</SelectItem>
+                    <SelectItem value="apartment">Appartement</SelectItem>
+                    <SelectItem value="house">Maison</SelectItem>
+                    <SelectItem value="villa">Villa</SelectItem>
+                    <SelectItem value="loft">Loft</SelectItem>
+                    <SelectItem value="penthouse">Penthouse</SelectItem>
+                    <SelectItem value="studio">Studio</SelectItem>
+                    <SelectItem value="duplex">Duplex</SelectItem>
+                    <SelectItem value="chalet">Chalet</SelectItem>
+                    <SelectItem value="castle">Château</SelectItem>
+                  </SelectContent>
+                </Select>
+
                 <Button 
                   variant="outline" 
                   onClick={() => setShowFilters(!showFilters)}
@@ -151,6 +198,97 @@ export const PropertiesPage: React.FC = () => {
               </div>
             </motion.div>
           </div>
+
+          {/* Advanced Filters */}
+          {showFilters && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-6 p-6 bg-muted/20 rounded-2xl border border-border"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Price Range */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Prix (CHF)</label>
+                  <div className="flex space-x-2">
+                    <Input
+                      placeholder="Min"
+                      value={priceRange.min}
+                      onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
+                      type="number"
+                    />
+                    <Input
+                      placeholder="Max"
+                      value={priceRange.max}
+                      onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
+                      type="number"
+                    />
+                  </div>
+                </div>
+
+                {/* Surface Range */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Surface (m²)</label>
+                  <div className="flex space-x-2">
+                    <Input
+                      placeholder="Min"
+                      value={surfaceRange.min}
+                      onChange={(e) => setSurfaceRange(prev => ({ ...prev, min: e.target.value }))}
+                      type="number"
+                    />
+                    <Input
+                      placeholder="Max"
+                      value={surfaceRange.max}
+                      onChange={(e) => setSurfaceRange(prev => ({ ...prev, max: e.target.value }))}
+                      type="number"
+                    />
+                  </div>
+                </div>
+
+                {/* Features */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Caractéristiques</label>
+                  <div className="max-h-32 overflow-y-auto space-y-2">
+                    {allFeatures.slice(0, 8).map((feature) => (
+                      <label key={feature} className="flex items-center space-x-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={selectedFeatures.includes(feature)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedFeatures(prev => [...prev, feature]);
+                            } else {
+                              setSelectedFeatures(prev => prev.filter(f => f !== feature));
+                            }
+                          }}
+                          className="rounded"
+                        />
+                        <span>{feature}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Clear Filters */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Actions</label>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setPriceRange({ min: '', max: '' });
+                      setSurfaceRange({ min: '', max: '' });
+                      setSelectedFeatures([]);
+                      setSelectedType('all');
+                    }}
+                    className="w-full"
+                  >
+                    Effacer les filtres
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          )}
         </motion.div>
 
         {/* Results Header */}
@@ -248,6 +386,10 @@ export const PropertiesPage: React.FC = () => {
                     setSelectedCity('all');
                     setSelectedRooms('all');
                     setSelectedStatus('all');
+                    setSelectedType('all');
+                    setPriceRange({ min: '', max: '' });
+                    setSurfaceRange({ min: '', max: '' });
+                    setSelectedFeatures([]);
                   }}
                 >
                   {t('properties.clearFilters')}

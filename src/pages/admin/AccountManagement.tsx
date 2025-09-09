@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useNotifications } from '@/contexts/NotificationContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -94,6 +95,7 @@ const users = [
 
 export const AccountManagement: React.FC = () => {
   const { t } = useTranslation();
+  const { sendSubscriptionExpiryNotification, sendSubscriptionExpiredNotification } = useNotifications();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [subscriptionFilter, setSubscriptionFilter] = useState('all');
@@ -161,6 +163,22 @@ export const AccountManagement: React.FC = () => {
     return daysUntilExpiry <= 30 && daysUntilExpiry > 0;
   };
 
+  const checkAndSendExpiryNotifications = () => {
+    users.forEach(user => {
+      const expiry = new Date(user.subscriptionExpiry);
+      const now = new Date();
+      const daysUntilExpiry = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      
+      if (daysUntilExpiry <= 0) {
+        // Subscription expired
+        sendSubscriptionExpiredNotification(user.email);
+      } else if (daysUntilExpiry <= 7) {
+        // Expiring in 7 days or less
+        sendSubscriptionExpiryNotification(user.email, daysUntilExpiry);
+      }
+    });
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -178,6 +196,13 @@ export const AccountManagement: React.FC = () => {
             </p>
           </div>
           <div className="flex space-x-3">
+            <Button 
+              variant="outline"
+              onClick={checkAndSendExpiryNotifications}
+            >
+              <Mail className="h-4 w-4 mr-2" />
+              {t('language') === 'fr' ? 'Vérifier les abonnements' : 'Check Subscriptions'}
+            </Button>
             <Button variant="outline">
               <Mail className="h-4 w-4 mr-2" />
               {t('language') === 'fr' ? 'Envoyer un email' : 'Send Email'}

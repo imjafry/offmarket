@@ -5,11 +5,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { TranslationProvider } from "@/components/TranslationProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { PropertyProvider } from "@/contexts/PropertyContext";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { HomePage } from "@/pages/Home";
 import { PropertiesPage } from "@/pages/Properties";
 import { PropertyDetailPage } from "@/pages/PropertyDetail";
+import { ServicesPage } from "@/pages/Services";
 import { LoginPage } from "@/pages/Login";
 import { ContactPage } from "@/pages/Contact";
 import { AccessExpiredPage } from "@/pages/AccessExpired";
@@ -31,7 +34,9 @@ const App = () => (
     <TooltipProvider>
       <TranslationProvider>
         <AuthProvider>
-          <BrowserRouter>
+          <PropertyProvider>
+            <NotificationProvider>
+              <BrowserRouter>
             <Routes>
               {/* Admin Routes - No main layout wrapper */}
               <Route path="/admin/login" element={<AdminLoginPage />} />
@@ -50,6 +55,7 @@ const App = () => (
                       <Route path="/" element={<HomePage />} />
                       <Route path="/properties" element={<PropertiesPage />} />
                       <Route path="/property/:id" element={<PropertyDetailPage />} />
+                      <Route path="/services" element={<ServicesPage />} />
                       <Route path="/contact" element={<ContactPage />} />
                       <Route path="/login" element={<LoginPage />} />
                       <Route path="/access-expired" element={<AccessExpiredPage />} />
@@ -66,7 +72,9 @@ const App = () => (
             </Routes>
             <Toaster />
             <Sonner />
-          </BrowserRouter>
+              </BrowserRouter>
+            </NotificationProvider>
+          </PropertyProvider>
         </AuthProvider>
       </TranslationProvider>
     </TooltipProvider>

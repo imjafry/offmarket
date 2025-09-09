@@ -27,6 +27,10 @@ export interface Property {
     phone: string;
     email: string;
   };
+  views?: number;
+  inquiries?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface PropertyCardProps {
@@ -57,18 +61,19 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -8 }}
-      transition={{ duration: 0.3 }}
-      className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => {
-        setIsHovered(false);
-        setCurrentImageIndex(0);
-      }}
-    >
+    <Link to={`/property/${property.id}`} className="block">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ y: -8 }}
+        transition={{ duration: 0.3 }}
+        className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden cursor-pointer"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          setCurrentImageIndex(0);
+        }}
+      >
       {/* Property Image with Carousel */}
       <div className="relative aspect-[4/3] overflow-hidden">
         <motion.img
@@ -98,6 +103,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
         <button
           onClick={(e) => {
             e.preventDefault();
+            e.stopPropagation();
             setIsFavorited(!isFavorited);
           }}
           className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
@@ -113,6 +119,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                 key={index}
                 onClick={(e) => {
                   e.preventDefault();
+                  e.stopPropagation();
                   setCurrentImageIndex(index);
                 }}
                 className={`w-2 h-2 rounded-full transition-colors ${
@@ -167,7 +174,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 
         {/* Title & Location */}
         <div className="space-y-2">
-          <h3 className="text-xl font-heading font-bold text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+          <h3 className="text-lg font-heading font-bold text-foreground line-clamp-2 group-hover:text-primary transition-colors min-h-[3.5rem] flex items-start">
             {property.title}
           </h3>
           <div className="flex items-center space-x-2 text-muted-foreground">
@@ -198,8 +205,8 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           </div>
         </div>
 
-        {/* Contact Info or Login Required */}
-        {showContactInfo && property.contactInfo ? (
+        {/* Contact Info (only show if showContactInfo is true) */}
+        {showContactInfo && property.contactInfo && (
           <div className="space-y-3">
             <div className="flex items-center space-x-3 p-3 bg-muted/20 rounded-lg">
               <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
@@ -213,29 +220,9 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
               </div>
             </div>
           </div>
-        ) : !showContactInfo ? (
-          <div className="p-3 bg-muted/20 rounded-lg">
-            <p className="text-sm text-muted-foreground text-center">
-              {t('auth.loginRequired')}
-            </p>
-          </div>
-        ) : null}
-
-        {/* Action Buttons */}
-        <div className="flex space-x-3 pt-2">
-          <Link to={`/property/${property.id}`} className="flex-1">
-            <Button variant="outline" className="w-full group border-primary/20 hover:bg-primary hover:text-primary-foreground">
-              {t('properties.viewDetails')}
-              <Eye className="ml-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-            </Button>
-          </Link>
-          {showContactInfo && (
-            <Button className="btn-primary px-6">
-              {t('language') === 'fr' ? 'Contacter' : 'Contact'}
-            </Button>
-          )}
-        </div>
+        )}
       </div>
-    </motion.div>
+      </motion.div>
+    </Link>
   );
 };

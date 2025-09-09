@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useProperties } from '@/contexts/PropertyContext';
+import { useNotifications } from '@/contexts/NotificationContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -26,12 +28,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { AdminLayout } from '@/components/admin/AdminLayout';
-import { mockProperties } from '@/data/mockProperties';
 
 export const PropertyForm: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
+  const { getProperty, addProperty, updateProperty } = useProperties();
+  const { sendNewPropertyNotification } = useNotifications();
   const isEdit = Boolean(id);
 
   const [formData, setFormData] = useState({
@@ -64,7 +67,7 @@ export const PropertyForm: React.FC = () => {
   // Load property data if editing
   React.useEffect(() => {
     if (isEdit && id) {
-      const property = mockProperties.find(p => p.id === id);
+      const property = getProperty(id);
       if (property) {
         setFormData({
           title: property.title,
@@ -86,7 +89,7 @@ export const PropertyForm: React.FC = () => {
         });
       }
     }
-  }, [isEdit, id]);
+  }, [isEdit, id, getProperty]);
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -163,12 +166,42 @@ export const PropertyForm: React.FC = () => {
 
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      console.log('Property saved:', formData);
+    try {
+      const propertyData = {
+        title: formData.title,
+        description: formData.description,
+        city: formData.city,
+        neighborhood: formData.neighborhood,
+        address: formData.address,
+        propertyType: formData.propertyType,
+        rooms: parseFloat(formData.rooms),
+        surface: parseFloat(formData.surface),
+        status: formData.status as 'available' | 'rented' | 'sold',
+        price: formData.price,
+        availabilityDate: formData.availabilityDate,
+        features: formData.features,
+        images: formData.images,
+        videoUrl: formData.videoUrl,
+        contactInfo: formData.contactInfo,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      if (isEdit && id) {
+        updateProperty(id, propertyData);
+      } else {
+        addProperty(propertyData);
+        // Send notification to all users about new property
+        // In a real app, you'd get the list of active users
+        sendNewPropertyNotification('all-users@offmarket.ch', propertyData.title);
+      }
+      
       navigate('/admin/properties');
-    }, 2000);
+    } catch (error) {
+      console.error('Error saving property:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

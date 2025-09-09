@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Home, Maximize, Phone, Mail, User, Star, Heart, Share2, Calendar, Eye, Wifi, Car, Dumbbell, Waves, TreePine, Shield, Snowflake, Camera, Play, MessageCircle, ChevronDown } from 'lucide-react';
+import { ArrowLeft, MapPin, Home, Maximize, Phone, Mail, User, Star, Heart, Share2, Calendar, Eye, Wifi, Car, Dumbbell, Waves, TreePine, Shield, Snowflake, Camera, Play, MessageCircle, ChevronDown, Bath, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useProperties } from '@/contexts/PropertyContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,19 +12,27 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { PropertyGallery } from '@/components/PropertyGallery';
-import { mockProperties } from '@/data/mockProperties';
+import { PropertyVideoPlayer } from '@/components/PropertyVideoPlayer';
 
 export const PropertyDetailPage: React.FC = () => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
+  const { getProperty, incrementViews } = useProperties();
   const [isFavorited, setIsFavorited] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [selectedTab, setSelectedTab] = useState('overview');
-  
+
   // Mock authentication state
   const isAuthenticated = false;
-  
-  const property = mockProperties.find(p => p.id === id);
+
+  const property = getProperty(id || '');
+
+  // Track view when property loads
+  React.useEffect(() => {
+    if (property && id) {
+      incrementViews(id);
+    }
+  }, [property, id, incrementViews]);
 
   if (!property) {
     return (
@@ -111,8 +120,8 @@ export const PropertyDetailPage: React.FC = () => {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
         >
-          <Link 
-            to="/properties" 
+          <Link
+            to="/properties"
             className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors mb-6"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -138,7 +147,7 @@ export const PropertyDetailPage: React.FC = () => {
                 {t('language') === 'fr' ? 'Vedette' : 'Featured'}
               </Badge>
             </div>
-            
+
             {/* Stats */}
             <div className="flex items-center space-x-6 text-muted-foreground">
               <span className="text-sm">{t('language') === 'fr' ? 'Total de visites' : 'Total No of Visits'}: 45</span>
@@ -155,8 +164,8 @@ export const PropertyDetailPage: React.FC = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <PropertyGallery 
-              images={property.images} 
+            <PropertyGallery
+              images={property.images}
               title={property.title}
               hasVideo={true}
             />
@@ -169,90 +178,127 @@ export const PropertyDetailPage: React.FC = () => {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Property Header */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
               className="space-y-6"
             >
-              {/* Title and Actions */}
-              <div className="flex items-start justify-between">
-                <div className="space-y-4">
-                  {/* Rating */}
+              {/* Clean Property Header */}
+              <div className="space-y-6">
+                {/* Rating and Address Row */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center space-x-1">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                        <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                       ))}
                     </div>
-                    <span className="text-lg font-semibold text-foreground">5.0</span>
-                    <span className="text-muted-foreground">
+                    <span className="text-lg font-bold text-foreground">5.0</span>
+                    <span className="text-sm text-muted-foreground">
                       318-330 S Oakley Blvd, Chicago, IL 60612, USA
                     </span>
-                    <Button variant="link" className="text-primary p-0 h-auto">
+                    <Button variant="link" className="text-muted-foreground hover:text-primary p-0 h-auto text-sm">
                       View Location
                     </Button>
                   </div>
-
-                  {/* Title */}
-                  <h1 className="text-4xl md:text-5xl font-heading font-bold text-foreground leading-tight">
-                    {property.title}
-                  </h1>
-                  
-                  {/* Location */}
-                  <div className="flex items-center space-x-2 text-lg text-muted-foreground">
-                    <MapPin className="h-5 w-5" />
-                    <span>{property.city}, {property.neighborhood}</span>
-                  </div>
                 </div>
 
-                {/* Price and Actions */}
-                <div className="text-right space-y-4">
-                  {property.price && (
-                    <div className="text-3xl md:text-4xl font-bold text-primary">
-                      {property.price}
+                {/* Main Content Row */}
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between space-y-4 lg:space-y-0">
+                  {/* Left Side - Title and Location */}
+                  <div className="space-y-3">
+                    <h1 className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
+                      {property.title}
+                    </h1>
+                    
+                    <div className="flex items-center space-x-2 text-muted-foreground">
+                      <MapPin className="h-4 w-4" />
+                      <span className="text-sm">{property.city}</span>
+                      <span className="text-muted-foreground">•</span>
+                      <span className="text-sm">{property.neighborhood}</span>
                     </div>
-                  )}
-                  <div className="flex items-center space-x-3">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setIsFavorited(!isFavorited)}
-                      className="p-2"
-                    >
-                      <Heart className={`h-5 w-5 ${isFavorited ? 'fill-red-500 text-red-500' : ''}`} />
-                    </Button>
-                    <Button variant="outline" size="sm" className="p-2">
-                      <Share2 className="h-5 w-5" />
-                    </Button>
+                  </div>
+
+                  {/* Right Side - Price and Actions */}
+                  <div className="flex flex-col items-end space-y-4">
+                    {/* Price Section */}
+                    <div className="text-right">
+                      {property.price ? (
+                        <div className="space-y-1">
+                          <div className="text-2xl md:text-3xl font-bold text-foreground">
+                            {property.price}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {t('language') === 'fr' ? 'Sur demande' : 'On Request'}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-1">
+                          <div className="text-2xl md:text-3xl font-bold text-muted-foreground">
+                            {t('language') === 'fr' ? 'Sur demande' : 'On Request'}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {t('language') === 'fr' ? 'Prix sur demande' : 'Price on Request'}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setIsFavorited(!isFavorited)}
+                        className={`h-10 w-10 rounded-full border transition-all duration-200 ${
+                          isFavorited 
+                            ? 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100' 
+                            : 'hover:border-primary/50 hover:bg-primary/5'
+                        }`}
+                      >
+                        <Heart className={`h-4 w-4 ${isFavorited ? 'fill-red-500 text-red-500' : ''}`} />
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="icon"
+                        className="h-10 w-10 rounded-full border hover:border-primary/50 hover:bg-primary/5 transition-all duration-200"
+                      >
+                        <Share2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Quick Stats */}
+              {/* Clean Quick Stats */}
               <div className="grid grid-cols-3 gap-8 py-6 border-y border-border">
                 <div className="text-center">
                   <div className="flex items-center justify-center mb-2">
                     <Home className="h-6 w-6 text-primary" />
                   </div>
-                  <div className="text-2xl font-bold text-foreground">2</div>
-                  <div className="text-sm text-muted-foreground">Bedroom</div>
+                  <div className="text-2xl font-bold text-foreground">{property.rooms}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {t('language') === 'fr' ? 'Chambres' : 'Bedrooms'}
+                  </div>
                 </div>
                 <div className="text-center">
                   <div className="flex items-center justify-center mb-2">
-                    <div className="w-6 h-6 flex items-center justify-center">
-                      <span className="text-primary font-bold">2</span>
-                    </div>
+                    <Bath className="h-6 w-6 text-primary" />
                   </div>
                   <div className="text-2xl font-bold text-foreground">2</div>
-                  <div className="text-sm text-muted-foreground">Bath</div>
+                  <div className="text-sm text-muted-foreground">
+                    {t('language') === 'fr' ? 'Salles de bain' : 'Bathrooms'}
+                  </div>
                 </div>
                 <div className="text-center">
                   <div className="flex items-center justify-center mb-2">
                     <Maximize className="h-6 w-6 text-primary" />
                   </div>
                   <div className="text-2xl font-bold text-foreground">{property.surface}</div>
-                  <div className="text-sm text-muted-foreground">Sq Ft</div>
+                  <div className="text-sm text-muted-foreground">
+                    {t('language') === 'fr' ? 'm²' : 'Sq Ft'}
+                  </div>
                 </div>
               </div>
 
@@ -282,19 +328,18 @@ export const PropertyDetailPage: React.FC = () => {
                   {[
                     { id: 'overview', label: t('language') === 'fr' ? 'Aperçu' : 'Overview' },
                     { id: 'description', label: t('property.description') },
-                    { id: 'features', label: t('property.features') },
-                    { id: 'amenities', label: t('language') === 'fr' ? 'Commodités' : 'Amenities' },
+                    // { id: 'features', label: t('property.features') },
+                    // { id: 'amenities', label: t('language') === 'fr' ? 'Commodités' : 'Amenities' },
                     { id: 'video', label: t('language') === 'fr' ? 'Vidéo' : 'Video' },
                     { id: 'reviews', label: t('language') === 'fr' ? 'Avis' : 'Reviews' }
                   ].map((tab) => (
                     <button
                       key={tab.id}
                       onClick={() => setSelectedTab(tab.id)}
-                      className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${
-                        selectedTab === tab.id
+                      className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${selectedTab === tab.id
                           ? 'border-primary text-primary'
                           : 'border-transparent text-muted-foreground hover:text-foreground'
-                      }`}
+                        }`}
                     >
                       {tab.label}
                     </button>
@@ -317,8 +362,8 @@ export const PropertyDetailPage: React.FC = () => {
                       {property.description}
                     </p>
                     {!showFullDescription && (
-                      <Button 
-                        variant="link" 
+                      <Button
+                        variant="link"
                         onClick={() => setShowFullDescription(true)}
                         className="text-primary p-0"
                       >
@@ -326,7 +371,7 @@ export const PropertyDetailPage: React.FC = () => {
                       </Button>
                     )}
                   </div>
-                  
+
                   {/* Key Points */}
                   <div className="space-y-4">
                     <h3 className="text-xl font-heading font-bold">Key Highlights</h3>
@@ -349,62 +394,58 @@ export const PropertyDetailPage: React.FC = () => {
                 </div>
               )}
 
-              {selectedTab === 'features' && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                  {propertyFeatures.map((feature, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="flex flex-col items-center p-6 bg-muted/20 rounded-2xl text-center space-y-3 hover:bg-muted/40 transition-colors"
-                    >
-                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                        <feature.icon className="h-6 w-6 text-primary" />
-                      </div>
-                      <span className="font-medium text-sm">{feature.label}</span>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-
-              {selectedTab === 'amenities' && (
+              {/* Description Tab Content */}
+              {selectedTab === 'description' && (
                 <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {property.features.map((feature, index) => {
-                      const IconComponent = amenityIcons[feature as keyof typeof amenityIcons] || Home;
-                      return (
-                        <motion.div
-                          key={index}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                          className="flex items-center space-x-3 p-4 bg-muted/20 rounded-lg"
-                        >
-                          <IconComponent className="h-5 w-5 text-primary" />
-                          <span className="font-medium">{feature}</span>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
+                  {property.description ? (
+                    <div className="prose prose-lg max-w-none">
+                      <p className="text-muted-foreground leading-relaxed text-base">
+                        {property.description}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="text-center py-16">
+                      <div className="w-20 h-20 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <FileText className="h-10 w-10 text-muted-foreground" />
+                      </div>
+                      <h3 className="text-xl font-semibold text-muted-foreground mb-3">
+                        {t('language') === 'fr' ? 'Aucune description disponible' : 'No description available'}
+                      </h3>
+                      <p className="text-muted-foreground max-w-md mx-auto">
+                        {t('language') === 'fr' 
+                          ? 'La description détaillée de cette propriété sera bientôt disponible. Contactez-nous pour plus d\'informations.'
+                          : 'Detailed description of this property will be available soon. Contact us for more information.'
+                        }
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
 
               {selectedTab === 'video' && (
                 <div className="space-y-6">
-                  <div className="aspect-video bg-muted rounded-2xl flex items-center justify-center relative overflow-hidden">
-                    <img 
-                      src="/placeholder.svg" 
-                      alt="Property Video Thumbnail" 
-                      className="w-full h-full object-cover"
+                  {property.videoUrl ? (
+                    <PropertyVideoPlayer
+                      videoUrl={property.videoUrl}
+                      title={property.title}
                     />
-                    <Button 
-                      size="lg" 
-                      className="absolute bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm rounded-full w-20 h-20 p-0"
-                    >
-                      <Play className="h-10 w-10" />
-                    </Button>
-                  </div>
+                  ) : (
+                    <div className="aspect-video bg-muted rounded-2xl flex items-center justify-center relative overflow-hidden">
+                      <img
+                        src="/placeholder.svg"
+                        alt="Property Video Thumbnail"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <div className="text-center text-white">
+                          <Play className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                          <p className="text-lg font-medium">
+                            {t('language') === 'fr' ? 'Aucune vidéo disponible' : 'No video available'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -428,7 +469,7 @@ export const PropertyDetailPage: React.FC = () => {
                             <span className="text-sm w-2">{star}</span>
                             <Star className="h-4 w-4 text-yellow-400" />
                             <div className="flex-1 bg-muted rounded-full h-2">
-                              <div 
+                              <div
                                 className="bg-yellow-400 h-2 rounded-full"
                                 style={{ width: star === 5 ? '80%' : star === 4 ? '15%' : '3%' }}
                               />
@@ -497,6 +538,56 @@ export const PropertyDetailPage: React.FC = () => {
                 </div>
               )}
             </motion.div>
+
+            {/* Features and Amenities Sections */}
+            <div className="space-y-12 mt-12">
+              {/* Property Features Section */}
+              <div>
+                <h3 className="text-2xl font-heading font-bold mb-6">
+                  {t('language') === 'fr' ? 'Caractéristiques de la propriété' : 'Property Features'}
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  {propertyFeatures.map((feature, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="flex flex-col items-center p-6 bg-muted/20 rounded-2xl text-center space-y-3 hover:bg-muted/40 transition-colors"
+                    >
+                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                        <feature.icon className="h-6 w-6 text-primary" />
+                      </div>
+                      <span className="font-medium text-sm">{feature.label}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Amenities Section */}
+              <div>
+                <h3 className="text-2xl font-heading font-bold mb-6">
+                  {t('language') === 'fr' ? 'Commodités et services' : 'Amenities & Services'}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {property.features.map((feature, index) => {
+                    const IconComponent = amenityIcons[feature as keyof typeof amenityIcons] || Home;
+                    return (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="flex items-center space-x-3 p-4 bg-muted/20 rounded-lg"
+                      >
+                        <IconComponent className="h-5 w-5 text-primary" />
+                        <span className="font-medium">{feature}</span>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Enhanced Sidebar */}

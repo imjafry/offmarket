@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useProperties } from '@/contexts/PropertyContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,18 +29,18 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AdminLayout } from '@/components/admin/AdminLayout';
-import { mockProperties } from '@/data/mockProperties';
 
 export const PropertyManagement: React.FC = () => {
   const { t } = useTranslation();
+  const { properties: allProperties, deleteProperty } = useProperties();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [cityFilter, setCityFilter] = useState('all');
   const [selectedProperties, setSelectedProperties] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
 
-  // Mock data with additional fields for admin
-  const properties = mockProperties.map(prop => ({
+  // Properties with additional fields for admin
+  const properties = allProperties.map(prop => ({
     ...prop,
     views: Math.floor(Math.random() * 100),
     inquiries: Math.floor(Math.random() * 20),
