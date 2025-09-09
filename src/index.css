@@ -2,57 +2,76 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Premium Off-Market Property Platform Design System */
 
 @layer base {
   :root {
+    /* Core Colors - Minimalist Premium Palette */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
+    --foreground: 0 0% 0%;
+    
+    /* Cards and surfaces */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 0 0% 0%;
+    
+    /* Popover elements */
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --popover-foreground: 0 0% 0%;
+    
+    /* Premium beige/taupe primary colors */
+    --primary: 30 12% 76%;
+    --primary-foreground: 0 0% 0%;
+    --primary-hover: 30 15% 70%;
+    
+    /* Subtle secondary colors */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 20%;
+    
+    /* Muted elements */
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    
+    /* Accent colors */
+    --accent: 30 12% 76%;
+    --accent-foreground: 0 0% 0%;
+    
+    /* Status colors */
+    --destructive: 0 65% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 120 40% 50%;
+    --success-foreground: 0 0% 100%;
+    --warning: 45 90% 60%;
+    --warning-foreground: 0 0% 0%;
+    
+    /* Borders and inputs */
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 30 12% 76%;
+    
+    /* Property status badges */
+    --available: 120 40% 95%;
+    --available-foreground: 120 60% 30%;
+    --rented: 45 50% 95%;
+    --rented-foreground: 45 70% 30%;
+    --sold: 0 40% 95%;
+    --sold-foreground: 0 60% 30%;
+    
+    /* Typography hierarchy */
+    --font-heading: "Inter", system-ui, sans-serif;
+    --font-body: "Inter", system-ui, sans-serif;
+    
+    /* Spacing and layout */
+    --radius: 0.375rem;
+    --section-padding: 4rem;
+    --container-max: 1200px;
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: all 0.15s ease;
+    
+    /* Shadows */
+    --shadow-subtle: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   .dark {
@@ -100,6 +119,62 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-body;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-semibold;
+  }
+}
+
+@layer components {
+  /* Container utilities */
+  .container-custom {
+    @apply mx-auto px-4 sm:px-6 lg:px-8;
+    max-width: var(--container-max);
+  }
+
+  .section-padding {
+    @apply py-16 lg:py-24;
+  }
+
+  /* Premium button variants */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-200 
+           px-6 py-3 rounded-md font-medium shadow-sm;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border 
+           transition-colors duration-200 px-6 py-3 rounded-md font-medium;
+  }
+
+  /* Property status badges */
+  .badge-available {
+    @apply bg-available text-available-foreground px-2 py-1 rounded-full text-xs font-medium;
+  }
+
+  .badge-rented {
+    @apply bg-rented text-rented-foreground px-2 py-1 rounded-full text-xs font-medium;
+  }
+
+  .badge-sold {
+    @apply bg-sold text-sold-foreground px-2 py-1 rounded-full text-xs font-medium;
+  }
+
+  /* Card styles */
+  .card-property {
+    @apply bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+
+  /* Form styles */
+  .form-input {
+    @apply w-full px-3 py-2 border border-input rounded-md bg-background 
+           focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
+           placeholder:text-muted-foreground;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-foreground mb-1;
   }
 }

@@ -1,0 +1,98 @@
+{
+  "navigation": {
+    "home": "Home",
+    "properties": "Properties",
+    "contact": "Contact",
+    "login": "Login",
+    "admin": "Admin"
+  },
+  "home": {
+    "hero": {
+      "title": "Exclusive Off-Market Properties",
+      "subtitle": "Discover unique real estate opportunities, available exclusively to our privileged members",
+      "cta": "View All Properties"
+    },
+    "featured": {
+      "title": "Featured Properties",
+      "subtitle": "A curated selection of our best opportunities"
+    }
+  },
+  "properties": {
+    "title": "All Properties",
+    "search": {
+      "placeholder": "Search by city, neighborhood or type...",
+      "button": "Search"
+    },
+    "filters": {
+      "type": "Type",
+      "rooms": "Rooms",
+      "location": "Location",
+      "status": "Status"
+    },
+    "status": {
+      "available": "Available",
+      "rented": "Rented",
+      "sold": "Sold"
+    },
+    "viewDetails": "View Details",
+    "rooms": "rooms",
+    "contactInfo": "Contact Information"
+  },
+  "property": {
+    "details": "Property Details",
+    "description": "Description",
+    "features": "Features",
+    "contact": "Contact",
+    "price": "Price",
+    "onRequest": "On Request",
+    "surface": "Surface",
+    "availability": "Availability"
+  },
+  "auth": {
+    "login": "Login",
+    "password": "Password",
+    "submit": "Sign In",
+    "loginRequired": "Login required to view contact information",
+    "accessExpired": "Your subscription has expired. Please renew your access."
+  },
+  "admin": {
+    "dashboard": "Admin Dashboard",
+    "properties": {
+      "title": "Property Management",
+      "add": "Add Property",
+      "edit": "Edit",
+      "delete": "Delete",
+      "total": "Total Properties"
+    },
+    "accounts": {
+      "title": "Account Management",
+      "add": "Add Account",
+      "active": "Active Accounts",
+      "expired": "Expired Accounts"
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "send": "Send"
+  },
+  "legal": {
+    "terms": "Terms & Conditions",
+    "privacy": "Privacy Policy",
+    "notices": "Legal Notices",
+    "safety": "Safety Guidelines"
+  },
+  "footer": {
+    "description": "Exclusive off-market property platform for privileged investors."
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "tryAgain": "Try Again",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel"
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "navigation": {
+    "home": "Accueil",
+    "properties": "Propriétés",
+    "contact": "Contact",
+    "login": "Connexion",
+    "admin": "Admin"
+  },
+  "home": {
+    "hero": {
+      "title": "Propriétés Hors-Marché Exclusives",
+      "subtitle": "Découvrez des opportunités immobilières uniques, disponibles uniquement pour nos membres privilégiés",
+      "cta": "Voir toutes les propriétés"
+    },
+    "featured": {
+      "title": "Propriétés en Vedette",
+      "subtitle": "Une sélection soignée de nos meilleures opportunités"
+    }
+  },
+  "properties": {
+    "title": "Toutes les Propriétés",
+    "search": {
+      "placeholder": "Rechercher par ville, quartier ou type...",
+      "button": "Rechercher"
+    },
+    "filters": {
+      "type": "Type",
+      "rooms": "Pièces",
+      "location": "Localisation",
+      "status": "Statut"
+    },
+    "status": {
+      "available": "Disponible",
+      "rented": "Loué",
+      "sold": "Vendu"
+    },
+    "viewDetails": "Voir les détails",
+    "rooms": "pièces",
+    "contactInfo": "Informations de contact"
+  },
+  "property": {
+    "details": "Détails de la Propriété",
+    "description": "Description",
+    "features": "Caractéristiques",
+    "contact": "Contact",
+    "price": "Prix",
+    "onRequest": "Sur demande",
+    "surface": "Surface",
+    "availability": "Disponibilité"
+  },
+  "auth": {
+    "login": "Connexion",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "loginRequired": "Connexion requise pour voir les informations de contact",
+    "accessExpired": "Votre abonnement a expiré. Merci de le renouveler."
+  },
+  "admin": {
+    "dashboard": "Tableau de Bord Admin",
+    "properties": {
+      "title": "Gestion des Propriétés",
+      "add": "Ajouter une propriété",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "total": "Total des propriétés"
+    },
+    "accounts": {
+      "title": "Gestion des Comptes",
+      "add": "Ajouter un compte",
+      "active": "Comptes actifs",
+      "expired": "Comptes expirés"
+    }
+  },
+  "contact": {
+    "title": "Nous Contacter",
+    "name": "Nom",
+    "email": "E-mail",
+    "message": "Message",
+    "send": "Envoyer"
+  },
+  "legal": {
+    "terms": "Conditions Générales",
+    "privacy": "Politique de Confidentialité",
+    "notices": "Mentions Légales",
+    "safety": "Conseils de Sécurité"
+  },
+  "footer": {
+    "description": "Plateforme exclusive de propriétés hors-marché pour les investisseurs privilégiés."
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "tryAgain": "Réessayer",
+    "close": "Fermer",
+    "save": "Sauvegarder",
+    "cancel": "Annuler"
+  }
+}
