@@ -1,5 +1,4 @@
 import { Property } from '@/components/PropertyCard';
-import propertyImage from '@/assets/property-hero.jpg';
 
 export const mockProperties: Property[] = [
   {
@@ -15,7 +14,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 2\'800\'000',
     availabilityDate: '2024-02-01',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video1.mp4',
     features: ['Vue lac', 'Balcon', 'Cave', 'Place de parc'],
     contactInfo: {
@@ -37,7 +36,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'Sur demande',
     availabilityDate: '2024-03-15',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video2.mp4',
     features: ['Piscine', 'Jardin', 'Garage 2 places', 'Cheminée'],
     contactInfo: {
@@ -59,7 +58,7 @@ export const mockProperties: Property[] = [
     status: 'rented',
     price: 'CHF 1\'950\'000',
     availabilityDate: '2024-01-15',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video3.mp4',
     features: ['Design', 'Terrasse', 'Ascenseur', 'Concierge'],
     contactInfo: {
@@ -81,7 +80,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 3\'200\'000',
     availabilityDate: '2024-04-01',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video4.mp4',
     features: ['Terrasse 150m²', 'Vue panoramique', 'Jacuzzi', 'Parking privé'],
     contactInfo: {
@@ -103,7 +102,7 @@ export const mockProperties: Property[] = [
     status: 'sold',
     price: 'CHF 8\'500\'000',
     availabilityDate: '2024-01-01',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video5.mp4',
     features: ['Parc 2 ha', 'Piscine chauffée', 'Écuries', 'Cave à vin'],
     contactInfo: {
@@ -125,7 +124,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 2\'100\'000',
     availabilityDate: '2024-05-15',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video6.mp4',
     features: ['Neuf', 'Conciergerie', 'Spa', 'Cave'],
     contactInfo: {
@@ -147,7 +146,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 1\'650\'000',
     availabilityDate: '2024-06-01',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video7.mp4',
     features: ['Terrasse', 'Rénové', 'Proche métro', 'Cave'],
     contactInfo: {
@@ -169,7 +168,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 2\'950\'000',
     availabilityDate: '2024-07-15',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video8.mp4',
     features: ['Piscine', 'Jardin', 'Garage', 'Sécurité'],
     contactInfo: {
@@ -191,7 +190,7 @@ export const mockProperties: Property[] = [
     status: 'rented',
     price: 'CHF 850\'000',
     availabilityDate: '2024-01-01',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video9.mp4',
     features: ['Vue lac', 'Rénové', 'Conciergerie', 'Parking'],
     contactInfo: {
@@ -213,7 +212,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 3\'800\'000',
     availabilityDate: '2024-08-01',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video10.mp4',
     features: ['Charme', 'Rénové', 'Jardin', 'Cave'],
     contactInfo: {
@@ -235,7 +234,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 1\'950\'000',
     availabilityDate: '2024-09-15',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video11.mp4',
     features: ['Terrasse', 'Vue dégagée', 'Calme', 'Cave'],
     contactInfo: {
@@ -257,7 +256,7 @@ export const mockProperties: Property[] = [
     status: 'sold',
     price: 'CHF 2\'400\'000',
     availabilityDate: '2024-01-01',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video12.mp4',
     features: ['Industriel', 'Hauteur', 'Rénové', 'Parking'],
     contactInfo: {
@@ -279,7 +278,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 4\'200\'000',
     availabilityDate: '2024-10-01',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video13.mp4',
     features: ['Piscine privée', 'Vue panoramique', 'Terrasse', 'Sécurité'],
     contactInfo: {
@@ -301,7 +300,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 3\'500\'000',
     availabilityDate: '2024-11-15',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video14.mp4',
     features: ['Piscine chauffée', 'Jardin', 'Garage 2 places', 'Sécurité'],
     contactInfo: {
@@ -323,7 +322,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 2\'200\'000',
     availabilityDate: '2024-12-01',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video15.mp4',
     features: ['Rénové', 'Proche université', 'Transports', 'Cave'],
     contactInfo: {
@@ -345,7 +344,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 5\'800\'000',
     availabilityDate: '2024-01-15',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video16.mp4',
     features: ['Vue Alpes', 'Cheminée', 'Garage', 'Ski'],
     contactInfo: {
@@ -367,7 +366,7 @@ export const mockProperties: Property[] = [
     status: 'rented',
     price: 'CHF 1\'750\'000',
     availabilityDate: '2024-01-01',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video17.mp4',
     features: ['Balcon sud', 'Proche lac', 'Centre-ville', 'Cave'],
     contactInfo: {
@@ -389,7 +388,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 3\'200\'000',
     availabilityDate: '2024-02-15',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video18.mp4',
     features: ['Grand jardin', 'Familial', 'Proche écoles', 'Garage'],
     contactInfo: {
@@ -411,7 +410,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 1\'850\'000',
     availabilityDate: '2024-03-01',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video19.mp4',
     features: ['Terrasse privée', 'Design', 'Hauteur', 'Rénové'],
     contactInfo: {
@@ -433,7 +432,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 2\'800\'000',
     availabilityDate: '2024-04-15',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video20.mp4',
     features: ['Vue lac', 'Standing', 'Finitions', 'Conciergerie'],
     contactInfo: {
@@ -455,7 +454,7 @@ export const mockProperties: Property[] = [
     status: 'sold',
     price: 'CHF 3\'100\'000',
     availabilityDate: '2024-01-01',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video21.mp4',
     features: ['Piscine', 'Jardin', 'Moderne', 'Garage'],
     contactInfo: {
@@ -477,7 +476,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 1\'700\'000',
     availabilityDate: '2024-05-01',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video22.mp4',
     features: ['Cave à vin', 'Centre-ville', 'Rénové', 'Cave'],
     contactInfo: {
@@ -499,7 +498,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 2\'600\'000',
     availabilityDate: '2024-06-15',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video23.mp4',
     features: ['Jardin privé', 'Familial', 'Proche parc', 'Garage'],
     contactInfo: {
@@ -521,7 +520,7 @@ export const mockProperties: Property[] = [
     status: 'rented',
     price: 'CHF 1\'450\'000',
     availabilityDate: '2024-01-01',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video24.mp4',
     features: ['Balcon', 'Proche métro', 'Commerces', 'Cave'],
     contactInfo: {
@@ -543,7 +542,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 2\'400\'000',
     availabilityDate: '2024-07-01',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video25.mp4',
     features: ['Grande terrasse', 'Vue dégagée', 'Calme', 'Garage'],
     contactInfo: {
@@ -565,7 +564,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 2\'100\'000',
     availabilityDate: '2024-08-15',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video26.mp4',
     features: ['Charme', 'Parquet', 'Moulures', 'Centre historique'],
     contactInfo: {
@@ -587,7 +586,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 3\'500\'000',
     availabilityDate: '2024-09-01',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video27.mp4',
     features: ['Piscine privée', 'Design', 'Vue panoramique', 'Rénové'],
     contactInfo: {
@@ -609,7 +608,7 @@ export const mockProperties: Property[] = [
     status: 'sold',
     price: 'CHF 2\'900\'000',
     availabilityDate: '2024-01-01',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video28.mp4',
     features: ['Garage 2 places', 'Jardin', 'Proche lac', 'Familial'],
     contactInfo: {
@@ -631,7 +630,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 2\'300\'000',
     availabilityDate: '2024-10-15',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video29.mp4',
     features: ['Terrasse', 'Vue lac', 'Montagnes', 'Rénové'],
     contactInfo: {
@@ -653,7 +652,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     price: 'CHF 6\'500\'000',
     availabilityDate: '2024-11-01',
-    images: [propertyImage],
+    images: ['/property-hero.jpg'],
     videoUrl: 'https://example.com/video30.mp4',
     features: ['Terrasse panoramique', 'Luxe', 'Finitions', 'Sécurité'],
     contactInfo: {
