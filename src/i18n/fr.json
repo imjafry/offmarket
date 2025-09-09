@@ -19,6 +19,7 @@
   },
   "properties": {
     "title": "Toutes les Propriétés",
+    "subtitle": "Découvrez notre sélection exclusive de propriétés hors-marché",
     "search": {
       "placeholder": "Rechercher par ville, quartier ou type...",
       "button": "Rechercher"
@@ -27,7 +28,12 @@
       "type": "Type",
       "rooms": "Pièces",
       "location": "Localisation",
-      "status": "Statut"
+      "status": "Statut",
+      "city": "Ville",
+      "allCities": "Toutes les villes",
+      "allRooms": "Toutes les pièces",
+      "allStatus": "Tous les statuts",
+      "more": "Plus de filtres"
     },
     "status": {
       "available": "Disponible",
@@ -36,7 +42,10 @@
     },
     "viewDetails": "Voir les détails",
     "rooms": "pièces",
-    "contactInfo": "Informations de contact"
+    "contactInfo": "Informations de contact",
+    "results": "propriétés trouvées",
+    "clearFilters": "Effacer les filtres",
+    "noResults": "Aucune propriété trouvée"
   },
   "property": {
     "details": "Détails de la Propriété",

@@ -19,6 +19,7 @@
   },
   "properties": {
     "title": "All Properties",
+    "subtitle": "Discover our exclusive selection of off-market properties",
     "search": {
       "placeholder": "Search by city, neighborhood or type...",
       "button": "Search"
@@ -27,7 +28,12 @@
       "type": "Type",
       "rooms": "Rooms",
       "location": "Location",
-      "status": "Status"
+      "status": "Status",
+      "city": "City",
+      "allCities": "All Cities",
+      "allRooms": "All Rooms",
+      "allStatus": "All Status",
+      "more": "More Filters"
     },
     "status": {
       "available": "Available",
@@ -36,7 +42,10 @@
     },
     "viewDetails": "View Details",
     "rooms": "rooms",
-    "contactInfo": "Contact Information"
+    "contactInfo": "Contact Information",
+    "results": "properties found",
+    "clearFilters": "Clear Filters",
+    "noResults": "No properties found"
   },
   "property": {
     "details": "Property Details",

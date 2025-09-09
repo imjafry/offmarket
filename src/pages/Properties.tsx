@@ -12,9 +12,9 @@ import { mockProperties } from '@/data/mockProperties';
 export const PropertiesPage: React.FC = () => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCity, setSelectedCity] = useState('');
-  const [selectedRooms, setSelectedRooms] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedCity, setSelectedCity] = useState('all');
+  const [selectedRooms, setSelectedRooms] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
 
@@ -27,12 +27,12 @@ export const PropertiesPage: React.FC = () => {
                          property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          property.neighborhood.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesCity = !selectedCity || property.city.toLowerCase().includes(selectedCity.toLowerCase());
-    const matchesRooms = !selectedRooms || 
+    const matchesCity = !selectedCity || selectedCity === 'all' || property.city.toLowerCase().includes(selectedCity.toLowerCase());
+    const matchesRooms = !selectedRooms || selectedRooms === 'all' ||
                         (selectedRooms === '1-2' && property.rooms <= 2) ||
                         (selectedRooms === '3-4' && property.rooms >= 3 && property.rooms <= 4) ||
                         (selectedRooms === '5+' && property.rooms >= 5);
-    const matchesStatus = !selectedStatus || property.status === selectedStatus;
+    const matchesStatus = !selectedStatus || selectedStatus === 'all' || property.status === selectedStatus;
     
     return matchesSearch && matchesCity && matchesRooms && matchesStatus;
   });
@@ -110,7 +110,7 @@ export const PropertiesPage: React.FC = () => {
                     <SelectValue placeholder={t('properties.filters.city')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">{t('properties.filters.allCities')}</SelectItem>
+                    <SelectItem value="all">{t('properties.filters.allCities')}</SelectItem>
                     <SelectItem value="lausanne">Lausanne</SelectItem>
                     <SelectItem value="geneve">Genève</SelectItem>
                     <SelectItem value="montreux">Montreux</SelectItem>
@@ -122,7 +122,7 @@ export const PropertiesPage: React.FC = () => {
                     <SelectValue placeholder={t('properties.filters.rooms')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">{t('properties.filters.allRooms')}</SelectItem>
+                    <SelectItem value="all">{t('properties.filters.allRooms')}</SelectItem>
                     <SelectItem value="1-2">1-2 {t('properties.rooms')}</SelectItem>
                     <SelectItem value="3-4">3-4 {t('properties.rooms')}</SelectItem>
                     <SelectItem value="5+">5+ {t('properties.rooms')}</SelectItem>
@@ -134,7 +134,7 @@ export const PropertiesPage: React.FC = () => {
                     <SelectValue placeholder={t('properties.filters.status')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">{t('properties.filters.allStatus')}</SelectItem>
+                    <SelectItem value="all">{t('properties.filters.allStatus')}</SelectItem>
                     <SelectItem value="available">{t('properties.status.available')}</SelectItem>
                     <SelectItem value="rented">{t('properties.status.rented')}</SelectItem>
                     <SelectItem value="sold">{t('properties.status.sold')}</SelectItem>
@@ -246,9 +246,9 @@ export const PropertiesPage: React.FC = () => {
                   variant="outline" 
                   onClick={() => {
                     setSearchTerm('');
-                    setSelectedCity('');
-                    setSelectedRooms('');
-                    setSelectedStatus('');
+                    setSelectedCity('all');
+                    setSelectedRooms('all');
+                    setSelectedStatus('all');
                   }}
                 >
                   {t('properties.clearFilters')}
@@ -256,7 +256,7 @@ export const PropertiesPage: React.FC = () => {
               </div>
             </motion.div>
           )}
-        </div>
+        </motion.div>
       </div>
     </div>
   );
