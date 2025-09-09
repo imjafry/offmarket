@@ -12,11 +12,15 @@ export interface Property {
   description: string;
   city: string;
   neighborhood: string;
+  address?: string; // Full address (optional for privacy)
+  propertyType: 'apartment' | 'house' | 'loft' | 'penthouse' | 'studio' | 'duplex' | 'villa' | 'chalet' | 'castle';
   rooms: number;
   surface: number;
   status: 'available' | 'rented' | 'sold';
   price?: string;
+  availabilityDate?: string; // Available from date
   images: string[];
+  videoUrl?: string; // Video URL or upload
   features: string[];
   contactInfo?: {
     name: string;

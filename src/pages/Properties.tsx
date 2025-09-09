@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Search, SlidersHorizontal, Grid3X3, List, Filter } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -11,15 +12,13 @@ import { mockProperties } from '@/data/mockProperties';
 
 export const PropertiesPage: React.FC = () => {
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCity, setSelectedCity] = useState('all');
   const [selectedRooms, setSelectedRooms] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
-
-  // Mock authentication state - in real app this would come from auth context
-  const isAuthenticated = false;
 
   // Filter properties based on search criteria
   const filteredProperties = mockProperties.filter(property => {

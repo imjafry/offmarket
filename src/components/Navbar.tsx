@@ -1,11 +1,14 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Globe } from 'lucide-react';
+import { Globe, LogOut, User } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 export const Navbar: React.FC = () => {
   const { t, language, setLanguage } = useTranslation();
+  const { isAuthenticated, user, logout } = useAuth();
   const location = useLocation();
 
   const toggleLanguage = () => {
@@ -47,7 +50,7 @@ export const Navbar: React.FC = () => {
             ))}
           </div>
 
-          {/* Language Switcher & Login */}
+          {/* Language Switcher & Auth */}
           <div className="flex items-center space-x-4">
             <Button
               variant="ghost"
@@ -61,11 +64,33 @@ export const Navbar: React.FC = () => {
               </span>
             </Button>
             
-            <Link to="/login">
-              <Button variant="outline" size="sm">
-                {t('navigation.login')}
-              </Button>
-            </Link>
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                    <User className="h-4 w-4" />
+                    <span>{user?.username}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>
+                    <User className="mr-2 h-4 w-4" />
+                    {t('language') === 'fr' ? 'Profil' : 'Profile'}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={logout} className="text-red-600">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    {t('language') === 'fr' ? 'Déconnexion' : 'Logout'}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link to="/login">
+                <Button variant="outline" size="sm">
+                  {t('navigation.login')}
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>

@@ -1,26 +1,45 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Lock, ArrowLeft } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Lock, ArrowLeft, AlertCircle } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export const LoginPage: React.FC = () => {
   const { t } = useTranslation();
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
     
-    // Simulate login process
-    setTimeout(() => {
+    try {
+      const success = await login(username, password);
+      if (success) {
+        navigate('/properties');
+      } else {
+        setError(t('language') === 'fr' 
+          ? 'Nom d\'utilisateur ou mot de passe incorrect, ou abonnement expiré'
+          : 'Invalid username or password, or subscription expired'
+        );
+      }
+    } catch (err) {
+      setError(t('language') === 'fr' 
+        ? 'Une erreur est survenue lors de la connexion'
+        : 'An error occurred during login'
+      );
+    } finally {
       setIsLoading(false);
-      // In real app, handle authentication here
-      console.log('Login attempt with password:', password);
-    }, 2000);
+    }
   };
 
   return (
@@ -53,7 +72,29 @@ export const LoginPage: React.FC = () => {
           </CardHeader>
 
           <CardContent>
+            {error && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="username" className="form-label">
+                  {t('language') === 'fr' ? 'Nom d\'utilisateur' : 'Username'}
+                </label>
+                <Input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder={t('language') === 'fr' ? 'Entrez votre nom d\'utilisateur' : 'Enter your username'}
+                  className="form-input"
+                  required
+                />
+              </div>
+
               <div className="space-y-2">
                 <label htmlFor="password" className="form-label">
                   {t('auth.password')}
@@ -94,12 +135,19 @@ export const LoginPage: React.FC = () => {
 
         {/* Demo Info */}
         <div className="bg-muted/50 border border-border rounded-lg p-4">
-          <p className="text-xs text-muted-foreground text-center">
-            <strong>Demo:</strong> {t('language') === 'fr' 
-              ? 'Utilisez n\'importe quel mot de passe pour tester'
-              : 'Use any password to test'
-            }
-          </p>
+          <h4 className="text-sm font-medium text-foreground mb-2">
+            {t('language') === 'fr' ? 'Identifiants de démonstration' : 'Demo Credentials'}
+          </h4>
+          <div className="text-xs text-muted-foreground space-y-1">
+            <p><strong>Username:</strong> marie.dubois</p>
+            <p><strong>Password:</strong> demo123</p>
+            <p className="text-xs text-green-600 mt-2">
+              {t('language') === 'fr' 
+                ? 'Abonnement valide jusqu\'au 10 juillet 2024'
+                : 'Valid subscription until July 10, 2024'
+              }
+            </p>
+          </div>
         </div>
       </div>
     </div>
