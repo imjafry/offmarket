@@ -57,7 +57,7 @@ export const PropertyGallery: React.FC<PropertyGalleryProps> = ({
         <div className="aspect-video bg-muted rounded-2xl overflow-hidden relative">
           <motion.img
             key={currentIndex}
-            src={images[currentIndex] || '/placeholder.svg'}
+            src={images[currentIndex] || '/property-hero.jpg'}
             alt={`${title} - Image ${currentIndex + 1}`}
             className="w-full h-full object-cover"
             initial={{ opacity: 0 }}
