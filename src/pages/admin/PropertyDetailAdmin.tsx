@@ -4,9 +4,10 @@ import { AdminLayout } from '@/components/admin/AdminLayout';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useProperties } from '@/contexts/PropertyContext';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Edit, Trash2, MapPin, Home, DollarSign, Calendar, Image as ImageIcon, List } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, MapPin, Home, DollarSign, Calendar, Image as ImageIcon, List, Maximize, Bath } from 'lucide-react';
+import { PropertyGallery } from '@/components/PropertyGallery';
 
 export const AdminPropertyDetailPage: React.FC = () => {
   const { id } = useParams();
@@ -68,18 +69,27 @@ export const AdminPropertyDetailPage: React.FC = () => {
             <CardContent className="p-6 text-gray-600">{t('language') === 'fr' ? 'Propriété introuvable.' : 'Property not found.'}</CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="space-y-6">
+            <Card className="overflow-hidden">
+              <CardContent className="p-0">
+                <PropertyGallery images={property.images} title={property.title} hasVideo={Boolean(property.videoUrl)} />
+              </CardContent>
+            </Card>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center"><Home className="h-5 w-5 mr-2 text-blue-600" />{property.title}</CardTitle>
+                  <CardDescription className="text-sm text-muted-foreground flex items-center"><MapPin className="h-4 w-4 mr-1" />{property.city}{property.neighborhood ? `, ${property.neighborhood}` : ''}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="text-gray-700">{property.description || (t('language') === 'fr' ? 'Aucune description fournie.' : 'No description provided.')}</div>
                   <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                    <div className="flex items-center"><MapPin className="h-4 w-4 mr-1" />{property.city}{property.neighborhood ? `, ${property.neighborhood}` : ''}</div>
                     <div className="flex items-center"><DollarSign className="h-4 w-4 mr-1" />{property.price || '-'}</div>
                     <div className="flex items-center"><Calendar className="h-4 w-4 mr-1" />{property.availabilityDate || '-'}</div>
+                    <div className="flex items-center"><Maximize className="h-4 w-4 mr-1" />{property.surface} m²</div>
+                    <div className="flex items-center"><Bath className="h-4 w-4 mr-1" />2</div>
                   </div>
                 </CardContent>
               </Card>
@@ -116,6 +126,7 @@ export const AdminPropertyDetailPage: React.FC = () => {
                 </CardContent>
               </Card>
             </div>
+          </div>
           </div>
         )}
       </div>

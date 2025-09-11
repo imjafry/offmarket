@@ -8,12 +8,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Bell, Globe, Mail, Settings } from 'lucide-react';
+import { Bell, Globe, Mail, Settings, Shield, Database, UploadCloud, Image as ImageIcon, Moon } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 
 export const AdminSettingsPage: React.FC = () => {
   const { t, language, setLanguage } = useTranslation();
   const [siteName, setSiteName] = React.useState<string>(() => localStorage.getItem('admin_site_name') || 'OffMarket');
   const [tagline, setTagline] = React.useState<string>(() => localStorage.getItem('admin_site_tagline') || (t('language') === 'fr' ? 'Accès exclusif aux propriétés hors-marché' : 'Exclusive access to off-market properties'));
+  const [darkMode, setDarkMode] = React.useState<boolean>(() => localStorage.getItem('admin_theme') === 'dark');
+  const [logoPreview, setLogoPreview] = React.useState<string | null>(() => localStorage.getItem('admin_logo') || null);
+  const [senderName, setSenderName] = React.useState<string>(() => localStorage.getItem('admin_email_sender_name') || 'OffMarket');
+  const [senderEmail, setSenderEmail] = React.useState<string>(() => localStorage.getItem('admin_email_sender_email') || 'noreply@offmarket.ch');
+  const [replyTo, setReplyTo] = React.useState<string>(() => localStorage.getItem('admin_email_reply_to') || 'support@offmarket.ch');
+  const [maintenance, setMaintenance] = React.useState<boolean>(() => localStorage.getItem('admin_maintenance') === 'true');
 
   return (
     <AdminLayout>
@@ -44,8 +51,11 @@ export const AdminSettingsPage: React.FC = () => {
         <Tabs defaultValue="general" className="w-full">
           <TabsList>
             <TabsTrigger value="general">{t('language') === 'fr' ? 'Général' : 'General'}</TabsTrigger>
+            <TabsTrigger value="branding">{t('language') === 'fr' ? 'Branding' : 'Branding'}</TabsTrigger>
             <TabsTrigger value="email">{t('language') === 'fr' ? 'E-mails' : 'Emails'}</TabsTrigger>
             <TabsTrigger value="notifications">{t('language') === 'fr' ? 'Notifications' : 'Notifications'}</TabsTrigger>
+            <TabsTrigger value="security">{t('language') === 'fr' ? 'Sécurité' : 'Security'}</TabsTrigger>
+            <TabsTrigger value="data">{t('language') === 'fr' ? 'Données' : 'Data'}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="general" className="space-y-6">
@@ -79,6 +89,62 @@ export const AdminSettingsPage: React.FC = () => {
             </Card>
           </TabsContent>
 
+          <TabsContent value="branding" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center"><ImageIcon className="h-5 w-5 mr-2 text-pink-600" />{t('language') === 'fr' ? 'Branding & Thème' : 'Branding & Theme'}</CardTitle>
+                <CardDescription>{t('language') === 'fr' ? 'Logo et préférences d\'apparence' : 'Logo and appearance preferences'}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label>{t('language') === 'fr' ? 'Logo' : 'Logo'}</Label>
+                    <div className="flex items-center space-x-4">
+                      <div className="w-16 h-16 bg-muted rounded-xl overflow-hidden flex items-center justify-center">
+                        {logoPreview ? (
+                          <img src={logoPreview} className="w-full h-full object-cover" />
+                        ) : (
+                          <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                        )}
+                      </div>
+                      <div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          id="logo-upload"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = () => {
+                                const url = String(reader.result);
+                                setLogoPreview(url);
+                                localStorage.setItem('admin_logo', url);
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                        <Button variant="outline" onClick={() => document.getElementById('logo-upload')?.click()}>
+                          <UploadCloud className="h-4 w-4 mr-2" />
+                          {t('language') === 'fr' ? 'Télécharger' : 'Upload'}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="flex items-center space-x-2"><Moon className="h-4 w-4 mr-2 text-purple-600" />{t('language') === 'fr' ? 'Mode sombre' : 'Dark Mode'}</Label>
+                    <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <span className="text-sm text-muted-foreground">{darkMode ? 'Dark' : 'Light'}</span>
+                      <Switch checked={darkMode} onCheckedChange={(v) => { setDarkMode(v); localStorage.setItem('admin_theme', v ? 'dark' : 'light'); }} />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="email" className="space-y-6">
             <Card>
               <CardHeader>
@@ -93,6 +159,44 @@ export const AdminSettingsPage: React.FC = () => {
                 <div className="space-y-2">
                   <Label htmlFor="welcomeBody">{t('language') === 'fr' ? 'Contenu de bienvenue' : 'Welcome Body'}</Label>
                   <Textarea id="welcomeBody" rows={6} placeholder={t('language') === 'fr' ? 'Bonjour {{name}}, merci de votre inscription...' : 'Hello {{name}}, thank you for signing up...'} />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label>{t('language') === 'fr' ? 'Nom de l\'expéditeur' : 'Sender Name'}</Label>
+                    <Input value={senderName} onChange={(e) => setSenderName(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{t('language') === 'fr' ? 'Email expéditeur' : 'Sender Email'}</Label>
+                    <Input value={senderEmail} onChange={(e) => setSenderEmail(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Reply-To</Label>
+                    <Input value={replyTo} onChange={(e) => setReplyTo(e.target.value)} />
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      localStorage.setItem('admin_email_sender_name', senderName);
+                      localStorage.setItem('admin_email_sender_email', senderEmail);
+                      localStorage.setItem('admin_email_reply_to', replyTo);
+                      const { toast } = require('@/hooks/use-toast');
+                      toast({ title: t('language') === 'fr' ? 'Paramètres e-mail enregistrés' : 'Email settings saved' });
+                    }}
+                  >
+                    {t('language') === 'fr' ? 'Enregistrer les paramètres e-mail' : 'Save email settings'}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      const { toast } = require('@/hooks/use-toast');
+                      toast({ title: t('language') === 'fr' ? 'Email test envoyé' : 'Test email sent', description: `${senderName} <${senderEmail}> → ${replyTo}` });
+                    }}
+                  >
+                    {t('language') === 'fr' ? 'Tester l\'email' : 'Send test email'}
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -127,6 +231,57 @@ export const AdminSettingsPage: React.FC = () => {
                     </Select>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="security" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center"><Shield className="h-5 w-5 mr-2 text-emerald-600" />{t('language') === 'fr' ? 'Sécurité' : 'Security'}</CardTitle>
+                <CardDescription>{t('language') === 'fr' ? 'Contrôles de sécurité de base' : 'Basic security controls'}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <div className="font-medium">{t('language') === 'fr' ? 'Mode maintenance' : 'Maintenance Mode'}</div>
+                    <div className="text-sm text-muted-foreground">{t('language') === 'fr' ? 'Empêche l\'accès public pendant la maintenance' : 'Prevents public access during maintenance'}</div>
+                  </div>
+                  <Switch checked={maintenance} onCheckedChange={(v) => { setMaintenance(v); localStorage.setItem('admin_maintenance', String(v)); }} />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="data" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center"><Database className="h-5 w-5 mr-2 text-indigo-600" />{t('language') === 'fr' ? 'Sauvegarde & Restauration' : 'Backup & Restore'}</CardTitle>
+                <CardDescription>{t('language') === 'fr' ? 'Exporter la configuration actuelle' : 'Export current configuration'}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    const data = {
+                      siteName,
+                      tagline,
+                      darkMode,
+                      logoPreview,
+                      senderName,
+                      senderEmail,
+                      replyTo,
+                      maintenance
+                    };
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url; a.download = 'admin-settings-backup.json'; a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                >
+                  {t('language') === 'fr' ? 'Exporter la sauvegarde' : 'Export Backup'}
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>

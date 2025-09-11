@@ -104,8 +104,10 @@ export const AccountManagement: React.FC = () => {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const [pageSize, setPageSize] = useState(10);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
+  const [sortKey, setSortKey] = useState<'name' | 'status' | 'subscriptionType' | 'lastActive' | 'subscriptionExpiry'>('lastActive');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -122,15 +124,30 @@ export const AccountManagement: React.FC = () => {
     return () => clearTimeout(id);
   }, [searchInput]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / pageSize));
+  const sortedUsers = React.useMemo(() => {
+    const arr = [...filteredUsers];
+    arr.sort((a: any, b: any) => {
+      const aVal = (a as any)[sortKey] ?? '';
+      const bVal = (b as any)[sortKey] ?? '';
+      if (sortKey === 'lastActive' || sortKey === 'subscriptionExpiry') {
+        const aDate = new Date(aVal).getTime();
+        const bDate = new Date(bVal).getTime();
+        return sortDir === 'asc' ? aDate - bDate : bDate - aDate;
+      }
+      return sortDir === 'asc' ? String(aVal).localeCompare(String(bVal)) : String(bVal).localeCompare(String(aVal));
+    });
+    return arr;
+  }, [filteredUsers, sortKey, sortDir]);
+
+  const totalPages = Math.max(1, Math.ceil(sortedUsers.length / pageSize));
   const paginatedUsers = React.useMemo(() => {
     const start = (currentPage - 1) * pageSize;
-    return filteredUsers.slice(start, start + pageSize);
-  }, [filteredUsers, currentPage]);
+    return sortedUsers.slice(start, start + pageSize);
+  }, [sortedUsers, currentPage, pageSize]);
 
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, statusFilter, subscriptionFilter]);
+  }, [searchQuery, statusFilter, subscriptionFilter, pageSize]);
 
   const handleSelectAll = () => {
     if (selectedUsers.length === filteredUsers.length) {
@@ -418,11 +435,11 @@ export const AccountManagement: React.FC = () => {
                         onCheckedChange={handleSelectAll}
                       />
                     </th>
-                    <th className="text-left p-4 font-medium">User</th>
-                    <th className="text-left p-4 font-medium">Status</th>
-                    <th className="text-left p-4 font-medium">Subscription</th>
-                    <th className="text-left p-4 font-medium">Activity</th>
-                    <th className="text-left p-4 font-medium">Expiry</th>
+                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('name'); setSortDir(prev => sortKey === 'name' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>User</th>
+                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('status'); setSortDir(prev => sortKey === 'status' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Status</th>
+                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('subscriptionType'); setSortDir(prev => sortKey === 'subscriptionType' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Subscription</th>
+                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('lastActive'); setSortDir(prev => sortKey === 'lastActive' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Activity</th>
+                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('subscriptionExpiry'); setSortDir(prev => sortKey === 'subscriptionExpiry' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Expiry</th>
                     <th className="text-left p-4 font-medium">Actions</th>
                   </tr>
                 </thead>
@@ -534,12 +551,22 @@ export const AccountManagement: React.FC = () => {
             <div className="flex items-center justify-between mt-6">
               <div className="text-sm text-gray-500">
                 {t('language') === 'fr' 
-                  ? `Affichage de ${(currentPage - 1) * pageSize + 1} à ${Math.min(currentPage * pageSize, filteredUsers.length)} sur ${filteredUsers.length} résultats`
-                  : `Showing ${(currentPage - 1) * pageSize + 1} to ${Math.min(currentPage * pageSize, filteredUsers.length)} of ${filteredUsers.length} results`
+                  ? `Affichage de ${(currentPage - 1) * pageSize + 1} à ${Math.min(currentPage * pageSize, sortedUsers.length)} sur ${sortedUsers.length} résultats`
+                  : `Showing ${(currentPage - 1) * pageSize + 1} to ${Math.min(currentPage * pageSize, sortedUsers.length)} of ${sortedUsers.length} results`
                 }
               </div>
               <div className="flex items-center space-x-3">
                 <span className="text-sm text-gray-500">{t('language') === 'fr' ? `Page ${currentPage} sur ${totalPages}` : `Page ${currentPage} of ${totalPages}`}</span>
+                <Select value={String(pageSize)} onValueChange={(v) => setPageSize(parseInt(v))}>
+                  <SelectTrigger className="w-24">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10 / page</SelectItem>
+                    <SelectItem value="20">20 / page</SelectItem>
+                    <SelectItem value="50">50 / page</SelectItem>
+                  </SelectContent>
+                </Select>
                 <div className="flex space-x-2">
                   <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))}>
                     {t('language') === 'fr' ? 'Précédent' : 'Previous'}

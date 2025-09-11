@@ -41,7 +41,9 @@ export const PropertyManagement: React.FC = () => {
   const [selectedProperties, setSelectedProperties] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const [pageSize, setPageSize] = useState(10);
+  const [sortKey, setSortKey] = useState<'title' | 'status' | 'price' | 'views' | 'inquiries' | 'createdAt'>('createdAt');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
 
   // Debounce search input
@@ -69,16 +71,29 @@ export const PropertyManagement: React.FC = () => {
     return matchesSearch && matchesStatus && matchesCity;
   });
 
-  const totalPages = Math.max(1, Math.ceil(filteredProperties.length / pageSize));
+  const sortedProperties = useMemo(() => {
+    const arr = [...filteredProperties];
+    arr.sort((a: any, b: any) => {
+      const aVal = (a as any)[sortKey] ?? '';
+      const bVal = (b as any)[sortKey] ?? '';
+      if (typeof aVal === 'number' && typeof bVal === 'number') {
+        return sortDir === 'asc' ? aVal - bVal : bVal - aVal;
+      }
+      return sortDir === 'asc' ? String(aVal).localeCompare(String(bVal)) : String(bVal).localeCompare(String(aVal));
+    });
+    return arr;
+  }, [filteredProperties, sortKey, sortDir]);
+
+  const totalPages = Math.max(1, Math.ceil(sortedProperties.length / pageSize));
   const paginatedProperties = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
-    return filteredProperties.slice(start, start + pageSize);
-  }, [filteredProperties, currentPage]);
+    return sortedProperties.slice(start, start + pageSize);
+  }, [sortedProperties, currentPage, pageSize]);
 
   useEffect(() => {
     // Reset to first page when filters/search change
     setCurrentPage(1);
-  }, [searchQuery, statusFilter, cityFilter]);
+  }, [searchQuery, statusFilter, cityFilter, pageSize]);
 
   const handleSelectAll = () => {
     if (selectedProperties.length === filteredProperties.length) {
@@ -334,12 +349,12 @@ export const PropertyManagement: React.FC = () => {
                         onCheckedChange={handleSelectAll}
                       />
                     </th>
-                    <th className="text-left p-4 font-medium">Property</th>
-                    <th className="text-left p-4 font-medium">Status</th>
-                    <th className="text-left p-4 font-medium">Price</th>
-                    <th className="text-left p-4 font-medium">Views</th>
-                    <th className="text-left p-4 font-medium">Inquiries</th>
-                    <th className="text-left p-4 font-medium">Created</th>
+                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('title'); setSortDir(prev => sortKey === 'title' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Property</th>
+                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('status'); setSortDir(prev => sortKey === 'status' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Status</th>
+                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('price'); setSortDir(prev => sortKey === 'price' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Price</th>
+                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('views'); setSortDir(prev => sortKey === 'views' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Views</th>
+                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('inquiries'); setSortDir(prev => sortKey === 'inquiries' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Inquiries</th>
+                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('createdAt'); setSortDir(prev => sortKey === 'createdAt' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Created</th>
                     <th className="text-left p-4 font-medium">Actions</th>
                   </tr>
                 </thead>
@@ -443,12 +458,22 @@ export const PropertyManagement: React.FC = () => {
             <div className="flex items-center justify-between mt-6">
               <div className="text-sm text-gray-500">
                 {t('language') === 'fr' 
-                  ? `Affichage de ${(currentPage - 1) * pageSize + 1} à ${Math.min(currentPage * pageSize, filteredProperties.length)} sur ${filteredProperties.length} résultats`
-                  : `Showing ${(currentPage - 1) * pageSize + 1} to ${Math.min(currentPage * pageSize, filteredProperties.length)} of ${filteredProperties.length} results`
+                  ? `Affichage de ${(currentPage - 1) * pageSize + 1} à ${Math.min(currentPage * pageSize, sortedProperties.length)} sur ${sortedProperties.length} résultats`
+                  : `Showing ${(currentPage - 1) * pageSize + 1} to ${Math.min(currentPage * pageSize, sortedProperties.length)} of ${sortedProperties.length} results`
                 }
               </div>
               <div className="flex items-center space-x-3">
                 <span className="text-sm text-gray-500">{t('language') === 'fr' ? `Page ${currentPage} sur ${totalPages}` : `Page ${currentPage} of ${totalPages}`}</span>
+                <Select value={String(pageSize)} onValueChange={(v) => setPageSize(parseInt(v))}>
+                  <SelectTrigger className="w-24">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10 / page</SelectItem>
+                    <SelectItem value="20">20 / page</SelectItem>
+                    <SelectItem value="50">50 / page</SelectItem>
+                  </SelectContent>
+                </Select>
                 <div className="flex space-x-2">
                   <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))}>
                     {t('language') === 'fr' ? 'Précédent' : 'Previous'}

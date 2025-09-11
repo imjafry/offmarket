@@ -3,9 +3,9 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowLeft, Mail, Phone, Shield } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, Shield, Calendar, Eye, Clock, Settings } from 'lucide-react';
 
 // Local mock (aligned with AccountManagement)
 const users = [
@@ -41,6 +41,7 @@ export const AdminUserProfilePage: React.FC = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center"><Shield className="h-5 w-5 mr-2 text-purple-600" />{t('language') === 'fr' ? 'Profil' : 'Profile'}</CardTitle>
+                  <CardDescription className="text-sm text-muted-foreground">{t('language') === 'fr' ? 'Détails du compte' : 'Account details'}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-4">
@@ -54,6 +55,20 @@ export const AdminUserProfilePage: React.FC = () => {
                     <div className="flex items-center"><Mail className="h-4 w-4 mr-2" />{user.email}</div>
                     <div className="flex items-center"><Phone className="h-4 w-4 mr-2" />{user.phone}</div>
                   </div>
+                  <div className="grid grid-cols-3 gap-3 text-center pt-2">
+                    <div>
+                      <div className="text-2xl font-bold">{user.propertiesViewed}</div>
+                      <div className="text-xs text-muted-foreground">{t('language') === 'fr' ? 'Vues' : 'Views'}</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold">{user.inquiries}</div>
+                      <div className="text-xs text-muted-foreground">{t('language') === 'fr' ? 'Demandes' : 'Inquiries'}</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold">{new Date(user.joinDate).getFullYear()}</div>
+                      <div className="text-xs text-muted-foreground">{t('language') === 'fr' ? 'Membre depuis' : 'Member since'}</div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -61,14 +76,14 @@ export const AdminUserProfilePage: React.FC = () => {
             <div className="lg:col-span-2">
               <Card>
                 <CardHeader>
-                  <CardTitle>{t('language') === 'fr' ? 'Activité' : 'Activity'}</CardTitle>
+                  <CardTitle className="flex items-center"><Clock className="h-5 w-5 mr-2 text-blue-600" />{t('language') === 'fr' ? 'Activité' : 'Activity'}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 gap-4 text-sm">
-                  <div><span className="text-gray-500">{t('language') === 'fr' ? 'Rejoint' : 'Joined'}:</span> {user.joinDate}</div>
-                  <div><span className="text-gray-500">{t('language') === 'fr' ? 'Dernière activité' : 'Last active'}:</span> {user.lastActive}</div>
-                  <div><span className="text-gray-500">{t('language') === 'fr' ? 'Vues de propriétés' : 'Properties viewed'}:</span> {user.propertiesViewed}</div>
-                  <div><span className="text-gray-500">{t('language') === 'fr' ? 'Demandes' : 'Inquiries'}:</span> {user.inquiries}</div>
-                  <div><span className="text-gray-500">{t('language') === 'fr' ? 'Expiration' : 'Expiry'}:</span> {user.subscriptionExpiry}</div>
+                  <div className="flex items-center"><Calendar className="h-4 w-4 mr-2" /><span className="text-gray-500 mr-1">{t('language') === 'fr' ? 'Rejoint' : 'Joined'}:</span> {user.joinDate}</div>
+                  <div className="flex items-center"><Eye className="h-4 w-4 mr-2" /><span className="text-gray-500 mr-1">{t('language') === 'fr' ? 'Dernière activité' : 'Last active'}:</span> {user.lastActive}</div>
+                  <div className="flex items-center"><Eye className="h-4 w-4 mr-2" /><span className="text-gray-500 mr-1">{t('language') === 'fr' ? 'Vues' : 'Views'}:</span> {user.propertiesViewed}</div>
+                  <div className="flex items-center"><Mail className="h-4 w-4 mr-2" /><span className="text-gray-500 mr-1">{t('language') === 'fr' ? 'Demandes' : 'Inquiries'}:</span> {user.inquiries}</div>
+                  <div className="flex items-center"><Calendar className="h-4 w-4 mr-2" /><span className="text-gray-500 mr-1">{t('language') === 'fr' ? 'Expiration' : 'Expiry'}:</span> {user.subscriptionExpiry}</div>
                 </CardContent>
               </Card>
             </div>

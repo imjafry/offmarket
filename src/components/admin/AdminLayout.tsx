@@ -168,7 +168,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                   variant="ghost"
                   size="sm"
                   onClick={toggleLanguage}
-                  className="flex items-center space-x-1 hover:bg-gray-100"
+                  className="flex items-center space-x-1 hover:bg-gray-100 hover:text-black"
                 >
                   <Globe className="h-4 w-4" />
                   <span className="font-medium">{language.toUpperCase()}</span>
