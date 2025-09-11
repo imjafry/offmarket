@@ -25,6 +25,9 @@ import { AdminDashboard } from "@/pages/admin/AdminDashboard";
 import { PropertyManagement } from "@/pages/admin/PropertyManagement";
 import { PropertyForm } from "@/pages/admin/PropertyForm";
 import { AccountManagement } from "@/pages/admin/AccountManagement";
+import AdminSettingsPage from "@/pages/admin/Settings";
+import AdminPropertyDetailPage from "@/pages/admin/PropertyDetailAdmin";
+import AdminUserProfilePage from "@/pages/admin/UserProfileAdmin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,7 +47,10 @@ const App = () => (
               <Route path="/admin/properties" element={<PropertyManagement />} />
               <Route path="/admin/properties/new" element={<PropertyForm />} />
               <Route path="/admin/properties/:id/edit" element={<PropertyForm />} />
+              <Route path="/admin/properties/:id" element={<AdminPropertyDetailPage />} />
               <Route path="/admin/accounts" element={<AccountManagement />} />
+              <Route path="/admin/accounts/:id" element={<AdminUserProfilePage />} />
+              <Route path="/admin/settings" element={<AdminSettingsPage />} />
               
               {/* Public Routes - With main layout wrapper */}
               <Route path="*" element={

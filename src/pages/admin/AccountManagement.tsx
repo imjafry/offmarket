@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Plus, 
@@ -32,6 +32,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AdminLayout } from '@/components/admin/AdminLayout';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 // Mock data
 const users = [
@@ -96,11 +97,15 @@ const users = [
 export const AccountManagement: React.FC = () => {
   const { t } = useTranslation();
   const { sendSubscriptionExpiryNotification, sendSubscriptionExpiredNotification } = useNotifications();
+  const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [subscriptionFilter, setSubscriptionFilter] = useState('all');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+  const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -110,6 +115,22 @@ export const AccountManagement: React.FC = () => {
     
     return matchesSearch && matchesStatus && matchesSubscription;
   });
+
+  // Debounce search input
+  React.useEffect(() => {
+    const id = setTimeout(() => setSearchQuery(searchInput), 300);
+    return () => clearTimeout(id);
+  }, [searchInput]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / pageSize));
+  const paginatedUsers = React.useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredUsers.slice(start, start + pageSize);
+  }, [filteredUsers, currentPage]);
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter, subscriptionFilter]);
 
   const handleSelectAll = () => {
     if (selectedUsers.length === filteredUsers.length) {
@@ -164,6 +185,8 @@ export const AccountManagement: React.FC = () => {
   };
 
   const checkAndSendExpiryNotifications = () => {
+    let expired = 0;
+    let expiring = 0;
     users.forEach(user => {
       const expiry = new Date(user.subscriptionExpiry);
       const now = new Date();
@@ -171,12 +194,21 @@ export const AccountManagement: React.FC = () => {
       
       if (daysUntilExpiry <= 0) {
         // Subscription expired
-        sendSubscriptionExpiredNotification(user.email);
+        expired += 1;
+        sendSubscriptionExpiredNotification(user.email, { quiet: true });
       } else if (daysUntilExpiry <= 7) {
         // Expiring in 7 days or less
-        sendSubscriptionExpiryNotification(user.email, daysUntilExpiry);
+        expiring += 1;
+        sendSubscriptionExpiryNotification(user.email, daysUntilExpiry, { quiet: true });
       }
     });
+    // Show a single summary toast
+    const message = t('language') === 'fr' 
+      ? `Notifications envoyées: ${expired} expirées, ${expiring} expirant bientôt`
+      : `Notifications sent: ${expired} expired, ${expiring} expiring soon`;
+    // Use the same app toast utility
+    const { toast } = require('@/hooks/use-toast');
+    toast({ title: t('language') === 'fr' ? 'Vérification terminée' : 'Check complete', description: message });
   };
 
   return (
@@ -280,8 +312,8 @@ export const AccountManagement: React.FC = () => {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
                     placeholder={t('language') === 'fr' ? 'Rechercher des utilisateurs...' : 'Search users...'}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
                     className="pl-10"
                   />
                 </div>
@@ -395,7 +427,7 @@ export const AccountManagement: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredUsers.map((user) => (
+                  {paginatedUsers.map((user) => (
                     <motion.tr
                       key={user.id}
                       initial={{ opacity: 0 }}
@@ -466,9 +498,11 @@ export const AccountManagement: React.FC = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                              <Eye className="h-4 w-4 mr-2" />
-                              {t('language') === 'fr' ? 'Voir le profil' : 'View Profile'}
+                            <DropdownMenuItem asChild>
+                              <Link to={`/admin/accounts/${user.id}`} className="flex items-center">
+                                <Eye className="h-4 w-4 mr-2" />
+                                {t('language') === 'fr' ? 'Voir le profil' : 'View Profile'}
+                              </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                               <Edit className="h-4 w-4 mr-2" />
@@ -500,21 +534,40 @@ export const AccountManagement: React.FC = () => {
             <div className="flex items-center justify-between mt-6">
               <div className="text-sm text-gray-500">
                 {t('language') === 'fr' 
-                  ? 'Affichage de 1 à 10 sur 24 résultats'
-                  : 'Showing 1 to 10 of 24 results'
+                  ? `Affichage de ${(currentPage - 1) * pageSize + 1} à ${Math.min(currentPage * pageSize, filteredUsers.length)} sur ${filteredUsers.length} résultats`
+                  : `Showing ${(currentPage - 1) * pageSize + 1} to ${Math.min(currentPage * pageSize, filteredUsers.length)} of ${filteredUsers.length} results`
                 }
               </div>
-              <div className="flex space-x-2">
-                <Button variant="outline" size="sm" disabled>
-                  {t('language') === 'fr' ? 'Précédent' : 'Previous'}
-                </Button>
-                <Button variant="outline" size="sm">
-                  {t('language') === 'fr' ? 'Suivant' : 'Next'}
-                </Button>
+              <div className="flex items-center space-x-3">
+                <span className="text-sm text-gray-500">{t('language') === 'fr' ? `Page ${currentPage} sur ${totalPages}` : `Page ${currentPage} of ${totalPages}`}</span>
+                <div className="flex space-x-2">
+                  <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))}>
+                    {t('language') === 'fr' ? 'Précédent' : 'Previous'}
+                  </Button>
+                  <Button variant="outline" size="sm" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}>
+                    {t('language') === 'fr' ? 'Suivant' : 'Next'}
+                  </Button>
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
+        {/* Bulk Delete Confirmation */}
+        <AlertDialog open={showBulkDeleteDialog} onOpenChange={setShowBulkDeleteDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('language') === 'fr' ? 'Supprimer les utilisateurs sélectionnés ?' : 'Delete selected users?'}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('language') === 'fr' ? 'Cette action est irréversible.' : 'This action cannot be undone.'}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('language') === 'fr' ? 'Annuler' : 'Cancel'}</AlertDialogCancel>
+              <AlertDialogAction onClick={() => setShowBulkDeleteDialog(false)}>{t('language') === 'fr' ? 'Supprimer' : 'Delete'}</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
       </div>
     </AdminLayout>
   );

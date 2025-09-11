@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Plus, 
@@ -28,16 +28,27 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 
 export const PropertyManagement: React.FC = () => {
   const { t } = useTranslation();
   const { properties: allProperties, deleteProperty } = useProperties();
+  const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [cityFilter, setCityFilter] = useState('all');
   const [selectedProperties, setSelectedProperties] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+  const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
+
+  // Debounce search input
+  useEffect(() => {
+    const id = setTimeout(() => setSearchQuery(searchInput), 300);
+    return () => clearTimeout(id);
+  }, [searchInput]);
 
   // Properties with additional fields for admin
   const properties = allProperties.map(prop => ({
@@ -58,6 +69,17 @@ export const PropertyManagement: React.FC = () => {
     return matchesSearch && matchesStatus && matchesCity;
   });
 
+  const totalPages = Math.max(1, Math.ceil(filteredProperties.length / pageSize));
+  const paginatedProperties = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredProperties.slice(start, start + pageSize);
+  }, [filteredProperties, currentPage]);
+
+  useEffect(() => {
+    // Reset to first page when filters/search change
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter, cityFilter]);
+
   const handleSelectAll = () => {
     if (selectedProperties.length === filteredProperties.length) {
       setSelectedProperties([]);
@@ -75,8 +97,30 @@ export const PropertyManagement: React.FC = () => {
   };
 
   const handleBulkAction = (action: string) => {
+    if (action === 'delete') {
+      setShowBulkDeleteDialog(true);
+      return;
+    }
     console.log(`Bulk action: ${action} on properties:`, selectedProperties);
-    // Implement bulk actions
+  };
+
+  const confirmBulkDelete = () => {
+    selectedProperties.forEach(id => deleteProperty(id));
+    setSelectedProperties([]);
+    setShowBulkDeleteDialog(false);
+  };
+
+  const exportCSV = () => {
+    const header = ['id','title','status','price','city','neighborhood','views','inquiries','createdAt'];
+    const rows = filteredProperties.map(p => [p.id, p.title, p.status, p.price, p.city, p.neighborhood, String((p as any).views ?? ''), String((p as any).inquiries ?? ''), (p as any).createdAt ?? '']);
+    const csv = [header, ...rows].map(r => r.map(v => `"${String(v ?? '').replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'properties.csv';
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const getStatusBadge = (status: string) => {
@@ -109,7 +153,7 @@ export const PropertyManagement: React.FC = () => {
             </p>
           </div>
           <div className="flex space-x-3">
-            <Button variant="outline">
+            <Button variant="outline" onClick={exportCSV}>
               <Download className="h-4 w-4 mr-2" />
               {t('language') === 'fr' ? 'Exporter' : 'Export'}
             </Button>
@@ -190,8 +234,8 @@ export const PropertyManagement: React.FC = () => {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
                     placeholder={t('language') === 'fr' ? 'Rechercher des propriétés...' : 'Search properties...'}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
                     className="pl-10"
                   />
                 </div>
@@ -300,7 +344,7 @@ export const PropertyManagement: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredProperties.map((property) => (
+                  {paginatedProperties.map((property) => (
                     <motion.tr
                       key={property.id}
                       initial={{ opacity: 0 }}
@@ -365,13 +409,17 @@ export const PropertyManagement: React.FC = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                              <Eye className="h-4 w-4 mr-2" />
-                              {t('language') === 'fr' ? 'Voir' : 'View'}
+                            <DropdownMenuItem asChild>
+                              <Link to={`/admin/properties/${property.id}`} className="flex items-center">
+                                <Eye className="h-4 w-4 mr-2" />
+                                {t('language') === 'fr' ? 'Voir' : 'View'}
+                              </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Edit className="h-4 w-4 mr-2" />
-                              {t('language') === 'fr' ? 'Modifier' : 'Edit'}
+                            <DropdownMenuItem asChild>
+                              <Link to={`/admin/properties/${property.id}/edit`} className="flex items-center">
+                                <Edit className="h-4 w-4 mr-2" />
+                                {t('language') === 'fr' ? 'Modifier' : 'Edit'}
+                              </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                               <Copy className="h-4 w-4 mr-2" />
@@ -395,21 +443,40 @@ export const PropertyManagement: React.FC = () => {
             <div className="flex items-center justify-between mt-6">
               <div className="text-sm text-gray-500">
                 {t('language') === 'fr' 
-                  ? 'Affichage de 1 à 10 sur 24 résultats'
-                  : 'Showing 1 to 10 of 24 results'
+                  ? `Affichage de ${(currentPage - 1) * pageSize + 1} à ${Math.min(currentPage * pageSize, filteredProperties.length)} sur ${filteredProperties.length} résultats`
+                  : `Showing ${(currentPage - 1) * pageSize + 1} to ${Math.min(currentPage * pageSize, filteredProperties.length)} of ${filteredProperties.length} results`
                 }
               </div>
-              <div className="flex space-x-2">
-                <Button variant="outline" size="sm" disabled>
-                  {t('language') === 'fr' ? 'Précédent' : 'Previous'}
-                </Button>
-                <Button variant="outline" size="sm">
-                  {t('language') === 'fr' ? 'Suivant' : 'Next'}
-                </Button>
+              <div className="flex items-center space-x-3">
+                <span className="text-sm text-gray-500">{t('language') === 'fr' ? `Page ${currentPage} sur ${totalPages}` : `Page ${currentPage} of ${totalPages}`}</span>
+                <div className="flex space-x-2">
+                  <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))}>
+                    {t('language') === 'fr' ? 'Précédent' : 'Previous'}
+                  </Button>
+                  <Button variant="outline" size="sm" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}>
+                    {t('language') === 'fr' ? 'Suivant' : 'Next'}
+                  </Button>
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
+        {/* Bulk Delete Confirmation */}
+        <AlertDialog open={showBulkDeleteDialog} onOpenChange={setShowBulkDeleteDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('language') === 'fr' ? 'Supprimer les propriétés sélectionnées ?' : 'Delete selected properties?'}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('language') === 'fr' ? 'Cette action est irréversible.' : 'This action cannot be undone.'}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('language') === 'fr' ? 'Annuler' : 'Cancel'}</AlertDialogCancel>
+              <AlertDialogAction onClick={confirmBulkDelete}>{t('language') === 'fr' ? 'Supprimer' : 'Delete'}</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
       </div>
     </AdminLayout>
   );

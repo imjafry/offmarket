@@ -175,12 +175,26 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 </Button>
 
                 {/* Notifications */}
-                <Button variant="ghost" size="sm" className="relative hover:bg-gray-100">
-                  <Bell className="h-5 w-5" />
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500 text-white">
-                    3
-                  </Badge>
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="relative hover:bg-gray-100">
+                      <Bell className="h-5 w-5" />
+                      <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500 text-white">
+                        3
+                      </Badge>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-72">
+                    <div className="px-3 py-2 text-sm font-medium">Notifications</div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="whitespace-normal">New property added: Cologny Villa</DropdownMenuItem>
+                    <DropdownMenuItem className="whitespace-normal">3 subscriptions expiring this week</DropdownMenuItem>
+                    <DropdownMenuItem className="whitespace-normal">Backup completed successfully</DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>Mark all as read</DropdownMenuItem>
+                    <DropdownMenuItem>Clear notifications</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
 
                 {/* User menu */}
                 <DropdownMenu>
