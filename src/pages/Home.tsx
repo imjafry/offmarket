@@ -134,20 +134,12 @@ export const HomePage: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
-            <Link to="/properties">
+            <Link to="/contact">
               <Button size="lg" className="btn-primary group px-8 py-4 text-lg">
-                {t('home.hero.cta')}
+                {t('language') === 'fr' ? 'Devenir membre' : 'Become a member'}
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="bg-white/20 border-white/30 text-white hover:bg-white/30 px-8 py-4 text-lg backdrop-blur-sm"
-            >
-              <Play className="mr-2 h-5 w-5" />
-              {t('language') === 'fr' ? 'Voir la galerie' : 'View Gallery'}
-            </Button>
           </motion.div>
         </div>
 
@@ -177,10 +169,13 @@ export const HomePage: React.FC = () => {
         <div className="container-custom">
           <div className="text-center space-y-4 mb-12">
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground">
-              {t('home.featured.title')}
+              {t('language') === 'fr' ? 'Dernières Propriétés Off Market' : 'Latest Off Market Listings'}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              {t('home.featured.subtitle')}
+              {t('language') === 'fr' 
+                ? 'Découvrez nos dernières opportunités immobilières exclusives'
+                : 'Discover our latest exclusive real estate opportunities'
+              }
             </p>
           </div>
 
@@ -250,11 +245,10 @@ export const HomePage: React.FC = () => {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: index * 0.2 }}
-                whileHover={{ y: -10 }}
-                className="relative group cursor-pointer"
+                className="relative group"
               >
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-gray-50 p-8 shadow-lg hover:shadow-2xl transition-all duration-300">
-                  <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${service.color} rounded-full -translate-y-16 translate-x-16 opacity-10 group-hover:opacity-20 transition-opacity`}></div>
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-gray-50 p-8 shadow-lg transition-all duration-300">
+                  <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${service.color} rounded-full -translate-y-16 translate-x-16 opacity-10 transition-opacity`}></div>
                   <service.icon className="h-12 w-12 text-primary mb-6" />
                   <h3 className="text-xl font-heading font-bold text-foreground mb-4">
                     {service.title}
@@ -262,9 +256,6 @@ export const HomePage: React.FC = () => {
                   <p className="text-muted-foreground leading-relaxed">
                     {service.description}
                   </p>
-                  <div className="mt-6">
-                    <ArrowRight className="h-5 w-5 text-primary group-hover:translate-x-2 transition-transform" />
-                  </div>
                 </div>
               </motion.div>
             ))}

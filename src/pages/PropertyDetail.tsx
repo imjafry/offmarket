@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Home, Maximize, Phone, Mail, User, Star, Heart, Share2, Calendar, Eye, Wifi, Car, Dumbbell, Waves, TreePine, Shield, Snowflake, Camera, Play, MessageCircle, ChevronDown, Bath, FileText } from 'lucide-react';
+import { ArrowLeft, MapPin, Home, Maximize, Phone, Mail, User, Star, Heart, Share2, Calendar, Eye, Wifi, Car, Dumbbell, Waves, TreePine, Shield, Snowflake, Camera, Play, MessageCircle, ChevronDown, Bath, FileText, Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAuth } from '@/contexts/AuthContext';
 import { useProperties } from '@/contexts/PropertyContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,13 +23,12 @@ export const PropertyDetailPage: React.FC = () => {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [selectedTab, setSelectedTab] = useState('overview');
 
-  // Mock authentication state
-  const isAuthenticated = false;
+  const { isAuthenticated } = useAuth();
 
   const property = getProperty(id || '');
   const priceText = (property?.price || '').trim();
   const isOnRequest = !priceText || /on\s*request|sur\s*demande/i.test(priceText);
-  const inferredListing: 'sale' | 'rent' = ((property && (property as any).listingType) || (property?.status === 'rented' ? 'rent' : 'sale')) as 'sale' | 'rent';
+  const listingType = property?.listingType || (property?.status === 'rented' ? 'rent' : 'sale');
 
   // Track view when property loads
   React.useEffect(() => {
@@ -228,9 +228,11 @@ export const PropertyDetailPage: React.FC = () => {
                     {/* Price Section */}
                     <div className="text-right">
                       {!isOnRequest ? (
-                        <div className="space-y-1">
+                        <div className="space-y-2">
+                          <div className="text-lg text-muted-foreground">
+                            {listingType === 'rent' ? t('property.listing.rent') : t('property.listing.sale')}
+                          </div>
                           <div className="text-2xl md:text-3xl font-bold text-foreground">
-                            {inferredListing ? `${inferredListing === 'rent' ? t('property.listing.rent') : t('property.listing.sale')} • ` : ''}
                             {priceText}
                           </div>
                         </div>
@@ -663,58 +665,116 @@ export const PropertyDetailPage: React.FC = () => {
                   <CardTitle>Listing Owner Details</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-                      <span className="text-primary-foreground font-medium">JC</span>
-                    </div>
-                    <div>
-                      <h4 className="font-medium">John Carter</h4>
-                      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                        <div className="flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                          ))}
+                  {isAuthenticated ? (
+                    <>
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
+                          <span className="text-primary-foreground font-medium">
+                            {property.contactInfo?.name?.split(' ').map(n => n[0]).join('') || 'JC'}
+                          </span>
                         </div>
-                        <span>5.0 (12 Reviews)</span>
+                        <div>
+                          <h4 className="font-medium">{property.contactInfo?.name || 'John Carter'}</h4>
+                          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                            <div className="flex items-center">
+                              {[...Array(5)].map((_, i) => (
+                                <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                              ))}
+                            </div>
+                            <span>5.0 (12 Reviews)</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <Separator />
+
+                      <div className="space-y-3 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Phone</span>
+                          <span>{property.contactInfo?.phone || 'Call Us - +1 12345 45648'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Email</span>
+                          <span>{property.contactInfo?.email || 'info@example.com'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">No of Listings</span>
+                          <span>05</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">No of Bookings</span>
+                          <span>225</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Member on</span>
+                          <span>15 Jan2014</span>
+                        </div>
+                      </div>
+
+                      <Separator />
+
+                      <div className="flex space-x-2">
+                        <Button className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white">
+                          WhatsApp
+                        </Button>
+                        <Button variant="outline" className="flex-1">
+                          Chat Now
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="relative">
+                      {/* Blurred content */}
+                      <div className="filter blur-sm pointer-events-none">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
+                            <span className="text-primary-foreground font-medium">JC</span>
+                          </div>
+                          <div>
+                            <h4 className="font-medium">John Carter</h4>
+                            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                              <div className="flex items-center">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                ))}
+                              </div>
+                              <span>5.0 (12 Reviews)</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        <div className="space-y-3 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Phone</span>
+                            <span>Call Us - +1 12345 45648</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Email</span>
+                            <span>info@example.com</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">No of Listings</span>
+                            <span>05</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Overlay for non-members */}
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm rounded-lg">
+                        <Lock className="h-8 w-8 text-muted-foreground mb-3" />
+                        <p className="text-sm font-medium text-foreground mb-3 text-center">
+                          {t('language') === 'fr' ? 'Information réservée aux membres' : 'Information reserved for members'}
+                        </p>
+                        <Link to="/contact">
+                          <Button size="sm" className="btn-primary">
+                            {t('language') === 'fr' ? 'Devenir membre' : 'Become a member'}
+                          </Button>
+                        </Link>
                       </div>
                     </div>
-                  </div>
-
-                  <Separator />
-
-                  <div className="space-y-3 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Phone</span>
-                      <span>Call Us - +1 12345 45648</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Email</span>
-                      <span>info@example.com</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">No of Listings</span>
-                      <span>05</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">No of Bookings</span>
-                      <span>225</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Member on</span>
-                      <span>15 Jan2014</span>
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  <div className="flex space-x-2">
-                    <Button className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white">
-                      WhatsApp
-                    </Button>
-                    <Button variant="outline" className="flex-1">
-                      Chat Now
-                    </Button>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>

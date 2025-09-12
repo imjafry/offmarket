@@ -50,7 +50,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 
   const priceText = (property.price || '').trim();
   const isOnRequest = !priceText || /on\s*request|sur\s*demande/i.test(priceText);
-  const inferredListing: 'sale' | 'rent' = (property.listingType || (property.status === 'rented' ? 'rent' : 'sale')) as 'sale' | 'rent';
+  const listingType = property.listingType || (property.status === 'rented' ? 'rent' : 'sale');
 
   const getStatusBadgeClass = (status: Property['status']) => {
     switch (status) {
@@ -153,10 +153,14 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
         {/* Price Tag or On Request */}
         <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2">
           {!isOnRequest ? (
-            <span className="text-lg font-bold text-foreground">
-              {inferredListing ? `${inferredListing === 'rent' ? t('property.listing.rent') : t('property.listing.sale')} • ` : ''}
-              {priceText}
-            </span>
+            <div className="flex flex-col">
+              <span className="text-sm text-muted-foreground">
+                {listingType === 'rent' ? t('property.listing.rent') : t('property.listing.sale')}
+              </span>
+              <span className="text-lg font-bold text-foreground">
+                {priceText}
+              </span>
+            </div>
           ) : (
             <Link to="/contact" className="text-lg font-bold text-primary hover:underline">
               {t('property.onRequest')}
