@@ -98,9 +98,9 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
         {/* Image Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
         
-        {/* Status Badge */}
+        {/* Listing Type Badge (Sale / Rent) */}
         <Badge className={`absolute top-4 left-4 ${getStatusBadgeClass(property.status)} px-3 py-1`}>
-          {t(`properties.status.${property.status}`)}
+          {listingType === 'rent' ? t('property.listing.rent') : t('property.listing.sale')}
         </Badge>
 
         {/* Featured Badge removed */}

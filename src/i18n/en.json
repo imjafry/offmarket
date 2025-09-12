@@ -56,8 +56,8 @@
     "price": "Price",
     "onRequest": "On Request",
     "listing": {
-      "sale": "For sale",
-      "rent": "For rent"
+      "sale": "For Sale",
+      "rent": "For Rent"
     },
     "surface": "Surface",
     "availability": "Availability"
