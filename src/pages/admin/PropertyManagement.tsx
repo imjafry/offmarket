@@ -396,7 +396,13 @@ export const PropertyManagement: React.FC = () => {
                       </td>
                       <td className="p-4">
                         <span className="text-sm font-medium text-gray-900">
-                          {property.price}
+                          {(() => {
+                            const priceText = (property.price || '').trim();
+                            const isOnRequest = !priceText || /on\s*request|sur\s*demande/i.test(priceText);
+                            if (isOnRequest) return (t('language') === 'fr' ? 'Sur demande' : 'On Request');
+                            const inferred = ((property as any).listingType || (property.status === 'rented' ? 'rent' : 'sale')) as 'sale' | 'rent';
+                            return `${inferred === 'rent' ? (t('language') === 'fr' ? 'Location' : 'For rent') : (t('language') === 'fr' ? 'Vente' : 'For sale')} • ${priceText}`;
+                          })()}
                         </span>
                       </td>
                       <td className="p-4">

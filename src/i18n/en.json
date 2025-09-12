@@ -55,6 +55,10 @@
     "contact": "Contact",
     "price": "Price",
     "onRequest": "On Request",
+    "listing": {
+      "sale": "For sale",
+      "rent": "For rent"
+    },
     "surface": "Surface",
     "availability": "Availability"
   },

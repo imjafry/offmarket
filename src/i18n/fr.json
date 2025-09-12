@@ -56,7 +56,11 @@
     "price": "Prix",
     "onRequest": "Sur demande",
     "surface": "Surface",
-    "availability": "Disponibilité"
+    "availability": "Disponibilité",
+    "listing": {
+      "sale": "Vente",
+      "rent": "Location"
+    }
   },
   "auth": {
     "login": "Connexion",

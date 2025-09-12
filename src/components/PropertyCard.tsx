@@ -17,6 +17,7 @@ export interface Property {
   rooms: number;
   surface: number;
   status: 'available' | 'rented' | 'sold';
+  listingType?: 'sale' | 'rent';
   price?: string;
   availabilityDate?: string; // Available from date
   images: string[];
@@ -46,6 +47,10 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
+
+  const priceText = (property.price || '').trim();
+  const isOnRequest = !priceText || /on\s*request|sur\s*demande/i.test(priceText);
+  const inferredListing: 'sale' | 'rent' = (property.listingType || (property.status === 'rented' ? 'rent' : 'sale')) as 'sale' | 'rent';
 
   const getStatusBadgeClass = (status: Property['status']) => {
     switch (status) {
@@ -145,12 +150,19 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           />
         )}
 
-        {/* Price Tag */}
-        {property.price && (
-          <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2">
-            <span className="text-lg font-bold text-foreground">{property.price}</span>
-          </div>
-        )}
+        {/* Price Tag or On Request */}
+        <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2">
+          {!isOnRequest ? (
+            <span className="text-lg font-bold text-foreground">
+              {inferredListing ? `${inferredListing === 'rent' ? t('property.listing.rent') : t('property.listing.sale')} • ` : ''}
+              {priceText}
+            </span>
+          ) : (
+            <Link to="/contact" className="text-lg font-bold text-primary hover:underline">
+              {t('property.onRequest')}
+            </Link>
+          )}
+        </div>
 
         {/* Views Counter */}
         <div className="absolute bottom-4 right-4 flex items-center space-x-1 bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 text-white text-sm">

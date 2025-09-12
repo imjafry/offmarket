@@ -47,6 +47,7 @@ export const PropertyForm: React.FC = () => {
     rooms: '',
     surface: '',
     status: 'available',
+    listingType: 'sale' as 'sale' | 'rent',
     price: '',
     availabilityDate: '',
     features: [] as string[],
@@ -79,6 +80,7 @@ export const PropertyForm: React.FC = () => {
           rooms: property.rooms.toString(),
           surface: property.surface.toString(),
           status: property.status,
+          listingType: (property as any).listingType || (property.status === 'rented' ? 'rent' : 'sale'),
           price: property.price || '',
           availabilityDate: property.availabilityDate || '',
           features: property.features,
@@ -177,6 +179,7 @@ export const PropertyForm: React.FC = () => {
         rooms: parseFloat(formData.rooms),
         surface: parseFloat(formData.surface),
         status: formData.status as 'available' | 'rented' | 'sold',
+        listingType: formData.listingType as 'sale' | 'rent',
         price: formData.price,
         availabilityDate: formData.availabilityDate,
         features: formData.features,
@@ -266,7 +269,7 @@ export const PropertyForm: React.FC = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="title">
                         {t('language') === 'fr' ? 'Titre' : 'Title'} *
@@ -295,6 +298,21 @@ export const PropertyForm: React.FC = () => {
                           <SelectItem value="available">Available</SelectItem>
                           <SelectItem value="sold">Sold</SelectItem>
                           <SelectItem value="rented">Rented</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="listingType">
+                        {t('language') === 'fr' ? 'Type d\'annonce' : 'Listing Type'}
+                      </Label>
+                      <Select value={formData.listingType} onValueChange={(value) => handleInputChange('listingType', value)}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="sale">{t('language') === 'fr' ? 'Vente' : 'Sale'}</SelectItem>
+                          <SelectItem value="rent">{t('language') === 'fr' ? 'Location' : 'Rent'}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

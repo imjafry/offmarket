@@ -26,6 +26,9 @@ export const PropertyDetailPage: React.FC = () => {
   const isAuthenticated = false;
 
   const property = getProperty(id || '');
+  const priceText = (property?.price || '').trim();
+  const isOnRequest = !priceText || /on\s*request|sur\s*demande/i.test(priceText);
+  const inferredListing: 'sale' | 'rent' = ((property && (property as any).listingType) || (property?.status === 'rented' ? 'rent' : 'sale')) as 'sale' | 'rent';
 
   // Track view when property loads
   React.useEffect(() => {
@@ -224,20 +227,18 @@ export const PropertyDetailPage: React.FC = () => {
                   <div className="flex flex-col items-end space-y-4">
                     {/* Price Section */}
                     <div className="text-right">
-                      {property.price ? (
+                      {!isOnRequest ? (
                         <div className="space-y-1">
                           <div className="text-2xl md:text-3xl font-bold text-foreground">
-                            {property.price}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {t('language') === 'fr' ? 'Sur demande' : 'On Request'}
+                            {inferredListing ? `${inferredListing === 'rent' ? t('property.listing.rent') : t('property.listing.sale')} • ` : ''}
+                            {priceText}
                           </div>
                         </div>
                       ) : (
                         <div className="space-y-1">
-                          <div className="text-2xl md:text-3xl font-bold text-muted-foreground">
-                            {t('language') === 'fr' ? 'Sur demande' : 'On Request'}
-                          </div>
+                          <Link to="/contact" className="text-2xl md:text-3xl font-bold text-primary hover:underline">
+                            {t('property.onRequest')}
+                          </Link>
                           <div className="text-sm text-muted-foreground">
                             {t('language') === 'fr' ? 'Prix sur demande' : 'Price on Request'}
                           </div>
