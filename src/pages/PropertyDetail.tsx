@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { PropertyGallery } from '@/components/PropertyGallery';
 import { PropertyVideoPlayer } from '@/components/PropertyVideoPlayer';
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 export const PropertyDetailPage: React.FC = () => {
   const { t } = useTranslation();
@@ -22,6 +23,7 @@ export const PropertyDetailPage: React.FC = () => {
   const [isFavorited, setIsFavorited] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [selectedTab, setSelectedTab] = useState('overview');
+  const [showFavDialog, setShowFavDialog] = useState(false);
 
   const { isAuthenticated } = useAuth();
 
@@ -94,26 +96,7 @@ export const PropertyDetailPage: React.FC = () => {
     'Concierge': User,
   };
 
-  const mockReviews = [
-    {
-      id: 1,
-      name: 'Joseph Massey',
-      rating: 5,
-      date: '2 days ago',
-      comment: 'This hotel exceeded my expectations! The pool, spa, and dining options were top-notch, and the room had every amenity I could ask for. It felt like a true getaway.',
-      helpful: 21,
-      replies: 0
-    },
-    {
-      id: 2,
-      name: 'Jeffrey Jones',
-      rating: 5,
-      date: '2 days ago',
-      comment: 'This hotel exceeded my expectations! The pool, spa, and dining options were top-notch, and the room had every amenity I could ask for. It felt like a true getaway.',
-      helpful: 41,
-      replies: 95
-    }
-  ];
+  
 
   return (
     <div className="min-h-screen bg-background">
@@ -139,18 +122,8 @@ export const PropertyDetailPage: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-wrap items-center justify-between mb-6"
+            className="flex flex-wrap items-center justify-end mb-6"
           >
-            {/* Status Badges */}
-            <div className="flex items-center space-x-3">
-              <Badge className="bg-red-500 text-white px-4 py-2">
-                {t('language') === 'fr' ? 'Tendance' : 'Trending'}
-              </Badge>
-              <Badge className="bg-orange-500 text-white px-4 py-2">
-                {t('language') === 'fr' ? 'Vedette' : 'Featured'}
-              </Badge>
-            </div>
-
             {/* Stats */}
             <div className="flex items-center space-x-6 text-muted-foreground">
               <span className="text-sm">{t('language') === 'fr' ? 'Total de visites' : 'Total No of Visits'}: 45</span>
@@ -253,7 +226,13 @@ export const PropertyDetailPage: React.FC = () => {
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => setIsFavorited(!isFavorited)}
+                        onClick={() => {
+                          if (!isAuthenticated) {
+                            setShowFavDialog(true);
+                            return;
+                          }
+                          setIsFavorited(!isFavorited);
+                        }}
                         className={`h-10 w-10 rounded-full border transition-all duration-200 ${
                           isFavorited 
                             ? 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100' 
@@ -333,8 +312,7 @@ export const PropertyDetailPage: React.FC = () => {
                     { id: 'description', label: t('property.description') },
                     // { id: 'features', label: t('property.features') },
                     // { id: 'amenities', label: t('language') === 'fr' ? 'Commodités' : 'Amenities' },
-                    { id: 'video', label: t('language') === 'fr' ? 'Vidéo' : 'Video' },
-                    { id: 'reviews', label: t('language') === 'fr' ? 'Avis' : 'Reviews' }
+                    { id: 'video', label: t('language') === 'fr' ? 'Vidéo' : 'Video' }
                   ].map((tab) => (
                     <button
                       key={tab.id}
@@ -452,94 +430,7 @@ export const PropertyDetailPage: React.FC = () => {
                 </div>
               )}
 
-              {selectedTab === 'reviews' && (
-                <div className="space-y-8">
-                  {/* Review Summary */}
-                  <div className="bg-muted/20 rounded-2xl p-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <div className="text-center">
-                        <div className="text-5xl font-bold text-foreground mb-2">4.9</div>
-                        <div className="flex items-center justify-center mb-2">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                          ))}
-                        </div>
-                        <p className="text-muted-foreground">Based on 2,649 Reviews</p>
-                      </div>
-                      <div className="space-y-3">
-                        {[5, 4, 3, 2, 1].map((star) => (
-                          <div key={star} className="flex items-center space-x-3">
-                            <span className="text-sm w-2">{star}</span>
-                            <Star className="h-4 w-4 text-yellow-400" />
-                            <div className="flex-1 bg-muted rounded-full h-2">
-                              <div
-                                className="bg-yellow-400 h-2 rounded-full"
-                                style={{ width: star === 5 ? '80%' : star === 4 ? '15%' : '3%' }}
-                              />
-                            </div>
-                            <span className="text-sm text-muted-foreground w-8">
-                              {star === 5 ? '247' : star === 4 ? '145' : '60'}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Individual Reviews */}
-                  <div className="space-y-6">
-                    {mockReviews.map((review) => (
-                      <div key={review.id} className="border-b border-border pb-6 last:border-b-0">
-                        <div className="flex items-start space-x-4">
-                          <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-                            <span className="text-primary-foreground font-medium">
-                              {review.name.charAt(0)}
-                            </span>
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between mb-2">
-                              <div>
-                                <h4 className="font-medium">{review.name}</h4>
-                                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                                  <div className="flex items-center">
-                                    {[...Array(review.rating)].map((_, i) => (
-                                      <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                                    ))}
-                                  </div>
-                                  <span>{review.date}</span>
-                                </div>
-                              </div>
-                            </div>
-                            <p className="text-muted-foreground leading-relaxed mb-3">
-                              {review.comment}
-                            </p>
-                            <div className="flex items-center space-x-4 text-sm">
-                              <button className="flex items-center space-x-1 text-muted-foreground hover:text-foreground">
-                                <span>👍</span>
-                                <span>{review.helpful}</span>
-                              </button>
-                              <button className="flex items-center space-x-1 text-muted-foreground hover:text-foreground">
-                                <span>👎</span>
-                                <span>0</span>
-                              </button>
-                              <button className="text-primary hover:text-primary-hover">
-                                Reply
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Load More Reviews */}
-                  <div className="text-center">
-                    <Button variant="outline">
-                      See All Reviews
-                    </Button>
-                  </div>
-                </div>
-              )}
+              {/* Reviews removed */}
             </motion.div>
 
             {/* Features and Amenities Sections */}
@@ -609,12 +500,11 @@ export const PropertyDetailPage: React.FC = () => {
                 </CardHeader>
                 <CardContent className="p-6 space-y-6">
                   <div className="flex space-x-3">
-                    <Button className="flex-1 bg-primary-hover text-primary-foreground">
-                      {t('language') === 'fr' ? 'Demander des infos' : 'Request Info'}
-                    </Button>
-                    <Button variant="outline" className="flex-1">
-                      {t('language') === 'fr' ? 'Programmer visite' : 'Schedule a Visit'}
-                    </Button>
+                    <Link to="/contact" className="flex-1">
+                      <Button className="w-full bg-primary-hover text-primary-foreground">
+                        {t('language') === 'fr' ? 'Demander des infos' : 'Request Info'}
+                      </Button>
+                    </Link>
                   </div>
 
                   {/* Agent Info */}
@@ -807,45 +697,33 @@ export const PropertyDetailPage: React.FC = () => {
             </motion.div>
 
             {/* Mortgage Calculator */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.8 }}
-            >
-              <Card>
-                <CardHeader>
-                  <CardTitle>Mortgage Calculator</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Total Amount ($)</label>
-                    <Input defaultValue="15000" />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Down Payment ($)</label>
-                    <Input defaultValue="15000" />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Loan Terms (Years)</label>
-                    <Input defaultValue="5" />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Interest Rate (%)</label>
-                    <Input defaultValue="15" />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Min Soft</label>
-                    <Input />
-                  </div>
-                  <Button className="w-full btn-primary">
-                    View larger map
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
+            {/* Mortgage Calculator removed */}
           </div>
         </div>
       </div>
+      {/* Favorites Auth Dialog */}
+      <AlertDialog open={showFavDialog} onOpenChange={setShowFavDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('language') === 'fr' ? 'Devenez membre' : 'Become a member'}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('language') === 'fr'
+                ? 'Devenez membre pour enregistrer vos favoris et accéder aux avantages réservés aux membres.'
+                : 'Become a member to save favorites and access member benefits.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button variant="outline" onClick={() => setShowFavDialog(false)}>
+              {t('language') === 'fr' ? 'Plus tard' : 'Not now'}
+            </Button>
+            <Link to="/contact">
+              <AlertDialogAction>
+                {t('language') === 'fr' ? 'Contactez-nous' : 'Contact us'}
+              </AlertDialogAction>
+            </Link>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

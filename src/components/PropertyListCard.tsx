@@ -6,6 +6,8 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Property } from './PropertyCard';
+import { useAuth } from '@/contexts/AuthContext';
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 interface PropertyListCardProps {
   property: Property;
@@ -18,6 +20,8 @@ export const PropertyListCard: React.FC<PropertyListCardProps> = ({
 }) => {
   const { t } = useTranslation();
   const [isFavorited, setIsFavorited] = useState(false);
+  const [showFavDialog, setShowFavDialog] = useState(false);
+  const { isAuthenticated } = useAuth();
   const priceText = (property.price || '').trim();
   const isOnRequest = !priceText || /on\s*request|sur\s*demande/i.test(priceText);
   const inferredListing: 'sale' | 'rent' = (property.listingType || (property.status === 'rented' ? 'rent' : 'sale')) as 'sale' | 'rent';
@@ -36,6 +40,7 @@ export const PropertyListCard: React.FC<PropertyListCardProps> = ({
   };
 
   return (
+    <>
     <motion.div 
       whileHover={{ x: 4 }}
       className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
@@ -61,6 +66,10 @@ export const PropertyListCard: React.FC<PropertyListCardProps> = ({
           <button
             onClick={(e) => {
               e.preventDefault();
+              if (!isAuthenticated) {
+                setShowFavDialog(true);
+                return;
+              }
               setIsFavorited(!isFavorited);
             }}
             className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
@@ -192,5 +201,29 @@ export const PropertyListCard: React.FC<PropertyListCardProps> = ({
         </div>
       </div>
     </motion.div>
+    {/* Favorites Auth Dialog */}
+    <AlertDialog open={showFavDialog} onOpenChange={setShowFavDialog}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{t('language') === 'fr' ? 'Devenez membre' : 'Become a member'}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {t('language') === 'fr'
+              ? 'Devenez membre pour enregistrer vos favoris et accéder aux avantages réservés aux membres.'
+              : 'Become a member to save favorites and access member benefits.'}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <Button variant="outline" onClick={() => setShowFavDialog(false)}>
+            {t('language') === 'fr' ? 'Plus tard' : 'Not now'}
+          </Button>
+          <Link to="/contact">
+            <AlertDialogAction>
+              {t('language') === 'fr' ? 'Contactez-nous' : 'Contact us'}
+            </AlertDialogAction>
+          </Link>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 };
