@@ -725,7 +725,7 @@ export const PropertyDetailPage: React.FC = () => {
                   ) : (
                     <div className="relative">
                       {/* Blurred content */}
-                      <div className="filter blur-sm pointer-events-none">
+                      <div className="filter blur-md pointer-events-none">
                         <div className="flex items-center space-x-4">
                           <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
                             <span className="text-primary-foreground font-medium">JC</span>

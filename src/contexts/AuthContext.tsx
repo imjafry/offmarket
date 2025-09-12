@@ -36,7 +36,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       username: 'marie.dubois',
       email: 'marie.dubois@example.ch',
       subscriptionType: 'premium',
-      subscriptionExpiry: '2024-07-10',
+      // Set far-future expiry to simulate lifetime membership for testing
+      subscriptionExpiry: '2099-12-31',
       isActive: true
     },
     {
@@ -44,7 +45,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       username: 'pierre.martin',
       email: 'pierre.martin@example.ch',
       subscriptionType: 'basic',
-      subscriptionExpiry: '2024-04-08',
+      subscriptionExpiry: '2099-12-31',
       isActive: true
     },
     {
@@ -52,7 +53,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       username: 'sophie.laurent',
       email: 'sophie.laurent@example.ch',
       subscriptionType: 'premium',
-      subscriptionExpiry: '2024-01-15', // Expired
+      subscriptionExpiry: '2023-01-15', // Expired intentionally
       isActive: false
     }
   ];

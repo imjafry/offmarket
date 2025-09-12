@@ -143,8 +143,8 @@ export const LoginPage: React.FC = () => {
             <p><strong>Password:</strong> demo123</p>
             <p className="text-xs text-green-600 mt-2">
               {t('language') === 'fr' 
-                ? 'Abonnement valide jusqu\'au 10 juillet 2024'
-                : 'Valid subscription until July 10, 2024'
+                ? 'Abonnement test actif (durée illimitée)'
+                : 'Test membership active (lifetime)'
               }
             </p>
           </div>
