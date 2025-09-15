@@ -141,7 +141,7 @@ export const LoginPage: React.FC = () => {
           <div className="text-xs text-muted-foreground space-y-1">
             <p><strong>Username:</strong> marie.dubois</p>
             <p><strong>Password:</strong> demo123</p>
-            <p className="text-xs text-green-600 mt-2">
+            <p className="text-xs text-success mt-2">
               {t('language') === 'fr' 
                 ? 'Abonnement test actif (durée illimitée)'
                 : 'Test membership active (lifetime)'

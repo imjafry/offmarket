@@ -179,8 +179,8 @@ export const BecomeMemberPage: React.FC = () => {
               <Card className="h-full hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50 overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-red-500 to-pink-500 rounded-full -translate-y-16 translate-x-16 opacity-10 group-hover:opacity-20 transition-opacity"></div>
                 <CardContent className="p-8">
-                  <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-red-500/20 transition-colors">
-                    <Lock className="h-8 w-8 text-red-500" />
+                  <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+                    <Lock className="h-8 w-8 text-primary" />
                   </div>
                   <h3 className="text-xl font-heading font-bold text-foreground mb-4">
                     {t('becomeMember.services.privateSales.title')}
@@ -189,7 +189,7 @@ export const BecomeMemberPage: React.FC = () => {
                     {t('becomeMember.services.privateSales.description')}
                   </p>
                   <Link to="/private-sales">
-                    <Button variant="outline" className="w-full group-hover:bg-red-500 group-hover:text-white group-hover:border-red-500 transition-all">
+                    <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
                       {t('becomeMember.services.privateSales.cta')}
                     </Button>
                   </Link>
@@ -208,8 +208,8 @@ export const BecomeMemberPage: React.FC = () => {
               <Card className="h-full hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50 overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full -translate-y-16 translate-x-16 opacity-10 group-hover:opacity-20 transition-opacity"></div>
                 <CardContent className="p-8">
-                  <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-500/20 transition-colors">
-                    <Video className="h-8 w-8 text-blue-500" />
+                  <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+                    <Video className="h-8 w-8 text-primary" />
                   </div>
                   <h3 className="text-xl font-heading font-bold text-foreground mb-4">
                     {t('becomeMember.services.videos.title')}
@@ -218,7 +218,7 @@ export const BecomeMemberPage: React.FC = () => {
                     {t('becomeMember.services.videos.description')}
                   </p>
                   <Link to="/property-videos">
-                    <Button variant="outline" className="w-full group-hover:bg-blue-500 group-hover:text-white group-hover:border-blue-500 transition-all">
+                    <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
                       {t('becomeMember.services.videos.cta')}
                     </Button>
                   </Link>
@@ -237,8 +237,8 @@ export const BecomeMemberPage: React.FC = () => {
               <Card className="h-full hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50 overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full -translate-y-16 translate-x-16 opacity-10 group-hover:opacity-20 transition-opacity"></div>
                 <CardContent className="p-8">
-                  <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-500/20 transition-colors">
-                    <Key className="h-8 w-8 text-purple-500" />
+                  <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+                    <Key className="h-8 w-8 text-primary" />
                   </div>
                   <h3 className="text-xl font-heading font-bold text-foreground mb-4">
                     {t('becomeMember.services.exclusiveAccess.title')}
@@ -247,7 +247,7 @@ export const BecomeMemberPage: React.FC = () => {
                     {t('becomeMember.services.exclusiveAccess.description')}
                   </p>
                   <Link to="/exclusive-access">
-                    <Button variant="outline" className="w-full group-hover:bg-purple-500 group-hover:text-white group-hover:border-purple-500 transition-all">
+                    <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
                       {t('becomeMember.services.exclusiveAccess.cta')}
                     </Button>
                   </Link>
@@ -266,8 +266,8 @@ export const BecomeMemberPage: React.FC = () => {
               <Card className="h-full hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50 overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full -translate-y-16 translate-x-16 opacity-10 group-hover:opacity-20 transition-opacity"></div>
                 <CardContent className="p-8">
-                  <div className="w-16 h-16 bg-green-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-500/20 transition-colors">
-                    <Search className="h-8 w-8 text-green-500" />
+                  <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+                    <Search className="h-8 w-8 text-primary" />
                   </div>
                   <h3 className="text-xl font-heading font-bold text-foreground mb-4">
                     {t('becomeMember.services.personalized.title')}
@@ -276,7 +276,7 @@ export const BecomeMemberPage: React.FC = () => {
                     {t('becomeMember.services.personalized.description')}
                   </p>
                   <Link to="/property-finder">
-                    <Button variant="outline" className="w-full group-hover:bg-green-500 group-hover:text-white group-hover:border-green-500 transition-all">
+                    <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
                       {t('becomeMember.services.personalized.cta')}
                     </Button>
                   </Link>

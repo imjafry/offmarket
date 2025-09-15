@@ -6,35 +6,50 @@
 
 @layer base {
   :root {
-    /* Core Colors - Minimalist Premium Palette */
+    /* Core Colors - Elegant Premium Palette */
     --background: 0 0% 100%;
+    /* Pure White (#FFFFFF) */
     --foreground: 0 0% 0%;
-    
+    /* Black (#000000) */
+
     /* Cards and surfaces */
     --card: 0 0% 100%;
+    /* Pure White */
     --card-foreground: 0 0% 0%;
-    
+    /* Black */
+
     /* Popover elements */
     --popover: 0 0% 100%;
+    /* Pure White */
     --popover-foreground: 0 0% 0%;
-    
-    /* Premium navy/charcoal primary colors */
-    --primary: 220 25% 25%;
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 220 30% 20%;
-    
+    /* Black */
+
+    /* Warm Beige/Taupe primary colors */
+    --primary: 45 20% 75%;
+    /* Warm Beige (#C5BEB1) */
+    --primary-foreground: 0 0% 0%;
+    /* Black */
+    --primary-hover: 45 25% 70%;
+    /* Slightly darker beige (#BFB7A8) */
+
     /* Subtle secondary colors */
     --secondary: 0 0% 96%;
-    --secondary-foreground: 220 25% 25%;
-    
+    /* Very light gray */
+    --secondary-foreground: 0 0% 0%;
+    /* Black */
+
     /* Muted elements */
     --muted: 0 0% 96%;
-    --muted-foreground: 220 15% 40%;
-    
+    /* Very light gray */
+    --muted-foreground: 0 0% 40%;
+    /* Dark gray */
+
     /* Accent colors */
-    --accent: 220 25% 25%;
-    --accent-foreground: 0 0% 100%;
-    
+    --accent: 45 20% 75%;
+    /* Warm Beige */
+    --accent-foreground: 0 0% 0%;
+    /* Black */
+
     /* Status colors */
     --destructive: 0 65% 51%;
     --destructive-foreground: 0 0% 100%;
@@ -42,12 +57,15 @@
     --success-foreground: 0 0% 100%;
     --warning: 45 90% 60%;
     --warning-foreground: 0 0% 0%;
-    
-    /* Borders and inputs */
+
+    /* Borders and inputs - Light Gray (#E0E0E0) */
     --border: 0 0% 88%;
+    /* Light Gray */
     --input: 0 0% 88%;
-    --ring: 220 25% 25%;
-    
+    /* Light Gray */
+    --ring: 45 20% 75%;
+    /* Warm Beige */
+
     /* Property status badges */
     --available: 120 40% 95%;
     --available-foreground: 120 60% 30%;
@@ -55,20 +73,20 @@
     --rented-foreground: 45 70% 30%;
     --sold: 0 40% 95%;
     --sold-foreground: 0 60% 30%;
-    
+
     /* Typography hierarchy */
     --font-heading: "Inter", system-ui, sans-serif;
     --font-body: "Inter", system-ui, sans-serif;
-    
+
     /* Spacing and layout */
     --radius: 0.375rem;
     --section-padding: 4rem;
     --container-max: 1200px;
-    
+
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-fast: all 0.15s ease;
-    
+
     /* Shadows */
     --shadow-subtle: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
     --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -122,12 +140,21 @@
     @apply bg-background text-foreground font-body;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-heading font-semibold;
   }
 }
 
 @layer components {
+  .text-primary {
+    color: hsl(0deg 0% 0%)!important;
+  }
+
   /* Container utilities */
   .container-custom {
     @apply mx-auto px-4 sm:px-6 lg:px-8;
@@ -140,13 +167,11 @@
 
   /* Premium button variants */
   .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-200 
-           px-6 py-3 rounded-md font-medium shadow-sm;
+    @apply bg-primary text-primary-foreground hover:bg-primary-hover transition-colors duration-200 px-6 py-3 rounded-md font-medium shadow-sm;
   }
 
   .btn-secondary {
-    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border 
-           transition-colors duration-200 px-6 py-3 rounded-md font-medium;
+    @apply bg-secondary text-secondary-foreground hover:bg-gray-light border border-border transition-colors duration-200 px-6 py-3 rounded-md font-medium;
   }
 
   /* Property status badges */
@@ -169,9 +194,7 @@
 
   /* Form styles */
   .form-input {
-    @apply w-full px-3 py-2 border border-input rounded-md bg-background 
-           focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
-           placeholder:text-muted-foreground;
+    @apply w-full px-3 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground;
   }
 
   .form-label {

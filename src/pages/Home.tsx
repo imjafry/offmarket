@@ -200,19 +200,19 @@ export const HomePage: React.FC = () => {
                 title: t('language') === 'fr' ? 'Acheter une Propriété' : 'Buy a Property',
                 description: t('language') === 'fr' ? 'Trouvez la propriété de vos rêves avec notre sélection exclusive' : 'Find your dream property with our exclusive selection',
                 icon: Home,
-                color: 'from-red-500 to-pink-500',
+                color: 'from-beige to-beige-hover',
               },
               {
                 title: t('language') === 'fr' ? 'Vendre une Propriété' : 'Sell a Property',
                 description: t('language') === 'fr' ? 'Vendez votre propriété au meilleur prix avec nos experts' : 'Sell your property at the best price with our experts',
                 icon: Award,
-                color: 'from-orange-500 to-yellow-500',
+                color: 'from-beige-hover to-beige-dark',
               },
               {
                 title: t('language') === 'fr' ? 'Louer une Propriété' : 'Rent a Property',
                 description: t('language') === 'fr' ? 'Trouvez la location parfaite pour votre style de vie' : 'Find the perfect rental for your lifestyle',
                 icon: Users,
-                color: 'from-blue-500 to-cyan-500',
+                color: 'from-beige-light to-beige',
               },
             ].map((service, index) => (
               <motion.div

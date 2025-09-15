@@ -229,11 +229,11 @@ export const PropertyDetailPage: React.FC = () => {
                         }}
                         className={`h-10 w-10 rounded-full border transition-all duration-200 ${
                           isFavorited 
-                            ? 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100' 
+                            ? 'bg-primary/10 border-primary/20 text-primary hover:bg-primary/20' 
                             : 'hover:border-primary/50 hover:bg-primary/5'
                         }`}
                       >
-                        <Heart className={`h-4 w-4 ${isFavorited ? 'fill-red-500 text-red-500' : ''}`} />
+                        <Heart className={`h-4 w-4 ${isFavorited ? 'fill-primary text-primary' : ''}`} />
                       </Button>
                       <Button 
                         variant="outline" 

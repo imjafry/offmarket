@@ -170,15 +170,15 @@ const recentUsers = [
 const getStatusBadge = (status: string) => {
   switch (status) {
     case 'available':
-      return <Badge className="bg-green-100 text-green-800">Available</Badge>;
+      return <Badge className="bg-available text-available-foreground">Available</Badge>;
     case 'sold':
-      return <Badge className="bg-red-100 text-red-800">Sold</Badge>;
+      return <Badge className="bg-sold text-sold-foreground">Sold</Badge>;
     case 'rented':
-      return <Badge className="bg-orange-100 text-orange-800">Rented</Badge>;
+      return <Badge className="bg-rented text-rented-foreground">Rented</Badge>;
     case 'active':
-      return <Badge className="bg-green-100 text-green-800">Active</Badge>;
+      return <Badge className="bg-available text-available-foreground">Active</Badge>;
     case 'expired':
-      return <Badge className="bg-red-100 text-red-800">Expired</Badge>;
+      return <Badge className="bg-sold text-sold-foreground">Expired</Badge>;
     default:
       return <Badge variant="secondary">{status}</Badge>;
   }
@@ -230,12 +230,12 @@ export const AdminDashboard: React.FC = () => {
                       <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
                       <div className="flex items-center mt-1">
                         {stat.changeType === 'positive' ? (
-                          <ArrowUpRight className="h-4 w-4 text-green-500" />
+                          <ArrowUpRight className="h-4 w-4 text-success" />
                         ) : (
-                          <ArrowDownRight className="h-4 w-4 text-red-500" />
+                          <ArrowDownRight className="h-4 w-4 text-destructive" />
                         )}
                         <span className={`text-sm font-medium ${
-                          stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
+                          stat.changeType === 'positive' ? 'text-success' : 'text-destructive'
                         }`}>
                           {stat.change}
                         </span>
@@ -260,7 +260,7 @@ export const AdminDashboard: React.FC = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <TrendingUp className="h-5 w-5 mr-2 text-purple-600" />
+                <TrendingUp className="h-5 w-5 mr-2 text-primary" />
                 {t('language') === 'fr' ? 'Propriétés par mois' : 'Properties by Month'}
               </CardTitle>
               <CardDescription>
@@ -278,7 +278,7 @@ export const AdminDashboard: React.FC = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <Calendar className="h-5 w-5 mr-2 text-blue-600" />
+                <Calendar className="h-5 w-5 mr-2 text-primary" />
                 {t('language') === 'fr' ? 'Actions rapides' : 'Quick Actions'}
               </CardTitle>
             </CardHeader>
@@ -318,7 +318,7 @@ export const AdminDashboard: React.FC = () => {
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="flex items-center">
-                  <Building2 className="h-5 w-5 mr-2 text-green-600" />
+                  <Building2 className="h-5 w-5 mr-2 text-success" />
                   {t('language') === 'fr' ? 'Propriétés récentes' : 'Recent Properties'}
                 </CardTitle>
                 <CardDescription>
@@ -362,7 +362,7 @@ export const AdminDashboard: React.FC = () => {
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="flex items-center">
-                  <Users className="h-5 w-5 mr-2 text-blue-600" />
+                  <Users className="h-5 w-5 mr-2 text-primary" />
                   {t('language') === 'fr' ? 'Utilisateurs récents' : 'Recent Users'}
                 </CardTitle>
                 <CardDescription>

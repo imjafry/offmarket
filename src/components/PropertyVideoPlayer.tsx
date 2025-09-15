@@ -105,8 +105,8 @@ export const PropertyVideoPlayer: React.FC<PropertyVideoPlayerProps> = ({
     return (
       <div className={`aspect-video bg-muted rounded-2xl flex items-center justify-center ${className}`}>
         <div className="text-center space-y-4">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
-            <Play className="h-8 w-8 text-red-500" />
+          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+            <Play className="h-8 w-8 text-primary" />
           </div>
           <div>
             <h3 className="text-lg font-semibold text-foreground mb-2">

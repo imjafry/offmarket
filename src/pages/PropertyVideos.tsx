@@ -66,7 +66,7 @@ export const PropertyVideosPage: React.FC = () => {
             className="flex items-center space-x-4 mb-12"
           >
             <Link to="/become-member">
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-blue-500 hover:bg-blue-500/10 transition-all">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 {t('language') === 'fr' ? 'Retour' : 'Back'}
               </Button>
@@ -95,7 +95,7 @@ export const PropertyVideosPage: React.FC = () => {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="text-center mb-16"
             >
-              <Button size="lg" className="bg-blue-500 hover:bg-blue-600 text-white group px-8 py-4 text-lg">
+              <Button size="lg" className="bg-primary hover:bg-primary-hover text-primary-foreground group px-8 py-4 text-lg">
                 {t('propertyVideos.cta')}
                 <Video className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
@@ -109,8 +109,8 @@ export const PropertyVideosPage: React.FC = () => {
               className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16"
             >
               <div className="text-center group">
-                <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-500/20 transition-colors">
-                  <Camera className="h-8 w-8 text-blue-500" />
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
+                  <Camera className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="font-semibold text-foreground mb-2">
                   {t('propertyVideos.process.production.title')}
@@ -120,8 +120,8 @@ export const PropertyVideosPage: React.FC = () => {
                 </p>
               </div>
               <div className="text-center group">
-                <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-500/20 transition-colors">
-                  <Play className="h-8 w-8 text-blue-500" />
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
+                  <Play className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="font-semibold text-foreground mb-2">
                   {t('propertyVideos.process.editing.title')}
@@ -131,8 +131,8 @@ export const PropertyVideosPage: React.FC = () => {
                 </p>
               </div>
               <div className="text-center group">
-                <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-500/20 transition-colors">
-                  <Award className="h-8 w-8 text-blue-500" />
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
+                  <Award className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="font-semibold text-foreground mb-2">
                   {t('propertyVideos.process.delivery.title')}
@@ -179,7 +179,7 @@ export const PropertyVideosPage: React.FC = () => {
                   viewport={{ once: true }}
                   className="text-center p-6 rounded-2xl bg-card border hover:shadow-lg transition-all duration-300"
                 >
-                  <benefit.icon className="h-8 w-8 text-blue-500 mx-auto mb-4" />
+                  <benefit.icon className="h-8 w-8 text-primary mx-auto mb-4" />
                   <p className="text-sm font-medium text-foreground">{benefit.text}</p>
                 </motion.div>
               ))}
@@ -236,11 +236,11 @@ export const PropertyVideosPage: React.FC = () => {
                 className="group"
               >
                 <Card className="h-full hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50 overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-blue-500/5 rounded-full -translate-y-16 translate-x-16 opacity-50 group-hover:opacity-70 transition-opacity"></div>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-primary/5 rounded-full -translate-y-16 translate-x-16 opacity-50 group-hover:opacity-70 transition-opacity"></div>
                   <CardContent className="p-8">
                     <div className="flex items-center mb-4">
                       {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                        <Star key={i} className="h-5 w-5 text-primary fill-current" />
                       ))}
                     </div>
                     <p className="text-muted-foreground leading-relaxed mb-6 italic">
@@ -430,7 +430,7 @@ export const PropertyVideosPage: React.FC = () => {
                     <Button 
                       type="submit" 
                       size="lg"
-                      className="w-full h-16 text-xl font-semibold transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/25 disabled:hover:scale-100 bg-blue-500 hover:bg-blue-600"
+                      className="w-full h-16 text-xl font-semibold transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/25 disabled:hover:scale-100 bg-primary hover:bg-primary-hover"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
@@ -476,7 +476,7 @@ export const PropertyVideosPage: React.FC = () => {
             <p className="text-lg text-muted-foreground mb-8">
               {t('propertyVideos.bottomCta.description')}
             </p>
-            <Button size="lg" className="bg-blue-500 hover:bg-blue-600 text-white group px-8 py-4 text-lg">
+            <Button size="lg" className="bg-primary hover:bg-primary-hover text-primary-foreground group px-8 py-4 text-lg">
               {t('propertyVideos.cta')}
               <Video className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>

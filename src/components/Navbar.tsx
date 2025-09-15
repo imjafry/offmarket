@@ -45,13 +45,13 @@ export const Navbar: React.FC = () => {
   ];
 
   return (
-    <nav className="bg-white/95 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-50 shadow-sm">
+    <nav className="bg-white/95 backdrop-blur-md border-b border-gray-light sticky top-0 z-50 shadow-sm">
       <div className="container-custom">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link 
             to="/" 
-            className="text-2xl font-heading font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent hover:from-primary/80 hover:to-primary/60 transition-all duration-300"
+            className="text-2xl font-heading font-bold text-foreground hover:text-primary transition-all duration-300"
           >
             OffMarket
           </Link>
@@ -65,7 +65,7 @@ export const Navbar: React.FC = () => {
                 className={`relative px-4 py-2 text-sm font-semibold transition-all duration-300 rounded-lg group ${
                   location.pathname === item.path 
                     ? 'text-primary bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    : 'text-foreground hover:text-primary hover:bg-gray-light'
                 }`}
               >
                 {t(`navigation.${item.key}`)}
@@ -82,10 +82,10 @@ export const Navbar: React.FC = () => {
               variant="ghost"
               size="sm"
               onClick={toggleLanguage}
-              className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all duration-200"
+              className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-light transition-all duration-200"
             >
-              <Globe className="h-4 w-4 text-gray-700" />
-              <span className="text-sm font-medium text-gray-800 uppercase">
+              <Globe className="h-4 w-4 text-foreground" />
+              <span className="text-sm font-medium text-foreground uppercase">
                 {language}
               </span>
             </Button>
@@ -93,7 +93,7 @@ export const Navbar: React.FC = () => {
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="flex items-center space-x-2 px-4 py-2 border-gray-300 text-gray-800 hover:border-primary/50 hover:bg-primary/5 transition-all duration-200">
+                  <Button variant="outline" size="sm" className="flex items-center space-x-2 px-4 py-2 border-border text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-200">
                     <User className="h-4 w-4" />
                     <span className="font-medium">{user?.username}</span>
                   </Button>
@@ -104,7 +104,7 @@ export const Navbar: React.FC = () => {
                     {t('language') === 'fr' ? 'Profil' : 'Profile'}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logout} className="px-4 py-2 text-red-600 hover:bg-red-50">
+                  <DropdownMenuItem onClick={logout} className="px-4 py-2 text-destructive hover:bg-destructive/10">
                     <LogOut className="mr-3 h-4 w-4" />
                     {t('language') === 'fr' ? 'Déconnexion' : 'Logout'}
                   </DropdownMenuItem>

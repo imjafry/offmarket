@@ -72,6 +72,18 @@ export default {
           DEFAULT: "hsl(var(--sold))",
           foreground: "hsl(var(--sold-foreground))",
         },
+        // New elegant color palette
+        beige: {
+          DEFAULT: "#C5BEB1",
+          hover: "#BFB7A8",
+          light: "#E8E4DD",
+          dark: "#A89F8F",
+        },
+        gray: {
+          light: "#E0E0E0",
+          DEFAULT: "#9CA3AF",
+          dark: "#6B7280",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

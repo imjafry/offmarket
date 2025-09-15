@@ -29,13 +29,13 @@ export const PropertyListCard: React.FC<PropertyListCardProps> = ({
   const getStatusBadgeClass = (status: Property['status']) => {
     switch (status) {
       case 'available':
-        return 'bg-emerald-500 text-white';
+        return 'bg-available text-available-foreground';
       case 'rented':
-        return 'bg-orange-500 text-white';
+        return 'bg-rented text-rented-foreground';
       case 'sold':
-        return 'bg-red-500 text-white';
+        return 'bg-sold text-sold-foreground';
       default:
-        return 'bg-emerald-500 text-white';
+        return 'bg-available text-available-foreground';
     }
   };
 
@@ -74,7 +74,7 @@ export const PropertyListCard: React.FC<PropertyListCardProps> = ({
             }}
             className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
           >
-            <Heart className={`h-5 w-5 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+            <Heart className={`h-5 w-5 ${isFavorited ? 'fill-primary text-primary' : 'text-white'}`} />
           </button>
 
           {/* Price Tag or On Request */}

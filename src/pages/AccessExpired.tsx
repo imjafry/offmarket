@@ -21,15 +21,15 @@ export const AccessExpiredPage: React.FC = () => {
         </Link>
 
         {/* Main Card */}
-        <Card className="border-orange-200 bg-orange-50">
+        <Card className="border-warning/20 bg-warning/5">
           <CardHeader className="text-center space-y-4">
-            <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
-              <Clock className="h-8 w-8 text-orange-600" />
+            <div className="mx-auto w-16 h-16 bg-warning/10 rounded-full flex items-center justify-center">
+              <Clock className="h-8 w-8 text-warning" />
             </div>
-            <CardTitle className="text-3xl font-heading text-orange-800">
+            <CardTitle className="text-3xl font-heading text-warning">
               {t('auth.accessExpired')}
             </CardTitle>
-            <CardDescription className="text-orange-700 text-lg">
+            <CardDescription className="text-warning/80 text-lg">
               {t('language') === 'fr' 
                 ? 'Votre accès privilégié a expiré. Contactez votre conseiller pour le renouveler.'
                 : 'Your privileged access has expired. Contact your advisor to renew it.'

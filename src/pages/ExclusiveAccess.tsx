@@ -66,7 +66,7 @@ export const ExclusiveAccessPage: React.FC = () => {
             className="flex items-center space-x-4 mb-12"
           >
             <Link to="/become-member">
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-purple-500 hover:bg-purple-500/10 transition-all">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 {t('language') === 'fr' ? 'Retour' : 'Back'}
               </Button>
@@ -95,7 +95,7 @@ export const ExclusiveAccessPage: React.FC = () => {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="text-center mb-16"
             >
-              <Button size="lg" className="bg-purple-500 hover:bg-purple-600 text-white group px-8 py-4 text-lg">
+              <Button size="lg" className="bg-primary hover:bg-primary-hover text-primary-foreground group px-8 py-4 text-lg">
                 {t('exclusiveAccess.cta')}
                 <Key className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
@@ -109,8 +109,8 @@ export const ExclusiveAccessPage: React.FC = () => {
               className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16"
             >
               <div className="text-center group">
-                <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-500/20 transition-colors">
-                  <Users className="h-8 w-8 text-purple-500" />
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
+                  <Users className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="font-semibold text-foreground mb-2">
                   {t('exclusiveAccess.process.membership.title')}
@@ -120,8 +120,8 @@ export const ExclusiveAccessPage: React.FC = () => {
                 </p>
               </div>
               <div className="text-center group">
-                <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-500/20 transition-colors">
-                  <Shield className="h-8 w-8 text-purple-500" />
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
+                  <Shield className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="font-semibold text-foreground mb-2">
                   {t('exclusiveAccess.process.verification.title')}
@@ -131,8 +131,8 @@ export const ExclusiveAccessPage: React.FC = () => {
                 </p>
               </div>
               <div className="text-center group">
-                <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-500/20 transition-colors">
-                  <Award className="h-8 w-8 text-purple-500" />
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
+                  <Award className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="font-semibold text-foreground mb-2">
                   {t('exclusiveAccess.process.access.title')}
@@ -179,7 +179,7 @@ export const ExclusiveAccessPage: React.FC = () => {
                   viewport={{ once: true }}
                   className="text-center p-6 rounded-2xl bg-card border hover:shadow-lg transition-all duration-300"
                 >
-                  <benefit.icon className="h-8 w-8 text-purple-500 mx-auto mb-4" />
+                  <benefit.icon className="h-8 w-8 text-primary mx-auto mb-4" />
                   <p className="text-sm font-medium text-foreground">{benefit.text}</p>
                 </motion.div>
               ))}
@@ -236,11 +236,11 @@ export const ExclusiveAccessPage: React.FC = () => {
                 className="group"
               >
                 <Card className="h-full hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50 overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-purple-500/5 rounded-full -translate-y-16 translate-x-16 opacity-50 group-hover:opacity-70 transition-opacity"></div>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-primary/5 rounded-full -translate-y-16 translate-x-16 opacity-50 group-hover:opacity-70 transition-opacity"></div>
                   <CardContent className="p-8">
                     <div className="flex items-center mb-4">
                       {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                        <Star key={i} className="h-5 w-5 text-primary fill-current" />
                       ))}
                     </div>
                     <p className="text-muted-foreground leading-relaxed mb-6 italic">
@@ -427,7 +427,7 @@ export const ExclusiveAccessPage: React.FC = () => {
                     <Button 
                       type="submit" 
                       size="lg"
-                      className="w-full h-16 text-xl font-semibold transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-purple-500/25 disabled:hover:scale-100 bg-purple-500 hover:bg-purple-600"
+                      className="w-full h-16 text-xl font-semibold transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/25 disabled:hover:scale-100 bg-primary hover:bg-primary-hover"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
@@ -473,7 +473,7 @@ export const ExclusiveAccessPage: React.FC = () => {
             <p className="text-lg text-muted-foreground mb-8">
               {t('exclusiveAccess.bottomCta.description')}
             </p>
-            <Button size="lg" className="bg-purple-500 hover:bg-purple-600 text-white group px-8 py-4 text-lg">
+            <Button size="lg" className="bg-primary hover:bg-primary-hover text-primary-foreground group px-8 py-4 text-lg">
               {t('exclusiveAccess.cta')}
               <Key className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>

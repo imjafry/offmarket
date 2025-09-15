@@ -59,13 +59,13 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   const getStatusBadgeClass = (status: Property['status']) => {
     switch (status) {
       case 'available':
-        return 'bg-emerald-500 text-white';
+        return 'bg-available text-available-foreground';
       case 'rented':
-        return 'bg-orange-500 text-white';
+        return 'bg-rented text-rented-foreground';
       case 'sold':
-        return 'bg-red-500 text-white';
+        return 'bg-sold text-sold-foreground';
       default:
-        return 'bg-emerald-500 text-white';
+        return 'bg-available text-available-foreground';
     }
   };
 
@@ -118,7 +118,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           }}
           className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
         >
-          <Heart className={`h-5 w-5 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+          <Heart className={`h-5 w-5 ${isFavorited ? 'fill-primary text-primary' : 'text-white'}`} />
         </button>
 
         {/* Image Navigation Dots */}
@@ -195,7 +195,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
         </div>
 
         {/* Property Features */}
-        <div className="grid grid-cols-3 gap-4 py-3 border-t border-b border-gray-100">
+        <div className="grid grid-cols-3 gap-4 py-3 border-t border-b border-gray-light">
           <div className="text-center">
             <div className="flex items-center justify-center space-x-1 text-primary">
               <Home className="h-4 w-4" />
