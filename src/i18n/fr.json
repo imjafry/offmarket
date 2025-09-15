@@ -80,46 +80,25 @@
     "phoneNumber": "+41 22 123 45 67"
   },
   "becomeMember": {
-    "title": "Devenir membre",
-    "subtitle": "Rejoignez notre communauté exclusive d'investisseurs immobiliers et découvrez des opportunités uniques.",
-    "whyJoin": "Pourquoi nous rejoindre ?",
-    "whyJoinSubtitle": "Découvrez les avantages exclusifs réservés à nos membres privilégiés.",
-    "features": {
-      "exclusiveAccess": {
-        "title": "Accès exclusif",
-        "description": "Accédez à des propriétés off-market exclusives"
+    "title": "Rejoignez Notre Réseau Immobilier Exclusif Hors-Marché",
+    "subtitle": "Accédez à des opportunités uniques et confidentielles d'achat, location ou vente de propriétés hors-marché. Devenir membre signifie intégrer un cercle privé où confiance, discrétion et opportunités sur mesure sont prioritaires.",
+    "intro": "Notre adhésion est conçue pour deux profils :\n- Acheteurs et locataires qui souhaitent un accès privilégié aux propriétés hors-marché.\n- Propriétaires immobiliers qui souhaitent louer ou vendre discrètement à un public qualifié.\n\nL'adhésion est gratuite et sans engagement. Une fois votre demande soumise, un membre de notre équipe vous contactera rapidement pour comprendre vos besoins et vous guider dans les prochaines étapes.",
+    "form": {
+      "title": "Demande d'Adhésion Exclusive",
+      "fullName": "Nom complet",
+      "email": "Email",
+      "phone": "Numéro de téléphone",
+      "profile": "Vous êtes ?",
+      "profileOptions": {
+        "looking": "À la recherche d'une propriété",
+        "owner": "Propriétaire cherchant à louer ou vendre",
+        "other": "Autre"
       },
-      "privacy": {
-        "title": "Confidentialité",
-        "description": "Vos informations restent confidentielles"
-      },
-      "privilegedNetwork": {
-        "title": "Réseau privilégié",
-        "description": "Rejoignez un réseau de propriétaires et investisseurs"
-      },
-      "premiumService": {
-        "title": "Service premium",
-        "description": "Accompagnement personnalisé pour vos investissements"
-      }
-    },
-    "benefits": {
-      "title": "Vos avantages membres",
-      "list": {
-        "0": "Accès à plus de 500 propriétés exclusives",
-        "1": "Notifications en temps réel des nouvelles opportunités",
-        "2": "Support dédié 24/7",
-        "3": "Analyses de marché personnalisées",
-        "4": "Accès aux données de performance des investissements"
-      }
-    },
-    "cta": {
-      "title": "Prêt à nous rejoindre ?",
-      "subtitle": "Contactez-nous dès aujourd'hui pour découvrir comment devenir membre de notre communauté exclusive.",
-      "contactUs": "Nous contacter",
-      "viewProperties": "Voir les propriétés"
-    },
-    "contactInfo": {
-      "title": "Informations de contact"
+      "project": "Votre projet",
+      "projectPlaceholder": "Ex: Appartement 3 chambres à Lausanne / Location villa à Genève...",
+      "submit": "Soumettre ma demande",
+      "success": "Demande envoyée avec succès !",
+      "error": "Erreur lors de l'envoi. Veuillez réessayer."
     }
   },
   "legal": {

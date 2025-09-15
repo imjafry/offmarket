@@ -80,46 +80,25 @@
     "phoneNumber": "+41 22 123 45 67"
   },
   "becomeMember": {
-    "title": "Become a member",
-    "subtitle": "Join our exclusive community of real estate investors and discover unique opportunities.",
-    "whyJoin": "Why join us?",
-    "whyJoinSubtitle": "Discover the exclusive benefits reserved for our privileged members.",
-    "features": {
-      "exclusiveAccess": {
-        "title": "Exclusive Access",
-        "description": "Access exclusive off-market properties"
+    "title": "Join Our Exclusive Off-Market Real Estate Network",
+    "subtitle": "Gain access to unique and confidential opportunities in buying, renting, or selling properties off-market. Becoming a member means entering a private circle where trust, discretion, and tailored opportunities come first.",
+    "intro": "Our membership is designed for two profiles:\n- Buyers and tenants who want privileged access to off-market properties.\n- Property owners who wish to rent or sell discreetly to a qualified audience.\n\nMembership is free and without obligation. Once you submit your request, one of our team members will contact you promptly to understand your needs and guide you through the next steps.",
+    "form": {
+      "title": "Exclusive Membership Request Form",
+      "fullName": "Full Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "profile": "You are?",
+      "profileOptions": {
+        "looking": "Looking for a property",
+        "owner": "Property owner looking to rent or sell",
+        "other": "Other"
       },
-      "privacy": {
-        "title": "Privacy",
-        "description": "Your information stays confidential"
-      },
-      "privilegedNetwork": {
-        "title": "Privileged Network",
-        "description": "Join a network of owners and investors"
-      },
-      "premiumService": {
-        "title": "Premium Service",
-        "description": "Personalized support for your investments"
-      }
-    },
-    "benefits": {
-      "title": "Your member benefits",
-      "list": {
-        "0": "Access to over 500 exclusive properties",
-        "1": "Real-time notifications of new opportunities",
-        "2": "24/7 dedicated support",
-        "3": "Personalized market analyses",
-        "4": "Access to investment performance data"
-      }
-    },
-    "cta": {
-      "title": "Ready to join us?",
-      "subtitle": "Contact us today to discover how to become a member of our exclusive community.",
-      "contactUs": "Contact us",
-      "viewProperties": "View properties"
-    },
-    "contactInfo": {
-      "title": "Contact Information"
+      "project": "Your project",
+      "projectPlaceholder": "e.g., 3-bedroom apartment in Lausanne / Villa rental in Geneva...",
+      "submit": "Submit my request",
+      "success": "Request submitted successfully!",
+      "error": "Error sending request. Please try again."
     }
   },
   "legal": {
