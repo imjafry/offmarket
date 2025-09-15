@@ -16,6 +16,10 @@ import { ServicesPage } from "@/pages/Services";
 import { LoginPage } from "@/pages/Login";
 import { ContactPage } from "@/pages/Contact";
 import { BecomeMemberPage } from "@/pages/BecomeMember";
+import { PropertyFinderPage } from "@/pages/PropertyFinder";
+import { PrivateSalesPage } from "@/pages/PrivateSales";
+import { PropertyVideosPage } from "@/pages/PropertyVideos";
+import { ExclusiveAccessPage } from "@/pages/ExclusiveAccess";
 import { AccessExpiredPage } from "@/pages/AccessExpired";
 import { TermsPage } from "@/pages/legal/Terms";
 import { PrivacyPage } from "@/pages/legal/Privacy";
@@ -65,6 +69,10 @@ const App = () => (
                       <Route path="/services" element={<ServicesPage />} />
                       <Route path="/contact" element={<ContactPage />} />
                       <Route path="/become-member" element={<BecomeMemberPage />} />
+                      <Route path="/property-finder" element={<PropertyFinderPage />} />
+                      <Route path="/private-sales" element={<PrivateSalesPage />} />
+                      <Route path="/property-videos" element={<PropertyVideosPage />} />
+                      <Route path="/exclusive-access" element={<ExclusiveAccessPage />} />
                       <Route path="/login" element={<LoginPage />} />
                       <Route path="/access-expired" element={<AccessExpiredPage />} />
                       <Route path="/legal/terms" element={<TermsPage />} />

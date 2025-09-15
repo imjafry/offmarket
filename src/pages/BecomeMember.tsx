@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Send, CheckCircle, AlertCircle, Users, Shield, Star } from 'lucide-react';
+import { ArrowLeft, Send, CheckCircle, AlertCircle, Users, Shield, Star, Home, Video, Key, Search, Lock, Camera, Play, Award } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -149,8 +149,146 @@ export const BecomeMemberPage: React.FC = () => {
         </div>
       </section>
 
+      {/* Off-Market Services Section */}
+      <section className="py-20 bg-background">
+        <div className="container-custom">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center space-y-4 mb-16"
+          >
+            <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground">
+              {t('becomeMember.services.title')}
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              {t('becomeMember.services.subtitle')}
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Private Property Sales */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              viewport={{ once: true }}
+              className="group"
+            >
+              <Card className="h-full hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50 overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-red-500 to-pink-500 rounded-full -translate-y-16 translate-x-16 opacity-10 group-hover:opacity-20 transition-opacity"></div>
+                <CardContent className="p-8">
+                  <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-red-500/20 transition-colors">
+                    <Lock className="h-8 w-8 text-red-500" />
+                  </div>
+                  <h3 className="text-xl font-heading font-bold text-foreground mb-4">
+                    {t('becomeMember.services.privateSales.title')}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed mb-6">
+                    {t('becomeMember.services.privateSales.description')}
+                  </p>
+                  <Link to="/private-sales">
+                    <Button variant="outline" className="w-full group-hover:bg-red-500 group-hover:text-white group-hover:border-red-500 transition-all">
+                      {t('becomeMember.services.privateSales.cta')}
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Property Showcase Videos */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="group"
+            >
+              <Card className="h-full hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50 overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full -translate-y-16 translate-x-16 opacity-10 group-hover:opacity-20 transition-opacity"></div>
+                <CardContent className="p-8">
+                  <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-500/20 transition-colors">
+                    <Video className="h-8 w-8 text-blue-500" />
+                  </div>
+                  <h3 className="text-xl font-heading font-bold text-foreground mb-4">
+                    {t('becomeMember.services.videos.title')}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed mb-6">
+                    {t('becomeMember.services.videos.description')}
+                  </p>
+                  <Link to="/property-videos">
+                    <Button variant="outline" className="w-full group-hover:bg-blue-500 group-hover:text-white group-hover:border-blue-500 transition-all">
+                      {t('becomeMember.services.videos.cta')}
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Exclusive Access */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="group"
+            >
+              <Card className="h-full hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50 overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full -translate-y-16 translate-x-16 opacity-10 group-hover:opacity-20 transition-opacity"></div>
+                <CardContent className="p-8">
+                  <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-500/20 transition-colors">
+                    <Key className="h-8 w-8 text-purple-500" />
+                  </div>
+                  <h3 className="text-xl font-heading font-bold text-foreground mb-4">
+                    {t('becomeMember.services.exclusiveAccess.title')}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed mb-6">
+                    {t('becomeMember.services.exclusiveAccess.description')}
+                  </p>
+                  <Link to="/exclusive-access">
+                    <Button variant="outline" className="w-full group-hover:bg-purple-500 group-hover:text-white group-hover:border-purple-500 transition-all">
+                      {t('becomeMember.services.exclusiveAccess.cta')}
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Personalized Assistance */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="group"
+            >
+              <Card className="h-full hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50 overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full -translate-y-16 translate-x-16 opacity-10 group-hover:opacity-20 transition-opacity"></div>
+                <CardContent className="p-8">
+                  <div className="w-16 h-16 bg-green-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-500/20 transition-colors">
+                    <Search className="h-8 w-8 text-green-500" />
+                  </div>
+                  <h3 className="text-xl font-heading font-bold text-foreground mb-4">
+                    {t('becomeMember.services.personalized.title')}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed mb-6">
+                    {t('becomeMember.services.personalized.description')}
+                  </p>
+                  <Link to="/property-finder">
+                    <Button variant="outline" className="w-full group-hover:bg-green-500 group-hover:text-white group-hover:border-green-500 transition-all">
+                      {t('becomeMember.services.personalized.cta')}
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Membership Form Section */}
-      <section className="py-20 bg-background relative overflow-hidden">
+      <section className="py-20 bg-muted/20 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50" />
         <div className="container-custom relative">
           <motion.div
@@ -318,7 +456,7 @@ export const BecomeMemberPage: React.FC = () => {
       </section>
 
       {/* Contact Info Footer */}
-      <section className="py-16 bg-muted/30 border-t">
+      <section className="py-16 bg-background border-t">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}

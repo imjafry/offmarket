@@ -83,6 +83,30 @@
     "title": "Join Our Exclusive Off-Market Real Estate Network",
     "subtitle": "Gain access to unique and confidential opportunities in buying, renting, or selling properties off-market. Becoming a member means entering a private circle where trust, discretion, and tailored opportunities come first.",
     "intro": "Our membership is designed for two profiles:\n- Buyers and tenants who want privileged access to off-market properties.\n- Property owners who wish to rent or sell discreetly to a qualified audience.\n\nMembership is free and without obligation. Once you submit your request, one of our team members will contact you promptly to understand your needs and guide you through the next steps.",
+    "services": {
+      "title": "Our Off-Market Services",
+      "subtitle": "Comprehensive solutions for all your real estate needs",
+      "privateSales": {
+        "title": "Private Property Sales",
+        "description": "For owners wishing to sell with complete discretion. Connection with qualified buyers without public listing.",
+        "cta": "Contact us for your private sale"
+      },
+      "videos": {
+        "title": "Property Showcase Videos",
+        "description": "Creation of professional videos: guided tour, drone shots, ambiance. Highlighting the key features of the property to attract serious buyers.",
+        "cta": "Request your professional video"
+      },
+      "exclusiveAccess": {
+        "title": "Exclusive Access to Properties",
+        "description": "Our members enjoy privileged access to off-market properties. Rare opportunities carefully selected according to their criteria.",
+        "cta": "Become a member and access exclusive properties"
+      },
+      "personalized": {
+        "title": "Personalized Assistance",
+        "description": "Tailored search for properties based on your needs and criteria. Personalized support at every step to find your ideal property quickly.",
+        "cta": "Start your personalized search"
+      }
+    },
     "form": {
       "title": "Exclusive Membership Request Form",
       "fullName": "Full Name",
@@ -99,6 +123,304 @@
       "submit": "Submit my request",
       "success": "Request submitted successfully!",
       "error": "Error sending request. Please try again."
+    }
+  },
+  "privateSales": {
+    "title": "Private Sales – Discretion & Efficiency",
+    "subtitle": "Offer your property with complete discretion, outside of public channels. We connect you with qualified buyers while ensuring full confidentiality of your project.",
+    "cta": "Contact us for your private sale",
+    "process": {
+      "discretion": {
+        "title": "Complete Discretion",
+        "description": "Your property sale remains completely confidential"
+      },
+      "connection": {
+        "title": "Qualified Buyers",
+        "description": "Connection with pre-qualified serious buyers"
+      },
+      "optimization": {
+        "title": "Best Price",
+        "description": "Optimize your sale price without public exposure"
+      }
+    },
+    "description": {
+      "title": "Why Choose Private Sales?",
+      "content": "Private sales offer complete discretion and often result in better prices by connecting directly with qualified buyers who are serious about purchasing. Our network ensures your property reaches the right audience without public exposure."
+    },
+    "benefits": {
+      "confidentiality": "Complete Confidentiality",
+      "qualified": "Qualified Buyers",
+      "expertise": "Expert Negotiation",
+      "personalized": "Personalized Service"
+    },
+    "testimonials": {
+      "title": "What Our Clients Say",
+      "subtitle": "Real experiences from satisfied clients who sold privately",
+      "client1": {
+        "name": "Robert Müller",
+        "location": "Zurich, Switzerland",
+        "text": "The private sale process was seamless and discreet. We got a better price than expected without any public exposure."
+      },
+      "client2": {
+        "name": "Isabelle Dubois",
+        "location": "Geneva, Switzerland",
+        "text": "Professional service with complete confidentiality. The team found the perfect buyer within weeks."
+      },
+      "client3": {
+        "name": "Thomas Weber",
+        "location": "Basel, Switzerland",
+        "text": "Excellent negotiation skills and a network of serious buyers. Highly recommended for private sales."
+      }
+    },
+    "form": {
+      "title": "Start Your Private Sale",
+      "subtitle": "Tell us about your property and we'll handle the rest",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "propertyType": "Property Type",
+      "propertyTypes": {
+        "apartment": "Apartment",
+        "house": "House",
+        "villa": "Villa",
+        "penthouse": "Penthouse"
+      },
+      "location": "Property Location",
+      "locationPlaceholder": "e.g., Lausanne, Geneva, Zurich...",
+      "message": "Property Details",
+      "messagePlaceholder": "Tell us about your property, price expectations, and any specific requirements...",
+      "submit": "Start my private sale",
+      "success": "Private sale request submitted successfully!",
+      "error": "Error sending request. Please try again."
+    },
+    "bottomCta": {
+      "title": "Ready to Sell Privately?",
+      "description": "Let our experts handle your private sale with complete discretion and maximum efficiency."
+    }
+  },
+  "propertyVideos": {
+    "title": "Professional Videos – Showcase Your Property",
+    "subtitle": "We create custom professional videos for each property: guided tours, drone shots, and ambiance videos. These videos highlight architecture, layout, and atmosphere, helping attract serious buyers quickly.",
+    "cta": "Request your professional video",
+    "process": {
+      "production": {
+        "title": "Professional Production",
+        "description": "High-quality filming with professional equipment"
+      },
+      "editing": {
+        "title": "Expert Editing",
+        "description": "Professional post-production and editing"
+      },
+      "delivery": {
+        "title": "Quick Delivery",
+        "description": "Fast turnaround with multiple format options"
+      }
+    },
+    "description": {
+      "title": "Why Choose Professional Videos?",
+      "content": "Professional property videos significantly increase buyer engagement and help properties sell faster. Our videos showcase your property's best features and create an emotional connection with potential buyers."
+    },
+    "benefits": {
+      "professional": "Professional Quality",
+      "engaging": "Engaging Content",
+      "attraction": "Attract Buyers",
+      "showcase": "Showcase Features"
+    },
+    "testimonials": {
+      "title": "What Our Clients Say",
+      "subtitle": "Real experiences from satisfied clients who used our video services",
+      "client1": {
+        "name": "Marie Laurent",
+        "location": "Lausanne, Switzerland",
+        "text": "The video was absolutely stunning and helped us sell our property in just 2 weeks. The quality exceeded our expectations."
+      },
+      "client2": {
+        "name": "David Schmidt",
+        "location": "Geneva, Switzerland",
+        "text": "Professional service from start to finish. The drone shots really showcased our property's unique features."
+      },
+      "client3": {
+        "name": "Sophie Martin",
+        "location": "Zurich, Switzerland",
+        "text": "The video production team was incredibly professional and the final result was perfect for our marketing."
+      }
+    },
+    "form": {
+      "title": "Request Your Professional Video",
+      "subtitle": "Tell us about your property and we'll create a stunning video",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "propertyType": "Property Type",
+      "propertyTypes": {
+        "apartment": "Apartment",
+        "house": "House",
+        "villa": "Villa",
+        "penthouse": "Penthouse"
+      },
+      "location": "Property Location",
+      "locationPlaceholder": "e.g., Lausanne, Geneva, Zurich...",
+      "message": "Video Requirements",
+      "messagePlaceholder": "Tell us about your property, specific features to highlight, and any special requirements...",
+      "submit": "Request my professional video",
+      "success": "Video request submitted successfully!",
+      "error": "Error sending request. Please try again."
+    },
+    "bottomCta": {
+      "title": "Ready to Showcase Your Property?",
+      "description": "Let our professional team create a stunning video that will make your property stand out."
+    }
+  },
+  "exclusiveAccess": {
+    "title": "Exclusive Access – Off-Market Properties",
+    "subtitle": "Become a member and enjoy exclusive access to off-market properties, often unavailable elsewhere. Our properties are carefully selected to meet the needs of our clients, offering rare opportunities.",
+    "cta": "Become a member and access exclusive properties",
+    "process": {
+      "membership": {
+        "title": "Membership Application",
+        "description": "Apply for exclusive membership access"
+      },
+      "verification": {
+        "title": "Verification Process",
+        "description": "Quick verification of your credentials"
+      },
+      "access": {
+        "title": "Exclusive Access",
+        "description": "Access to off-market properties"
+      }
+    },
+    "description": {
+      "title": "Why Choose Exclusive Access?",
+      "content": "Our exclusive network provides access to properties that are never listed publicly. These off-market opportunities often offer better value and less competition, giving you a significant advantage in the real estate market."
+    },
+    "benefits": {
+      "exclusive": "Exclusive Properties",
+      "verified": "Verified Members",
+      "network": "Premium Network",
+      "opportunities": "Rare Opportunities"
+    },
+    "testimonials": {
+      "title": "What Our Members Say",
+      "subtitle": "Real experiences from our exclusive members",
+      "client1": {
+        "name": "Alexandre Moreau",
+        "location": "Lausanne, Switzerland",
+        "text": "The exclusive access has been incredible. I found properties that were never on the public market and got amazing deals."
+      },
+      "client2": {
+        "name": "Claire Dubois",
+        "location": "Geneva, Switzerland",
+        "text": "Being a member gives me access to the best properties before anyone else. It's like having a secret advantage."
+      },
+      "client3": {
+        "name": "Marc Schneider",
+        "location": "Zurich, Switzerland",
+        "text": "The quality of properties in the exclusive network is outstanding. Every property I've seen has been exceptional."
+      }
+    },
+    "form": {
+      "title": "Join Our Exclusive Network",
+      "subtitle": "Apply for membership and access off-market properties",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "interest": "Interest",
+      "interests": {
+        "rent": "Rent",
+        "purchase": "Purchase",
+        "both": "Both"
+      },
+      "location": "Preferred Location",
+      "locationPlaceholder": "e.g., Lausanne, Geneva, Zurich...",
+      "message": "Additional Information",
+      "messagePlaceholder": "Tell us about your property preferences, budget range, and any specific requirements...",
+      "submit": "Apply for membership",
+      "success": "Membership application submitted successfully!",
+      "error": "Error sending request. Please try again."
+    },
+    "bottomCta": {
+      "title": "Ready to Join Our Exclusive Network?",
+      "description": "Apply for membership today and gain access to the most exclusive off-market properties."
+    }
+  },
+  "propertyFinder": {
+    "title": "Property Finder – Tailored to Your Project",
+    "subtitle": "We guide you step by step in finding your ideal property. Our property finder service includes search, selection, and negotiation, saving you time and helping you find the property that perfectly matches your criteria.",
+    "cta": "Start your personalized search",
+    "process": {
+      "search": {
+        "title": "Search",
+        "description": "Comprehensive property search based on your criteria"
+      },
+      "selection": {
+        "title": "Selection",
+        "description": "Careful evaluation and shortlisting of best options"
+      },
+      "negotiation": {
+        "title": "Negotiation",
+        "description": "Expert negotiation to secure the best deal"
+      }
+    },
+    "description": {
+      "title": "Why Choose Our Property Finder Service?",
+      "content": "Our experienced team combines local market knowledge with advanced search techniques to find properties that match your exact requirements. We handle every aspect of the property search process, from initial consultation to final negotiations."
+    },
+    "benefits": {
+      "time": "Save Time",
+      "expertise": "Expert Knowledge",
+      "network": "Exclusive Network",
+      "personalized": "Personalized Service"
+    },
+    "testimonials": {
+      "title": "What Our Clients Say",
+      "subtitle": "Real experiences from satisfied clients who found their dream properties",
+      "client1": {
+        "name": "Sarah Johnson",
+        "location": "Lausanne, Switzerland",
+        "text": "The team found us the perfect apartment in just 3 weeks. Their attention to detail and understanding of our needs was exceptional."
+      },
+      "client2": {
+        "name": "Michael Chen",
+        "location": "Geneva, Switzerland",
+        "text": "Professional service from start to finish. They negotiated a great deal and made the entire process stress-free."
+      },
+      "client3": {
+        "name": "Elena Rodriguez",
+        "location": "Zurich, Switzerland",
+        "text": "Outstanding expertise in the local market. They found properties we never would have discovered on our own."
+      }
+    },
+    "form": {
+      "title": "Start Your Personalized Property Search",
+      "subtitle": "Tell us about your ideal property and we'll find it for you",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "propertyType": "Property Type",
+      "propertyTypes": {
+        "apartment": "Apartment",
+        "house": "House",
+        "villa": "Villa",
+        "penthouse": "Penthouse",
+        "commercial": "Commercial"
+      },
+      "location": "Desired Location",
+      "locationPlaceholder": "e.g., Lausanne, Geneva, Zurich...",
+      "budget": "Budget",
+      "budgetPlaceholder": "e.g., CHF 500,000 - 1,000,000",
+      "message": "Additional Requirements",
+      "messagePlaceholder": "Tell us about any specific requirements, preferences, or questions...",
+      "submit": "Start my personalized search",
+      "success": "Search request submitted successfully!",
+      "error": "Error sending request. Please try again."
+    },
+    "bottomCta": {
+      "title": "Ready to Find Your Dream Property?",
+      "description": "Let our experts guide you through the entire process and find the perfect property that matches your criteria and budget."
     }
   },
   "legal": {
