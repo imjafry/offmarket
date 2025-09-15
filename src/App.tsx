@@ -15,6 +15,7 @@ import { PropertyDetailPage } from "@/pages/PropertyDetail";
 import { ServicesPage } from "@/pages/Services";
 import { LoginPage } from "@/pages/Login";
 import { ContactPage } from "@/pages/Contact";
+import { BecomeMemberPage } from "@/pages/BecomeMember";
 import { AccessExpiredPage } from "@/pages/AccessExpired";
 import { TermsPage } from "@/pages/legal/Terms";
 import { PrivacyPage } from "@/pages/legal/Privacy";
@@ -63,6 +64,7 @@ const App = () => (
                       <Route path="/property/:id" element={<PropertyDetailPage />} />
                       <Route path="/services" element={<ServicesPage />} />
                       <Route path="/contact" element={<ContactPage />} />
+                      <Route path="/become-member" element={<BecomeMemberPage />} />
                       <Route path="/login" element={<LoginPage />} />
                       <Route path="/access-expired" element={<AccessExpiredPage />} />
                       <Route path="/legal/terms" element={<TermsPage />} />

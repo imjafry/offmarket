@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Home, User, Heart, Eye, Star } from 'lucide-react';
+import { MapPin, Home, User, Heart, Eye } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
@@ -182,16 +182,6 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 
       {/* Property Content */}
       <div className="p-6 space-y-4">
-        {/* Rating */}
-        <div className="flex items-center space-x-2">
-          <div className="flex items-center space-x-1">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-            ))}
-          </div>
-          <span className="text-sm font-medium text-foreground">4.6</span>
-          <span className="text-sm text-muted-foreground">(36 Reviews)</span>
-        </div>
 
         {/* Title & Location */}
         <div className="space-y-2">
@@ -259,9 +249,9 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
             <Button variant="outline" onClick={() => setShowFavDialog(false)}>
               {t('language') === 'fr' ? 'Plus tard' : 'Not now'}
             </Button>
-            <Link to="/contact">
+            <Link to="/become-member">
               <AlertDialogAction>
-                {t('language') === 'fr' ? 'Contactez-nous' : 'Contact us'}
+                {t('language') === 'fr' ? 'Devenir membre' : 'Become a member'}
               </AlertDialogAction>
             </Link>
           </AlertDialogFooter>

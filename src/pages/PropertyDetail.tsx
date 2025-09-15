@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Home, Maximize, Phone, Mail, User, Star, Heart, Share2, Calendar, Eye, Wifi, Car, Dumbbell, Waves, TreePine, Shield, Snowflake, Camera, Play, MessageCircle, ChevronDown, Bath, FileText, Lock } from 'lucide-react';
+import { ArrowLeft, MapPin, Home, Maximize, Phone, Mail, User, Heart, Share2, Calendar, Eye, Wifi, Car, Dumbbell, Waves, TreePine, Shield, Snowflake, Camera, Play, MessageCircle, ChevronDown, Bath, FileText, Lock, Award } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -90,7 +90,7 @@ export const PropertyDetailPage: React.FC = () => {
     'Jardin': TreePine,
     'Garage 2 places': Car,
     'Cheminée': Home,
-    'Design': Star,
+    'Design': Award,
     'Terrasse': Home,
     'Ascenseur': Home,
     'Concierge': User,
@@ -165,12 +165,6 @@ export const PropertyDetailPage: React.FC = () => {
                 {/* Rating and Address Row */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                   <div className="flex items-center space-x-3">
-                    <div className="flex items-center space-x-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      ))}
-                    </div>
-                    <span className="text-lg font-bold text-foreground">5.0</span>
                     <span className="text-sm text-muted-foreground">
                       318-330 S Oakley Blvd, Chicago, IL 60612, USA
                     </span>
@@ -565,14 +559,6 @@ export const PropertyDetailPage: React.FC = () => {
                         </div>
                         <div>
                           <h4 className="font-medium">{property.contactInfo?.name || 'John Carter'}</h4>
-                          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                            <div className="flex items-center">
-                              {[...Array(5)].map((_, i) => (
-                                <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                              ))}
-                            </div>
-                            <span>5.0 (12 Reviews)</span>
-                          </div>
                         </div>
                       </div>
 
@@ -622,14 +608,6 @@ export const PropertyDetailPage: React.FC = () => {
                           </div>
                           <div>
                             <h4 className="font-medium">John Carter</h4>
-                            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                              <div className="flex items-center">
-                                {[...Array(5)].map((_, i) => (
-                                  <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                                ))}
-                              </div>
-                              <span>5.0 (12 Reviews)</span>
-                            </div>
                           </div>
                         </div>
 
@@ -716,9 +694,9 @@ export const PropertyDetailPage: React.FC = () => {
             <Button variant="outline" onClick={() => setShowFavDialog(false)}>
               {t('language') === 'fr' ? 'Plus tard' : 'Not now'}
             </Button>
-            <Link to="/contact">
+            <Link to="/become-member">
               <AlertDialogAction>
-                {t('language') === 'fr' ? 'Contactez-nous' : 'Contact us'}
+                {t('language') === 'fr' ? 'Devenir membre' : 'Become a member'}
               </AlertDialogAction>
             </Link>
           </AlertDialogFooter>

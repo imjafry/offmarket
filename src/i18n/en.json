@@ -3,7 +3,7 @@
     "home": "Home",
     "properties": "Properties",
     "services": "Services",
-    "contact": "Contact",
+    "becomeMember": "Become a Member",
     "login": "Login",
     "admin": "Admin"
   },
@@ -74,7 +74,53 @@
     "name": "Name",
     "email": "Email",
     "message": "Message",
-    "send": "Send"
+    "send": "Send",
+    "phone": "Phone",
+    "emailAddress": "contact@offmarket.ch",
+    "phoneNumber": "+41 22 123 45 67"
+  },
+  "becomeMember": {
+    "title": "Become a member",
+    "subtitle": "Join our exclusive community of real estate investors and discover unique opportunities.",
+    "whyJoin": "Why join us?",
+    "whyJoinSubtitle": "Discover the exclusive benefits reserved for our privileged members.",
+    "features": {
+      "exclusiveAccess": {
+        "title": "Exclusive Access",
+        "description": "Access exclusive off-market properties"
+      },
+      "privacy": {
+        "title": "Privacy",
+        "description": "Your information stays confidential"
+      },
+      "privilegedNetwork": {
+        "title": "Privileged Network",
+        "description": "Join a network of owners and investors"
+      },
+      "premiumService": {
+        "title": "Premium Service",
+        "description": "Personalized support for your investments"
+      }
+    },
+    "benefits": {
+      "title": "Your member benefits",
+      "list": {
+        "0": "Access to over 500 exclusive properties",
+        "1": "Real-time notifications of new opportunities",
+        "2": "24/7 dedicated support",
+        "3": "Personalized market analyses",
+        "4": "Access to investment performance data"
+      }
+    },
+    "cta": {
+      "title": "Ready to join us?",
+      "subtitle": "Contact us today to discover how to become a member of our exclusive community.",
+      "contactUs": "Contact us",
+      "viewProperties": "View properties"
+    },
+    "contactInfo": {
+      "title": "Contact Information"
+    }
   },
   "legal": {
     "terms": "Terms & Conditions",

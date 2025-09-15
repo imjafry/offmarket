@@ -41,7 +41,7 @@ export const Navbar: React.FC = () => {
     { key: 'home', path: '/' },
     { key: 'properties', path: '/properties' },
     { key: 'services', path: '/services', scrollTo: 'services-section' },
-    { key: 'contact', path: '/contact' },
+    { key: 'becomeMember', path: '/become-member' },
   ];
 
   return (

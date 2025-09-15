@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Play, Home, Users, Award, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, Play, Home, Users, Award } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
@@ -50,17 +50,6 @@ export const HomePage: React.FC = () => {
     return () => clearInterval(interval);
   }, [heroImages.length]);
 
-  const nextImage = () => {
-    setCurrentImageIndex((prevIndex) => 
-      prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
-    );
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prevIndex) => 
-      prevIndex === 0 ? heroImages.length - 1 : prevIndex - 1
-    );
-  };
 
   return (
     <div className="min-h-screen">
@@ -80,20 +69,6 @@ export const HomePage: React.FC = () => {
           <div className="absolute inset-0 bg-black/40"></div>
         </div>
 
-        {/* Carousel Navigation */}
-        <button
-          onClick={prevImage}
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-all duration-300 group"
-        >
-          <ChevronLeft className="h-6 w-6 text-white group-hover:scale-110 transition-transform" />
-        </button>
-        
-        <button
-          onClick={nextImage}
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-all duration-300 group"
-        >
-          <ChevronRight className="h-6 w-6 text-white group-hover:scale-110 transition-transform" />
-        </button>
 
         {/* Carousel Dots */}
         {/* <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2">
@@ -134,9 +109,9 @@ export const HomePage: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
-            <Link to="/contact">
+            <Link to="/become-member">
               <Button size="lg" className="btn-primary group px-8 py-4 text-lg">
-                {t('language') === 'fr' ? 'Devenir membre' : 'Become a member'}
+                {t('navigation.becomeMember')}
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>

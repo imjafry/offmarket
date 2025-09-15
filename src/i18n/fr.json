@@ -3,7 +3,7 @@
     "home": "Accueil",
     "properties": "Propriétés",
     "services": "Services",
-    "contact": "Contact",
+    "becomeMember": "Devenir membre",
     "login": "Connexion",
     "admin": "Admin"
   },
@@ -74,7 +74,53 @@
     "name": "Nom",
     "email": "E-mail",
     "message": "Message",
-    "send": "Envoyer"
+    "send": "Envoyer",
+    "phone": "Téléphone",
+    "emailAddress": "contact@offmarket.ch",
+    "phoneNumber": "+41 22 123 45 67"
+  },
+  "becomeMember": {
+    "title": "Devenir membre",
+    "subtitle": "Rejoignez notre communauté exclusive d'investisseurs immobiliers et découvrez des opportunités uniques.",
+    "whyJoin": "Pourquoi nous rejoindre ?",
+    "whyJoinSubtitle": "Découvrez les avantages exclusifs réservés à nos membres privilégiés.",
+    "features": {
+      "exclusiveAccess": {
+        "title": "Accès exclusif",
+        "description": "Accédez à des propriétés off-market exclusives"
+      },
+      "privacy": {
+        "title": "Confidentialité",
+        "description": "Vos informations restent confidentielles"
+      },
+      "privilegedNetwork": {
+        "title": "Réseau privilégié",
+        "description": "Rejoignez un réseau de propriétaires et investisseurs"
+      },
+      "premiumService": {
+        "title": "Service premium",
+        "description": "Accompagnement personnalisé pour vos investissements"
+      }
+    },
+    "benefits": {
+      "title": "Vos avantages membres",
+      "list": {
+        "0": "Accès à plus de 500 propriétés exclusives",
+        "1": "Notifications en temps réel des nouvelles opportunités",
+        "2": "Support dédié 24/7",
+        "3": "Analyses de marché personnalisées",
+        "4": "Accès aux données de performance des investissements"
+      }
+    },
+    "cta": {
+      "title": "Prêt à nous rejoindre ?",
+      "subtitle": "Contactez-nous dès aujourd'hui pour découvrir comment devenir membre de notre communauté exclusive.",
+      "contactUs": "Nous contacter",
+      "viewProperties": "Voir les propriétés"
+    },
+    "contactInfo": {
+      "title": "Informations de contact"
+    }
   },
   "legal": {
     "terms": "Conditions Générales",

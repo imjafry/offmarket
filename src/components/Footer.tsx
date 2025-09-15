@@ -50,13 +50,13 @@ export const Footer: React.FC = () => {
               {t('contact.title')}
             </h4>
             <div className="space-y-2 text-sm text-muted-foreground">
-              <p>contact@offmarket.ch</p>
-              <p>+41 22 123 45 67</p>
+              <p>{t('contact.emailAddress')}</p>
+              <p>{t('contact.phoneNumber')}</p>
               <Link 
-                to="/contact"
-                className="text-primary hover:text-primary-hover transition-colors"
-              >
-                {t('navigation.contact')}
+                to="/become-member"
+                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                {t('navigation.becomeMember')}
               </Link>
             </div>
           </div>
