@@ -36,7 +36,7 @@ export const PropertyFinderPage: React.FC = () => {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       toast.success(t('propertyFinder.form.success'));
       setFormData({
         firstName: '',
@@ -57,92 +57,160 @@ export const PropertyFinderPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary/5 via-background to-primary/10 py-20 lg:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
-        <div className="container-custom relative">
-          <motion.div
+      {/* Hero Banner Section */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src="/property-hero.jpg"
+            alt="Personalized property finder service"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/50"></div>
+        </div>
+
+        {/* Back Button */}
+        <div className="absolute top-8 left-8 z-20">
+          <Link to="/become-member">
+            <Button variant="ghost" size="sm" className="text-white hover:text-white hover:bg-white/10 transition-all backdrop-blur-sm">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              {t('language') === 'fr' ? 'Retour' : 'Back'}
+            </Button>
+          </Link>
+        </div>
+
+        {/* Hero Content */}
+        <div className="relative z-10 text-center text-white max-w-6xl mx-auto px-6">
+          <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="flex items-center space-x-4 mb-12"
+            className="text-5xl md:text-7xl font-heading font-bold leading-tight mb-6"
           >
-            <Link to="/become-member">
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                {t('language') === 'fr' ? 'Retour' : 'Back'}
-              </Button>
-            </Link>
+            {t('propertyFinder.title')}
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-xl md:text-2xl mb-8 leading-relaxed max-w-4xl mx-auto"
+          >
+            {t('propertyFinder.subtitle')}
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+          >
+            <Button
+              size="lg"
+              className="btn-primary group px-8 py-4 text-lg"
+              onClick={() => {
+                document.getElementById('contact-form')?.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start'
+                });
+              }}
+            >
+              {t('propertyFinder.cta')}
+              <Search className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
           </motion.div>
-          
-          <div className="max-w-5xl">
+        </div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5 }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white"
+        >
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="w-6 h-10 border-2 border-white rounded-full flex justify-center"
+          >
+            <motion.div
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="w-1 h-3 bg-white rounded-full mt-2"
+            />
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* Process Steps Section */}
+      <section className="py-20 bg-background">
+        <div className="container-custom">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center space-y-4 mb-16"
+          >
+            <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground">
+              {t('propertyFinder.process.title')}
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              {t('propertyFinder.process.subtitle')}
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-center mb-16"
+              viewport={{ once: true }}
+              className="text-center group"
             >
-              <h1 className="text-4xl md:text-5xl lg:text-7xl font-heading font-bold mb-8 leading-tight text-foreground">
-                {t('propertyFinder.title')}
-              </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-4xl mx-auto">
-                {t('propertyFinder.subtitle')}
+              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
+                <Search className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="font-semibold text-foreground mb-2">
+                {t('propertyFinder.process.search.title')}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {t('propertyFinder.process.search.description')}
               </p>
             </motion.div>
-
-            {/* CTA Button */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-center mb-16"
+              viewport={{ once: true }}
+              className="text-center group"
             >
-              <Button size="lg" className="btn-primary group px-8 py-4 text-lg">
-                {t('propertyFinder.cta')}
-                <Search className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
+                <CheckCircle className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="font-semibold text-foreground mb-2">
+                {t('propertyFinder.process.selection.title')}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {t('propertyFinder.process.selection.description')}
+              </p>
             </motion.div>
-
-            {/* Process Steps */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16"
+              viewport={{ once: true }}
+              className="text-center group"
             >
-              <div className="text-center group">
-                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
-                  <Search className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="font-semibold text-foreground mb-2">
-                  {t('propertyFinder.process.search.title')}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {t('propertyFinder.process.search.description')}
-                </p>
+              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
+                <Award className="h-8 w-8 text-primary" />
               </div>
-              <div className="text-center group">
-                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
-                  <CheckCircle className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="font-semibold text-foreground mb-2">
-                  {t('propertyFinder.process.selection.title')}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {t('propertyFinder.process.selection.description')}
-                </p>
-              </div>
-              <div className="text-center group">
-                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
-                  <Award className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="font-semibold text-foreground mb-2">
-                  {t('propertyFinder.process.negotiation.title')}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {t('propertyFinder.process.negotiation.description')}
-                </p>
-              </div>
+              <h3 className="font-semibold text-foreground mb-2">
+                {t('propertyFinder.process.negotiation.title')}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {t('propertyFinder.process.negotiation.description')}
+              </p>
             </motion.div>
           </div>
         </div>
@@ -164,7 +232,7 @@ export const PropertyFinderPage: React.FC = () => {
             <p className="text-lg md:text-xl leading-relaxed text-muted-foreground mb-12">
               {t('propertyFinder.description.content')}
             </p>
-            
+
             {/* Benefits Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
@@ -261,7 +329,7 @@ export const PropertyFinderPage: React.FC = () => {
       </section>
 
       {/* Property Finder Form Section */}
-      <section className="py-20 bg-muted/20 relative overflow-hidden">
+      <section id="contact-form" className="py-20 bg-muted/20 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50" />
         <div className="container-custom relative">
           <motion.div
@@ -273,7 +341,7 @@ export const PropertyFinderPage: React.FC = () => {
           >
             <Card className="shadow-2xl border-0 bg-card/80 backdrop-blur-sm overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-primary/80 to-primary" />
-              
+
               <CardHeader className="text-center py-12 px-8">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -449,8 +517,8 @@ export const PropertyFinderPage: React.FC = () => {
 
                   {/* Submit Button */}
                   <div className="pt-4">
-                    <Button 
-                      type="submit" 
+                    <Button
+                      type="submit"
                       size="lg"
                       className="w-full h-16 text-xl font-semibold transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/25 disabled:hover:scale-100 bg-primary hover:bg-primary/90"
                       disabled={isSubmitting}
@@ -498,7 +566,16 @@ export const PropertyFinderPage: React.FC = () => {
             <p className="text-lg text-muted-foreground mb-8">
               {t('propertyFinder.bottomCta.description')}
             </p>
-            <Button size="lg" className="btn-primary group px-8 py-4 text-lg">
+            <Button
+              size="lg"
+              className="btn-primary group px-8 py-4 text-lg"
+              onClick={() => {
+                document.getElementById('contact-form')?.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start'
+                });
+              }}
+            >
               {t('propertyFinder.cta')}
               <Search className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>

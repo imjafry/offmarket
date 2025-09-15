@@ -82,6 +82,7 @@
   "becomeMember": {
     "title": "Join Our Exclusive Off-Market Real Estate Network",
     "subtitle": "Gain access to unique and confidential opportunities in buying, renting, or selling properties off-market. Becoming a member means entering a private circle where trust, discretion, and tailored opportunities come first.",
+    "cta": "Apply for Membership",
     "intro": "Our membership is designed for two profiles:\n- Buyers and tenants who want privileged access to off-market properties.\n- Property owners who wish to rent or sell discreetly to a qualified audience.\n\nMembership is free and without obligation. Once you submit your request, one of our team members will contact you promptly to understand your needs and guide you through the next steps.",
     "services": {
       "title": "Our Off-Market Services",
@@ -130,6 +131,8 @@
     "subtitle": "Offer your property with complete discretion, outside of public channels. We connect you with qualified buyers while ensuring full confidentiality of your project.",
     "cta": "Contact us for your private sale",
     "process": {
+      "title": "How It Works",
+      "subtitle": "Our proven process ensures your private sale is handled with the utmost discretion and efficiency",
       "discretion": {
         "title": "Complete Discretion",
         "description": "Your property sale remains completely confidential"
@@ -204,6 +207,8 @@
     "subtitle": "We create custom professional videos for each property: guided tours, drone shots, and ambiance videos. These videos highlight architecture, layout, and atmosphere, helping attract serious buyers quickly.",
     "cta": "Request your professional video",
     "process": {
+      "title": "Our Video Production Process",
+      "subtitle": "From concept to final delivery, we create stunning videos that showcase your property's unique features",
       "production": {
         "title": "Professional Production",
         "description": "High-quality filming with professional equipment"
@@ -278,6 +283,8 @@
     "subtitle": "Become a member and enjoy exclusive access to off-market properties, often unavailable elsewhere. Our properties are carefully selected to meet the needs of our clients, offering rare opportunities.",
     "cta": "Become a member and access exclusive properties",
     "process": {
+      "title": "How to Get Exclusive Access",
+      "subtitle": "Join our exclusive network and gain access to the most sought-after off-market properties",
       "membership": {
         "title": "Membership Application",
         "description": "Apply for exclusive membership access"
@@ -351,6 +358,8 @@
     "subtitle": "We guide you step by step in finding your ideal property. Our property finder service includes search, selection, and negotiation, saving you time and helping you find the property that perfectly matches your criteria.",
     "cta": "Start your personalized search",
     "process": {
+      "title": "Our Property Finding Process",
+      "subtitle": "From initial consultation to final purchase, we guide you through every step of finding your perfect property",
       "search": {
         "title": "Search",
         "description": "Comprehensive property search based on your criteria"

@@ -82,6 +82,7 @@
   "becomeMember": {
     "title": "Rejoignez Notre Réseau Immobilier Exclusif Hors-Marché",
     "subtitle": "Accédez à des opportunités uniques et confidentielles d'achat, location ou vente de propriétés hors-marché. Devenir membre signifie intégrer un cercle privé où confiance, discrétion et opportunités sur mesure sont prioritaires.",
+    "cta": "Demander l'Adhésion",
     "intro": "Notre adhésion est conçue pour deux profils :\n- Acheteurs et locataires qui souhaitent un accès privilégié aux propriétés hors-marché.\n- Propriétaires immobiliers qui souhaitent louer ou vendre discrètement à un public qualifié.\n\nL'adhésion est gratuite et sans engagement. Une fois votre demande soumise, un membre de notre équipe vous contactera rapidement pour comprendre vos besoins et vous guider dans les prochaines étapes.",
     "services": {
       "title": "Nos Services Hors-Marché",
@@ -130,6 +131,8 @@
     "subtitle": "Offrez votre propriété avec une discrétion totale, en dehors des canaux publics. Nous vous connectons avec des acheteurs qualifiés tout en garantissant la confidentialité complète de votre projet.",
     "cta": "Contactez-nous pour votre vente privée",
     "process": {
+      "title": "Comment Ça Marche",
+      "subtitle": "Notre processus éprouvé garantit que votre vente privée est gérée avec la plus grande discrétion et efficacité",
       "discretion": {
         "title": "Discrétion Totale",
         "description": "Votre vente reste complètement confidentielle"
@@ -204,6 +207,8 @@
     "subtitle": "Nous créons des vidéos professionnelles personnalisées pour chaque propriété : visites guidées, prises de vue drone et vidéos d'ambiance. Ces vidéos mettent en valeur l'architecture, la disposition et l'atmosphère, aidant à attirer rapidement les acheteurs sérieux.",
     "cta": "Demandez votre vidéo professionnelle",
     "process": {
+      "title": "Notre Processus de Production Vidéo",
+      "subtitle": "Du concept à la livraison finale, nous créons des vidéos époustouflantes qui mettent en valeur les caractéristiques uniques de votre propriété",
       "production": {
         "title": "Production Professionnelle",
         "description": "Tournage de haute qualité avec équipement professionnel"
@@ -278,6 +283,8 @@
     "subtitle": "Devenez membre et profitez d'un accès exclusif aux propriétés hors-marché, souvent indisponibles ailleurs. Nos propriétés sont soigneusement sélectionnées pour répondre aux besoins de nos clients, offrant des opportunités rares.",
     "cta": "Devenez membre et accédez aux propriétés exclusives",
     "process": {
+      "title": "Comment Obtenir un Accès Exclusif",
+      "subtitle": "Rejoignez notre réseau exclusif et accédez aux propriétés hors-marché les plus recherchées",
       "membership": {
         "title": "Demande d'Adhésion",
         "description": "Postulez pour un accès membre exclusif"
@@ -351,6 +358,8 @@
     "subtitle": "Nous vous guidons étape par étape pour trouver votre propriété idéale. Notre service de recherche de propriété comprend la recherche, la sélection et la négociation, vous faisant gagner du temps et vous aidant à trouver la propriété qui correspond parfaitement à vos critères.",
     "cta": "Commencez votre recherche personnalisée",
     "process": {
+      "title": "Notre Processus de Recherche de Propriété",
+      "subtitle": "De la consultation initiale à l'achat final, nous vous guidons à chaque étape pour trouver votre propriété parfaite",
       "search": {
         "title": "Recherche",
         "description": "Recherche complète de propriétés basée sur vos critères"

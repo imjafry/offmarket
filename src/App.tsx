@@ -9,6 +9,7 @@ import { PropertyProvider } from "@/contexts/PropertyContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import ScrollToTop from "@/components/ScrollToTop";
 import { HomePage } from "@/pages/Home";
 import { PropertiesPage } from "@/pages/Properties";
 import { PropertyDetailPage } from "@/pages/PropertyDetail";
@@ -45,6 +46,7 @@ const App = () => (
           <PropertyProvider>
             <NotificationProvider>
               <BrowserRouter>
+            <ScrollToTop />
             <Routes>
               {/* Admin Routes - No main layout wrapper */}
               <Route path="/admin/login" element={<AdminLoginPage />} />
