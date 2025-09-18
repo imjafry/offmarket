@@ -9,14 +9,13 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PropertyCard } from '@/components/PropertyCard';
 import { PropertyListCard } from '@/components/PropertyListCard';
-import { filterCities } from '@/data/swissCities';
+import { swissCities, filterCities } from '@/data/swissCities';
 
 export const PropertiesPage: React.FC = () => {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const { properties } = useProperties();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCity, setSelectedCity] = useState('');
   const [selectedRooms, setSelectedRooms] = useState('3.5');
   const [selectedType, setSelectedType] = useState('apartment');
   const [selectedStatus, setSelectedStatus] = useState('rent');
@@ -25,43 +24,9 @@ export const PropertiesPage: React.FC = () => {
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
-  const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
-  const [showCitySuggestions, setShowCitySuggestions] = useState(false);
-  const cityInputRef = useRef<HTMLInputElement>(null);
 
   // Get all unique features for filter options
   const allFeatures = Array.from(new Set(properties.flatMap(p => p.features)));
-
-  // Handle city input changes
-  const handleCityInput = (value: string) => {
-    setSelectedCity(value);
-    if (value.length >= 2) {
-      const suggestions = filterCities(value);
-      setCitySuggestions(suggestions);
-      setShowCitySuggestions(suggestions.length > 0);
-    } else {
-      setCitySuggestions([]);
-      setShowCitySuggestions(false);
-    }
-  };
-
-  // Handle city suggestion selection
-  const handleCitySelect = (city: string) => {
-    setSelectedCity(city);
-    setShowCitySuggestions(false);
-  };
-
-  // Close city suggestions when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (cityInputRef.current && !cityInputRef.current.contains(event.target as Node)) {
-        setShowCitySuggestions(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   // Generate room options
   const roomOptions = [];
@@ -72,11 +37,11 @@ export const PropertiesPage: React.FC = () => {
 
   // Filter properties based on search criteria
   const filteredProperties = properties.filter(property => {
-    const matchesSearch = property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = !searchTerm || 
+                         property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         property.neighborhood.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesCity = !selectedCity || property.city.toLowerCase().includes(selectedCity.toLowerCase());
+                         property.neighborhood.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         property.propertyType.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesRooms = !selectedRooms || 
                         (selectedRooms === '10+' && property.rooms >= 10) ||
@@ -106,7 +71,7 @@ export const PropertiesPage: React.FC = () => {
     const matchesFeatures = selectedFeatures.length === 0 || 
                            selectedFeatures.every(feature => property.features.includes(feature));
     
-    return matchesSearch && matchesCity && matchesRooms && matchesType && matchesStatus && matchesPrice && matchesSurface && matchesFeatures;
+    return matchesSearch && matchesRooms && matchesType && matchesStatus && matchesPrice && matchesSurface && matchesFeatures;
   });
 
   return (
@@ -136,13 +101,20 @@ export const PropertiesPage: React.FC = () => {
               transition={{ delay: 0.2 }}
               className="relative"
             >
-              <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 h-6 w-6 text-muted-foreground" />
-              <Input
-                placeholder={t('properties.search.placeholder')}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-16 py-8 text-lg rounded-2xl border-2 shadow-lg focus:shadow-2xl transition-all"
-              />
+              <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 h-6 w-6 text-muted-foreground z-10" />
+              <Select value={searchTerm} onValueChange={setSearchTerm}>
+                <SelectTrigger className="pl-16 py-8 text-lg rounded-2xl border-2 shadow-lg focus:shadow-2xl transition-all">
+                  <SelectValue placeholder="Search by city, neighbourhood or type..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">All locations</SelectItem>
+                  {swissCities.map((city) => (
+                    <SelectItem key={city} value={city.toLowerCase()}>
+                      {city}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </motion.div>
 
             {/* View Toggle and Filters Bar */}
@@ -177,34 +149,6 @@ export const PropertiesPage: React.FC = () => {
 
               {/* Filters */}
               <div className="flex flex-wrap items-center gap-3">
-                {/* City Input with Autocomplete */}
-                <div className="relative" ref={cityInputRef}>
-                  <Input
-                    placeholder={t('properties.filters.city')}
-                    value={selectedCity}
-                    onChange={(e) => handleCityInput(e.target.value)}
-                    onFocus={() => {
-                      if (citySuggestions.length > 0) {
-                        setShowCitySuggestions(true);
-                      }
-                    }}
-                    className="w-[200px]"
-                  />
-                  {showCitySuggestions && citySuggestions.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border border-border rounded-md shadow-lg max-h-60 overflow-y-auto">
-                      {citySuggestions.map((city) => (
-                        <button
-                          key={city}
-                          onClick={() => handleCitySelect(city)}
-                          className="w-full px-3 py-2 text-left hover:bg-muted focus:bg-muted focus:outline-none text-sm"
-                        >
-                          {city}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
                 {/* Status Filter */}
                 <Select value={selectedStatus} onValueChange={setSelectedStatus}>
                   <SelectTrigger className="w-[120px]">
@@ -444,7 +388,6 @@ export const PropertiesPage: React.FC = () => {
                   variant="outline" 
                   onClick={() => {
                     setSearchTerm('');
-                    setSelectedCity('');
                     setSelectedRooms('3.5');
                     setSelectedStatus('rent');
                     setSelectedType('apartment');
