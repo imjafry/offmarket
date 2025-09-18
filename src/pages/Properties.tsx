@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, SlidersHorizontal, Grid3X3, List, Filter } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Search, SlidersHorizontal, Grid3X3, List, Filter, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,23 +9,66 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PropertyCard } from '@/components/PropertyCard';
 import { PropertyListCard } from '@/components/PropertyListCard';
+import { filterCities } from '@/data/swissCities';
 
 export const PropertiesPage: React.FC = () => {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const { properties } = useProperties();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCity, setSelectedCity] = useState('all');
-  const [selectedRooms, setSelectedRooms] = useState('all');
-  const [selectedType, setSelectedType] = useState('all');
+  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedRooms, setSelectedRooms] = useState('3.5');
+  const [selectedType, setSelectedType] = useState('apartment');
+  const [selectedStatus, setSelectedStatus] = useState('rent');
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [surfaceRange, setSurfaceRange] = useState({ min: '', max: '' });
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
+  const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
+  const [showCitySuggestions, setShowCitySuggestions] = useState(false);
+  const cityInputRef = useRef<HTMLInputElement>(null);
 
   // Get all unique features for filter options
   const allFeatures = Array.from(new Set(properties.flatMap(p => p.features)));
+
+  // Handle city input changes
+  const handleCityInput = (value: string) => {
+    setSelectedCity(value);
+    if (value.length >= 2) {
+      const suggestions = filterCities(value);
+      setCitySuggestions(suggestions);
+      setShowCitySuggestions(suggestions.length > 0);
+    } else {
+      setCitySuggestions([]);
+      setShowCitySuggestions(false);
+    }
+  };
+
+  // Handle city suggestion selection
+  const handleCitySelect = (city: string) => {
+    setSelectedCity(city);
+    setShowCitySuggestions(false);
+  };
+
+  // Close city suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (cityInputRef.current && !cityInputRef.current.contains(event.target as Node)) {
+        setShowCitySuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Generate room options
+  const roomOptions = [];
+  for (let i = 1; i <= 10; i += 0.5) {
+    roomOptions.push(i.toString());
+  }
+  roomOptions.push('10+');
 
   // Filter properties based on search criteria
   const filteredProperties = properties.filter(property => {
@@ -33,12 +76,15 @@ export const PropertiesPage: React.FC = () => {
                          property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          property.neighborhood.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesCity = !selectedCity || selectedCity === 'all' || property.city.toLowerCase().includes(selectedCity.toLowerCase());
-    const matchesRooms = !selectedRooms || selectedRooms === 'all' ||
-                        (selectedRooms === '1-2' && property.rooms <= 2) ||
-                        (selectedRooms === '3-4' && property.rooms >= 3 && property.rooms <= 4) ||
-                        (selectedRooms === '5+' && property.rooms >= 5);
-    const matchesType = !selectedType || selectedType === 'all' || property.propertyType === selectedType;
+    const matchesCity = !selectedCity || property.city.toLowerCase().includes(selectedCity.toLowerCase());
+    
+    const matchesRooms = !selectedRooms || 
+                        (selectedRooms === '10+' && property.rooms >= 10) ||
+                        (selectedRooms !== '10+' && property.rooms === parseFloat(selectedRooms));
+    
+    const matchesType = !selectedType || property.propertyType === selectedType;
+    
+    const matchesStatus = !selectedStatus || property.listingType === selectedStatus;
     
     // Price range filter
     const matchesPrice = !priceRange.min && !priceRange.max || (() => {
@@ -60,7 +106,7 @@ export const PropertiesPage: React.FC = () => {
     const matchesFeatures = selectedFeatures.length === 0 || 
                            selectedFeatures.every(feature => property.features.includes(feature));
     
-    return matchesSearch && matchesCity && matchesRooms && matchesType && matchesPrice && matchesSurface && matchesFeatures;
+    return matchesSearch && matchesCity && matchesRooms && matchesType && matchesStatus && matchesPrice && matchesSurface && matchesFeatures;
   });
 
   return (
@@ -131,37 +177,65 @@ export const PropertiesPage: React.FC = () => {
 
               {/* Filters */}
               <div className="flex flex-wrap items-center gap-3">
-                <Select value={selectedCity} onValueChange={setSelectedCity}>
-                  <SelectTrigger className="w-[150px]">
-                    <SelectValue placeholder={t('properties.filters.city')} />
+                {/* City Input with Autocomplete */}
+                <div className="relative" ref={cityInputRef}>
+                  <Input
+                    placeholder={t('properties.filters.city')}
+                    value={selectedCity}
+                    onChange={(e) => handleCityInput(e.target.value)}
+                    onFocus={() => {
+                      if (citySuggestions.length > 0) {
+                        setShowCitySuggestions(true);
+                      }
+                    }}
+                    className="w-[200px]"
+                  />
+                  {showCitySuggestions && citySuggestions.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border border-border rounded-md shadow-lg max-h-60 overflow-y-auto">
+                      {citySuggestions.map((city) => (
+                        <button
+                          key={city}
+                          onClick={() => handleCitySelect(city)}
+                          className="w-full px-3 py-2 text-left hover:bg-muted focus:bg-muted focus:outline-none text-sm"
+                        >
+                          {city}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Status Filter */}
+                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t('properties.filters.allCities')}</SelectItem>
-                    <SelectItem value="lausanne">Lausanne</SelectItem>
-                    <SelectItem value="geneve">Genève</SelectItem>
-                    <SelectItem value="montreux">Montreux</SelectItem>
+                    <SelectItem value="rent">Rent</SelectItem>
+                    <SelectItem value="sale">Buy</SelectItem>
                   </SelectContent>
                 </Select>
 
+                {/* Rooms Filter */}
                 <Select value={selectedRooms} onValueChange={setSelectedRooms}>
-                  <SelectTrigger className="w-[150px]">
-                    <SelectValue placeholder={t('properties.filters.rooms')} />
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t('properties.filters.allRooms')}</SelectItem>
-                    <SelectItem value="1-2">1-2 {t('properties.rooms')}</SelectItem>
-                    <SelectItem value="3-4">3-4 {t('properties.rooms')}</SelectItem>
-                    <SelectItem value="5+">5+ {t('properties.rooms')}</SelectItem>
+                    {roomOptions.map((room) => (
+                      <SelectItem key={room} value={room}>
+                        {room} {room === '10+' ? 'rooms' : 'rooms'}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
 
-
+                {/* Property Type Filter */}
                 <Select value={selectedType} onValueChange={setSelectedType}>
                   <SelectTrigger className="w-[150px]">
-                    <SelectValue placeholder="Type" />
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Tous les types</SelectItem>
                     <SelectItem value="apartment">Appartement</SelectItem>
                     <SelectItem value="house">Maison</SelectItem>
                     <SelectItem value="villa">Villa</SelectItem>
@@ -266,7 +340,7 @@ export const PropertiesPage: React.FC = () => {
                       setPriceRange({ min: '', max: '' });
                       setSurfaceRange({ min: '', max: '' });
                       setSelectedFeatures([]);
-                      setSelectedType('all');
+                      setSelectedType('apartment');
                     }}
                     className="w-full"
                   >
@@ -370,10 +444,10 @@ export const PropertiesPage: React.FC = () => {
                   variant="outline" 
                   onClick={() => {
                     setSearchTerm('');
-                    setSelectedCity('all');
-                    setSelectedRooms('all');
-                    setSelectedStatus('all');
-                    setSelectedType('all');
+                    setSelectedCity('');
+                    setSelectedRooms('3.5');
+                    setSelectedStatus('rent');
+                    setSelectedType('apartment');
                     setPriceRange({ min: '', max: '' });
                     setSurfaceRange({ min: '', max: '' });
                     setSelectedFeatures([]);
