@@ -16,17 +16,14 @@ export const PropertiesPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const { properties } = useProperties();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedRooms, setSelectedRooms] = useState('3.5');
-  const [selectedType, setSelectedType] = useState('apartment');
-  const [selectedStatus, setSelectedStatus] = useState('rent');
+  const [selectedRooms, setSelectedRooms] = useState('');
+  const [selectedType, setSelectedType] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [surfaceRange, setSurfaceRange] = useState({ min: '', max: '' });
-  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
-
-  // Get all unique features for filter options
-  const allFeatures = Array.from(new Set(properties.flatMap(p => p.features)));
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   // Generate room options
   const roomOptions = [];
@@ -34,6 +31,20 @@ export const PropertiesPage: React.FC = () => {
     roomOptions.push(i.toString());
   }
   roomOptions.push('10+');
+
+  // Generate search suggestions
+  const searchSuggestions = [
+    'All locations',
+    ...swissCities,
+    'Appartement', 'Maison', 'Villa', 'Loft', 'Penthouse', 'Studio', 'Duplex', 'Chalet', 'Château'
+  ];
+
+  // Filter suggestions based on current search term
+  const filteredSuggestions = searchTerm 
+    ? searchSuggestions.filter(suggestion => 
+        suggestion.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : searchSuggestions;
 
   // Filter properties based on search criteria
   const filteredProperties = properties.filter(property => {
@@ -45,11 +56,11 @@ export const PropertiesPage: React.FC = () => {
     
     const matchesRooms = !selectedRooms || 
                         (selectedRooms === '10+' && property.rooms >= 10) ||
-                        (selectedRooms !== '10+' && property.rooms === parseFloat(selectedRooms));
+                        (selectedRooms !== '10+' && selectedRooms !== '' && property.rooms === parseFloat(selectedRooms));
     
-    const matchesType = !selectedType || property.propertyType === selectedType;
+    const matchesType = !selectedType || selectedType === '' || property.propertyType === selectedType;
     
-    const matchesStatus = !selectedStatus || property.listingType === selectedStatus;
+    const matchesStatus = !selectedStatus || selectedStatus === '' || property.listingType === selectedStatus;
     
     // Price range filter
     const matchesPrice = !priceRange.min && !priceRange.max || (() => {
@@ -67,11 +78,7 @@ export const PropertiesPage: React.FC = () => {
       return property.surface >= min && property.surface <= max;
     })();
     
-    // Features filter
-    const matchesFeatures = selectedFeatures.length === 0 || 
-                           selectedFeatures.every(feature => property.features.includes(feature));
-    
-    return matchesSearch && matchesRooms && matchesType && matchesStatus && matchesPrice && matchesSurface && matchesFeatures;
+    return matchesSearch && matchesRooms && matchesType && matchesStatus && matchesPrice && matchesSurface;
   });
 
   return (
@@ -102,19 +109,36 @@ export const PropertiesPage: React.FC = () => {
               className="relative"
             >
               <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 h-6 w-6 text-muted-foreground z-10" />
-              <Select value={searchTerm} onValueChange={setSearchTerm}>
-                <SelectTrigger className="pl-16 py-8 text-lg rounded-2xl border-2 shadow-lg focus:shadow-2xl transition-all">
-                  <SelectValue placeholder="Search by city, neighbourhood or type..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All locations</SelectItem>
-                  {swissCities.map((city) => (
-                    <SelectItem key={city} value={city.toLowerCase()}>
-                      {city}
-                    </SelectItem>
+              <Input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                placeholder="Search by city, neighbourhood or type..."
+                className="pl-16 py-8 text-lg rounded-2xl border-2 shadow-lg focus:shadow-2xl transition-all"
+              />
+              
+              {/* Search Suggestions Dropdown */}
+              {showSuggestions && filteredSuggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-2xl shadow-xl z-50 max-h-60 overflow-y-auto">
+                  {filteredSuggestions.slice(0, 10).map((suggestion, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        setSearchTerm(suggestion === 'All locations' ? 'all' : suggestion.toLowerCase());
+                        setShowSuggestions(false);
+                      }}
+                      className="w-full px-6 py-4 text-left hover:bg-muted/50 transition-colors first:rounded-t-2xl last:rounded-b-2xl"
+                    >
+                      <span className="text-lg">{suggestion}</span>
+                    </button>
                   ))}
-                </SelectContent>
-              </Select>
+                </div>
+              )}
             </motion.div>
 
             {/* View Toggle and Filters Bar */}
@@ -152,7 +176,7 @@ export const PropertiesPage: React.FC = () => {
                 {/* Status Filter */}
                 <Select value={selectedStatus} onValueChange={setSelectedStatus}>
                   <SelectTrigger className="w-[120px]">
-                    <SelectValue />
+                    <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="rent">Rent</SelectItem>
@@ -163,7 +187,7 @@ export const PropertiesPage: React.FC = () => {
                 {/* Rooms Filter */}
                 <Select value={selectedRooms} onValueChange={setSelectedRooms}>
                   <SelectTrigger className="w-[140px]">
-                    <SelectValue />
+                    <SelectValue placeholder="Rooms" />
                   </SelectTrigger>
                   <SelectContent>
                     {roomOptions.map((room) => (
@@ -177,7 +201,7 @@ export const PropertiesPage: React.FC = () => {
                 {/* Property Type Filter */}
                 <Select value={selectedType} onValueChange={setSelectedType}>
                   <SelectTrigger className="w-[150px]">
-                    <SelectValue />
+                    <SelectValue placeholder="Type" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="apartment">Appartement</SelectItem>
@@ -212,7 +236,7 @@ export const PropertiesPage: React.FC = () => {
               exit={{ opacity: 0, height: 0 }}
               className="mt-6 p-6 bg-muted/20 rounded-2xl border border-border"
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Price Range */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Prix (CHF)</label>
@@ -251,40 +275,18 @@ export const PropertiesPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Features */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Caractéristiques</label>
-                  <div className="max-h-32 overflow-y-auto space-y-2">
-                    {allFeatures.slice(0, 8).map((feature) => (
-                      <label key={feature} className="flex items-center space-x-2 text-sm">
-                        <input
-                          type="checkbox"
-                          checked={selectedFeatures.includes(feature)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedFeatures(prev => [...prev, feature]);
-                            } else {
-                              setSelectedFeatures(prev => prev.filter(f => f !== feature));
-                            }
-                          }}
-                          className="rounded"
-                        />
-                        <span>{feature}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
                 {/* Clear Filters */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Actions</label>
                   <Button
                     variant="outline"
                     onClick={() => {
+                      setSearchTerm('');
+                      setSelectedRooms('');
+                      setSelectedType('');
+                      setSelectedStatus('');
                       setPriceRange({ min: '', max: '' });
                       setSurfaceRange({ min: '', max: '' });
-                      setSelectedFeatures([]);
-                      setSelectedType('apartment');
                     }}
                     className="w-full"
                   >
@@ -387,13 +389,12 @@ export const PropertiesPage: React.FC = () => {
                 <Button 
                   variant="outline" 
                   onClick={() => {
-                    setSearchTerm('all');
-                    setSelectedRooms('3.5');
-                    setSelectedStatus('rent');
-                    setSelectedType('apartment');
+                    setSearchTerm('');
+                    setSelectedRooms('');
+                    setSelectedStatus('');
+                    setSelectedType('');
                     setPriceRange({ min: '', max: '' });
                     setSurfaceRange({ min: '', max: '' });
-                    setSelectedFeatures([]);
                   }}
                 >
                   {t('properties.clearFilters')}
