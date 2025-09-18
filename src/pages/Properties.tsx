@@ -37,7 +37,7 @@ export const PropertiesPage: React.FC = () => {
 
   // Filter properties based on search criteria
   const filteredProperties = properties.filter(property => {
-    const matchesSearch = !searchTerm || 
+    const matchesSearch = !searchTerm || searchTerm === 'all' ||
                          property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          property.neighborhood.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -107,7 +107,7 @@ export const PropertiesPage: React.FC = () => {
                   <SelectValue placeholder="Search by city, neighbourhood or type..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All locations</SelectItem>
+                  <SelectItem value="all">All locations</SelectItem>
                   {swissCities.map((city) => (
                     <SelectItem key={city} value={city.toLowerCase()}>
                       {city}
@@ -387,7 +387,7 @@ export const PropertiesPage: React.FC = () => {
                 <Button 
                   variant="outline" 
                   onClick={() => {
-                    setSearchTerm('');
+                    setSearchTerm('all');
                     setSelectedRooms('3.5');
                     setSelectedStatus('rent');
                     setSelectedType('apartment');
