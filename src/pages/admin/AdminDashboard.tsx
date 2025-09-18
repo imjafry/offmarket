@@ -117,7 +117,6 @@ const recentProperties = [
   {
     id: '1',
     title: 'Appartement 4.5 pièces - Lausanne Centre',
-    status: 'available',
     price: 'CHF 2\'800\'000',
     views: 45,
     date: '2024-01-15'
@@ -125,7 +124,6 @@ const recentProperties = [
   {
     id: '2',
     title: 'Villa individuelle - Cologny',
-    status: 'sold',
     price: 'CHF 4\'200\'000',
     views: 78,
     date: '2024-01-14'
@@ -133,7 +131,6 @@ const recentProperties = [
   {
     id: '3',
     title: 'Loft moderne - Genève',
-    status: 'rented',
     price: 'CHF 1\'950\'000',
     views: 32,
     date: '2024-01-13'
@@ -167,14 +164,8 @@ const recentUsers = [
   }
 ];
 
-const getStatusBadge = (status: string) => {
+const getUserStatusBadge = (status: string) => {
   switch (status) {
-    case 'available':
-      return <Badge className="bg-available text-available-foreground">Available</Badge>;
-    case 'sold':
-      return <Badge className="bg-sold text-sold-foreground">Sold</Badge>;
-    case 'rented':
-      return <Badge className="bg-rented text-rented-foreground">Rented</Badge>;
     case 'active':
       return <Badge className="bg-available text-available-foreground">Active</Badge>;
     case 'expired':
@@ -349,7 +340,9 @@ export const AdminDashboard: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      {getStatusBadge(property.status)}
+                      <Badge className="bg-primary text-primary-foreground">
+                        {property.price}
+                      </Badge>
                     </div>
                   </div>
                 ))}
@@ -398,7 +391,7 @@ export const AdminDashboard: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      {getStatusBadge(user.status)}
+                      {getUserStatusBadge(user.status)}
                     </div>
                   </div>
                 ))}

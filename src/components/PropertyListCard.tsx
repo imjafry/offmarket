@@ -24,20 +24,7 @@ export const PropertyListCard: React.FC<PropertyListCardProps> = ({
   const { isAuthenticated } = useAuth();
   const priceText = (property.price || '').trim();
   const isOnRequest = !priceText || /on\s*request|sur\s*demande/i.test(priceText);
-  const inferredListing: 'sale' | 'rent' = (property.listingType || (property.status === 'rented' ? 'rent' : 'sale')) as 'sale' | 'rent';
-
-  const getStatusBadgeClass = (status: Property['status']) => {
-    switch (status) {
-      case 'available':
-        return 'bg-available text-available-foreground';
-      case 'rented':
-        return 'bg-rented text-rented-foreground';
-      case 'sold':
-        return 'bg-sold text-sold-foreground';
-      default:
-        return 'bg-available text-available-foreground';
-    }
-  };
+  const inferredListing: 'sale' | 'rent' = (property.listingType || 'sale') as 'sale' | 'rent';
 
   return (
     <>
@@ -57,9 +44,9 @@ export const PropertyListCard: React.FC<PropertyListCardProps> = ({
           {/* Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
           
-          {/* Status Badge */}
-          <Badge className={`absolute top-4 left-4 ${getStatusBadgeClass(property.status)} px-3 py-1`}>
-            {t(`properties.status.${property.status}`)}
+          {/* Listing Type Badge */}
+          <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground px-3 py-1">
+            {inferredListing === 'rent' ? t('property.listing.rent') : t('property.listing.sale')}
           </Badge>
 
           {/* Favorite Button */}
@@ -101,6 +88,23 @@ export const PropertyListCard: React.FC<PropertyListCardProps> = ({
               <Eye className="h-4 w-4" />
               <span>45</span>
             </div>
+
+            {/* Availability Status */}
+              <div className="mb-2">
+                <Badge 
+                  variant={property.availabilityStatus === 'immediate' ? 'default' : 'secondary'}
+                  className={`text-xs px-2 py-1 ${
+                    property.availabilityStatus === 'immediate' 
+                      ? 'bg-green-100 text-green-800 border-green-200' 
+                      : 'bg-orange-100 text-orange-800 border-orange-200'
+                  }`}
+                >
+                  {property.availabilityStatus === 'immediate' 
+                    ? (t('language') === 'fr' ? 'Disponible immédiatement' : 'Available immediately')
+                    : (t('language') === 'fr' ? 'À convenir' : 'To be arranged')
+                  }
+                </Badge>
+              </div>
 
             {/* Title & Location */}
             <div className="space-y-2">

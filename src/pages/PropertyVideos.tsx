@@ -56,7 +56,7 @@ export const PropertyVideosPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-background">
             {/* Hero Banner Section */}
-            <section className="relative h-screen flex items-center justify-center overflow-hidden">
+            <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
                 {/* Background Image */}
                 <div className="absolute inset-0 z-0">
                     <img
@@ -69,7 +69,7 @@ export const PropertyVideosPage: React.FC = () => {
 
                 {/* Back Button */}
                 <div className="absolute top-8 left-8 z-20">
-                    <Link to="/become-member">
+                    <Link to="/">
                         <Button variant="ghost" size="sm" className="text-white hover:text-white hover:bg-white/10 transition-all backdrop-blur-sm">
                             <ArrowLeft className="h-4 w-4 mr-2" />
                             {t('language') === 'fr' ? 'Retour' : 'Back'}
@@ -256,75 +256,6 @@ export const PropertyVideosPage: React.FC = () => {
                 </div>
             </section>
 
-            {/* Testimonials Section */}
-            <section className="py-20 bg-background">
-                <div className="container-custom">
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                        viewport={{ once: true }}
-                        className="text-center space-y-4 mb-16"
-                    >
-                        <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground">
-                            {t('propertyVideos.testimonials.title')}
-                        </h2>
-                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                            {t('propertyVideos.testimonials.subtitle')}
-                        </p>
-                    </motion.div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {[
-                            {
-                                name: t('propertyVideos.testimonials.client1.name'),
-                                location: t('propertyVideos.testimonials.client1.location'),
-                                text: t('propertyVideos.testimonials.client1.text'),
-                                rating: 5
-                            },
-                            {
-                                name: t('propertyVideos.testimonials.client2.name'),
-                                location: t('propertyVideos.testimonials.client2.location'),
-                                text: t('propertyVideos.testimonials.client2.text'),
-                                rating: 5
-                            },
-                            {
-                                name: t('propertyVideos.testimonials.client3.name'),
-                                location: t('propertyVideos.testimonials.client3.location'),
-                                text: t('propertyVideos.testimonials.client3.text'),
-                                rating: 5
-                            }
-                        ].map((testimonial, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.8, delay: index * 0.2 }}
-                                viewport={{ once: true }}
-                                className="group"
-                            >
-                                <Card className="h-full hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50 overflow-hidden">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-primary/5 rounded-full -translate-y-16 translate-x-16 opacity-50 group-hover:opacity-70 transition-opacity"></div>
-                                    <CardContent className="p-8">
-                                        <div className="flex items-center mb-4">
-                                            {[...Array(testimonial.rating)].map((_, i) => (
-                                                <Star key={i} className="h-5 w-5 text-primary fill-current" />
-                                            ))}
-                                        </div>
-                                        <p className="text-muted-foreground leading-relaxed mb-6 italic">
-                                            "{testimonial.text}"
-                                        </p>
-                                        <div className="border-t pt-4">
-                                            <p className="font-semibold text-foreground">{testimonial.name}</p>
-                                            <p className="text-sm text-muted-foreground">{testimonial.location}</p>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </section>
 
             {/* Contact Form Section */}
             <section id="contact-form" className="py-20 bg-muted/20 relative overflow-hidden">
@@ -528,38 +459,6 @@ export const PropertyVideosPage: React.FC = () => {
                 </div>
             </section>
 
-            {/* Bottom CTA Section */}
-            <section className="py-16 bg-background border-t">
-                <div className="container-custom">
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                        viewport={{ once: true }}
-                        className="text-center max-w-2xl mx-auto"
-                    >
-                        <h3 className="text-2xl md:text-3xl font-heading font-bold text-foreground mb-6">
-                            {t('propertyVideos.bottomCta.title')}
-                        </h3>
-                        <p className="text-lg text-muted-foreground mb-8">
-                            {t('propertyVideos.bottomCta.description')}
-                        </p>
-                        <Button
-                            size="lg"
-                            className="bg-primary hover:bg-primary-hover text-primary-foreground group px-8 py-4 text-lg"
-                            onClick={() => {
-                                document.getElementById('contact-form')?.scrollIntoView({
-                                    behavior: 'smooth',
-                                    block: 'start'
-                                });
-                            }}
-                        >
-                            {t('propertyVideos.cta')}
-                            <Video className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                        </Button>
-                    </motion.div>
-                </div>
-            </section>
         </div>
     );
 };

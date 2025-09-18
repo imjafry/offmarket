@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Globe, LogOut, User } from 'lucide-react';
+import { Globe, LogOut, User, Menu, X, Phone, Mail, MapPin } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 export const Navbar: React.FC = () => {
   const { t, language, setLanguage } = useTranslation();
   const { isAuthenticated, user, logout } = useAuth();
   const location = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleLanguage = () => {
     setLanguage(language === 'fr' ? 'en' : 'fr');
@@ -42,6 +44,7 @@ export const Navbar: React.FC = () => {
     { key: 'properties', path: '/properties' },
     { key: 'services', path: '/services', scrollTo: 'services-section' },
     { key: 'becomeMember', path: '/become-member' },
+    { key: 'contact', path: '/contact' },
   ];
 
   return (
@@ -56,7 +59,7 @@ export const Navbar: React.FC = () => {
             OffMarket
           </Link>
 
-          {/* Navigation Links */}
+          {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => (
               <button
@@ -76,8 +79,8 @@ export const Navbar: React.FC = () => {
             ))}
           </div>
 
-          {/* Language Switcher & Auth */}
-          <div className="flex items-center space-x-3">
+          {/* Desktop Language Switcher & Auth */}
+          <div className="hidden md:flex items-center space-x-3">
             <Button
               variant="ghost"
               size="sm"
@@ -121,6 +124,111 @@ export const Navbar: React.FC = () => {
                 </Button>
               </Link>
             )}
+          </div>
+
+          {/* Mobile Menu */}
+          <div className="md:hidden flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleLanguage}
+              className="flex items-center space-x-1 px-2 py-2 rounded-lg hover:bg-gray-light transition-all duration-200"
+            >
+              <Globe className="h-4 w-4 text-foreground" />
+              <span className="text-xs font-medium text-foreground uppercase">
+                {language}
+              </span>
+            </Button>
+            
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="sm" className="px-2 py-2">
+                  <Menu className="h-5 w-5 text-foreground" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-80 sm:w-96">
+                <SheetHeader className="pb-4">
+                  <SheetTitle className="text-left text-xl font-heading font-bold text-foreground">
+                    OffMarket
+                  </SheetTitle>
+                </SheetHeader>
+                
+                <div className="flex flex-col space-y-4">
+                  {/* Mobile Navigation Links */}
+                  <div className="space-y-2">
+                    {navItems.map((item) => (
+                      <button
+                        key={item.key}
+                        onClick={() => {
+                          handleNavClick(item);
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 text-base font-semibold transition-all duration-300 rounded-lg group ${
+                          location.pathname === item.path 
+                            ? 'text-primary bg-primary/10' 
+                            : 'text-foreground hover:text-primary hover:bg-gray-light'
+                        }`}
+                      >
+                        {t(`navigation.${item.key}`)}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Mobile Auth Section */}
+                  <div className="pt-4 border-t border-gray-light">
+                    {isAuthenticated ? (
+                      <div className="space-y-3">
+                        <div className="flex items-center space-x-3 px-4 py-2">
+                          <User className="h-5 w-5 text-foreground" />
+                          <span className="font-medium text-foreground">{user?.username}</span>
+                        </div>
+                        <button
+                          onClick={() => {
+                            logout();
+                            setIsMobileMenuOpen(false);
+                          }}
+                          className="w-full text-left px-4 py-3 text-base font-semibold text-destructive hover:bg-destructive/10 transition-all duration-300 rounded-lg"
+                        >
+                          <LogOut className="inline h-4 w-4 mr-3" />
+                          {t('language') === 'fr' ? 'Déconnexion' : 'Logout'}
+                        </button>
+                      </div>
+                    ) : (
+                      <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full px-6 py-3 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-200 font-semibold"
+                        >
+                          {t('navigation.login')}
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
+
+                  {/* Contact Info */}
+                  <div className="pt-4 border-t border-gray-light">
+                    <h3 className="text-sm font-semibold text-foreground mb-3 px-4">
+                      {t('language') === 'fr' ? 'Contact' : 'Contact'}
+                    </h3>
+                    <div className="space-y-2 px-4">
+                      <div className="flex items-center space-x-3 text-sm text-muted-foreground">
+                        <Phone className="h-4 w-4" />
+                        <span>+41 22 123 45 67</span>
+                      </div>
+                      <div className="flex items-center space-x-3 text-sm text-muted-foreground">
+                        <Mail className="h-4 w-4" />
+                        <span>info@offmarket.ch</span>
+                      </div>
+                      <div className="flex items-center space-x-3 text-sm text-muted-foreground">
+                        <MapPin className="h-4 w-4" />
+                        <span>Rue du Rhône 12, 1204 Genève</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>

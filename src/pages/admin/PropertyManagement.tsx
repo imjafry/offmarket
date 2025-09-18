@@ -36,13 +36,12 @@ export const PropertyManagement: React.FC = () => {
   const { properties: allProperties, deleteProperty } = useProperties();
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
   const [cityFilter, setCityFilter] = useState('all');
   const [selectedProperties, setSelectedProperties] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [sortKey, setSortKey] = useState<'title' | 'status' | 'price' | 'views' | 'inquiries' | 'createdAt'>('createdAt');
+  const [sortKey, setSortKey] = useState<'title' | 'price' | 'views' | 'inquiries' | 'createdAt'>('createdAt');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
 
@@ -65,10 +64,9 @@ export const PropertyManagement: React.FC = () => {
   const filteredProperties = properties.filter(property => {
     const matchesSearch = property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          property.city.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || property.status === statusFilter;
     const matchesCity = cityFilter === 'all' || property.city.toLowerCase().includes(cityFilter.toLowerCase());
     
-    return matchesSearch && matchesStatus && matchesCity;
+    return matchesSearch && matchesCity;
   });
 
   const sortedProperties = useMemo(() => {
@@ -93,7 +91,7 @@ export const PropertyManagement: React.FC = () => {
   useEffect(() => {
     // Reset to first page when filters/search change
     setCurrentPage(1);
-  }, [searchQuery, statusFilter, cityFilter, pageSize]);
+  }, [searchQuery, cityFilter, pageSize]);
 
   const handleSelectAll = () => {
     if (selectedProperties.length === filteredProperties.length) {
@@ -126,8 +124,8 @@ export const PropertyManagement: React.FC = () => {
   };
 
   const exportCSV = () => {
-    const header = ['id','title','status','price','city','neighborhood','views','inquiries','createdAt'];
-    const rows = filteredProperties.map(p => [p.id, p.title, p.status, p.price, p.city, p.neighborhood, String((p as any).views ?? ''), String((p as any).inquiries ?? ''), (p as any).createdAt ?? '']);
+    const header = ['id','title','price','city','neighborhood','views','inquiries','createdAt'];
+    const rows = filteredProperties.map(p => [p.id, p.title, p.price, p.city, p.neighborhood, String((p as any).views ?? ''), String((p as any).inquiries ?? ''), (p as any).createdAt ?? '']);
     const csv = [header, ...rows].map(r => r.map(v => `"${String(v ?? '').replace(/"/g,'""')}"`).join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -138,18 +136,6 @@ export const PropertyManagement: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'available':
-        return <Badge className="bg-green-100 text-green-800">Available</Badge>;
-      case 'sold':
-        return <Badge className="bg-red-100 text-red-800">Sold</Badge>;
-      case 'rented':
-        return <Badge className="bg-orange-100 text-orange-800">Rented</Badge>;
-      default:
-        return <Badge variant="secondary">{status}</Badge>;
-    }
-  };
 
   return (
     <AdminLayout>
@@ -202,9 +188,9 @@ export const PropertyManagement: React.FC = () => {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Available</p>
+                  <p className="text-sm font-medium text-gray-600">Total Properties</p>
                   <p className="text-2xl font-bold text-green-600">
-                    {properties.filter(p => p.status === 'available').length}
+                    {properties.length}
                   </p>
                 </div>
                 <CheckSquare className="h-8 w-8 text-green-600" />
@@ -258,17 +244,6 @@ export const PropertyManagement: React.FC = () => {
 
               {/* Filters */}
               <div className="flex gap-4">
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-40">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="available">Available</SelectItem>
-                    <SelectItem value="sold">Sold</SelectItem>
-                    <SelectItem value="rented">Rented</SelectItem>
-                  </SelectContent>
-                </Select>
 
                 <Select value={cityFilter} onValueChange={setCityFilter}>
                   <SelectTrigger className="w-40">
@@ -350,7 +325,6 @@ export const PropertyManagement: React.FC = () => {
                       />
                     </th>
                     <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('title'); setSortDir(prev => sortKey === 'title' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Property</th>
-                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('status'); setSortDir(prev => sortKey === 'status' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Status</th>
                     <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('price'); setSortDir(prev => sortKey === 'price' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Price</th>
                     <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('views'); setSortDir(prev => sortKey === 'views' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Views</th>
                     <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('inquiries'); setSortDir(prev => sortKey === 'inquiries' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Inquiries</th>
@@ -392,15 +366,12 @@ export const PropertyManagement: React.FC = () => {
                         </div>
                       </td>
                       <td className="p-4">
-                        {getStatusBadge(property.status)}
-                      </td>
-                      <td className="p-4">
                         <span className="text-sm font-medium text-gray-900">
                           {(() => {
                             const priceText = (property.price || '').trim();
                             const isOnRequest = !priceText || /on\s*request|sur\s*demande/i.test(priceText);
                             if (isOnRequest) return (t('language') === 'fr' ? 'Sur demande' : 'On Request');
-                            const inferred = ((property as any).listingType || (property.status === 'rented' ? 'rent' : 'sale')) as 'sale' | 'rent';
+                            const inferred = ((property as any).listingType || 'sale') as 'sale' | 'rent';
                             return `${inferred === 'rent' ? (t('language') === 'fr' ? 'Location' : 'For rent') : (t('language') === 'fr' ? 'Vente' : 'For sale')} • ${priceText}`;
                           })()}
                         </span>

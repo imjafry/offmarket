@@ -30,7 +30,7 @@ export const PropertyDetailPage: React.FC = () => {
   const property = getProperty(id || '');
   const priceText = (property?.price || '').trim();
   const isOnRequest = !priceText || /on\s*request|sur\s*demande/i.test(priceText);
-  const listingType = property?.listingType || (property?.status === 'rented' ? 'rent' : 'sale');
+  const listingType = property?.listingType || 'sale';
 
   // Track view when property loads
   React.useEffect(() => {
@@ -56,18 +56,6 @@ export const PropertyDetailPage: React.FC = () => {
     );
   }
 
-  const getStatusBadgeClass = (status: string) => {
-    switch (status) {
-      case 'available':
-        return 'bg-available text-available-foreground';
-      case 'rented':
-        return 'bg-rented text-rented-foreground';
-      case 'sold':
-        return 'bg-sold text-sold-foreground';
-      default:
-        return 'bg-available text-available-foreground';
-    }
-  };
 
   // Enhanced property features with icons
   const propertyFeatures = [
@@ -178,6 +166,23 @@ export const PropertyDetailPage: React.FC = () => {
                 <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between space-y-4 lg:space-y-0">
                   {/* Left Side - Title and Location */}
                   <div className="space-y-3">
+                    {/* Availability Status */}
+                    <div>
+                      <Badge 
+                        variant={property.availabilityStatus === 'immediate' ? 'default' : 'secondary'}
+                        className={`text-sm px-3 py-1 ${
+                          property.availabilityStatus === 'immediate' 
+                            ? 'bg-green-100 text-green-800 border-green-200' 
+                            : 'bg-orange-100 text-orange-800 border-orange-200'
+                        }`}
+                      >
+                        {property.availabilityStatus === 'immediate' 
+                          ? (t('language') === 'fr' ? 'Disponible immédiatement' : 'Available immediately')
+                          : (t('language') === 'fr' ? 'À convenir' : 'To be arranged')
+                        }
+                      </Badge>
+                    </div>
+
                     <h1 className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
                       {property.title}
                     </h1>

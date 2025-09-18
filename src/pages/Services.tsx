@@ -91,7 +91,7 @@ export const ServicesPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-br from-primary/5 via-background to-primary/5">
+      <section className="relative py-12 bg-gradient-to-br from-primary/5 via-background to-primary/5">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -212,18 +212,6 @@ export const ServicesPage: React.FC = () => {
             ))}
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            viewport={{ once: true }}
-            className="text-center mt-12"
-          >
-            <Button size="lg" className="px-8 py-4 text-lg">
-              {t('language') === 'fr' ? 'Prendre Rendez-vous' : 'Schedule a Meeting'}
-              <Clock className="ml-2 h-5 w-5" />
-            </Button>
-          </motion.div>
         </div>
       </section>
     </div>

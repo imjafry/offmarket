@@ -46,10 +46,10 @@ export const PropertyForm: React.FC = () => {
     propertyType: 'apartment' as 'apartment' | 'house' | 'loft' | 'penthouse' | 'studio' | 'duplex' | 'villa' | 'chalet' | 'castle',
     rooms: '',
     surface: '',
-    status: 'available',
     listingType: 'sale' as 'sale' | 'rent',
     price: '',
     availabilityDate: '',
+    availabilityStatus: 'immediate' as 'immediate' | 'arranged',
     features: [] as string[],
     images: [] as string[],
     videoUrl: '',
@@ -79,10 +79,10 @@ export const PropertyForm: React.FC = () => {
           propertyType: property.propertyType || 'apartment',
           rooms: property.rooms.toString(),
           surface: property.surface.toString(),
-          status: property.status,
-          listingType: (property as any).listingType || (property.status === 'rented' ? 'rent' : 'sale'),
+          listingType: (property as any).listingType || 'sale',
           price: property.price || '',
           availabilityDate: property.availabilityDate || '',
+          availabilityStatus: (property as any).availabilityStatus || 'immediate',
           features: property.features,
           images: property.images,
           videoUrl: property.videoUrl || '',
@@ -178,10 +178,10 @@ export const PropertyForm: React.FC = () => {
         propertyType: formData.propertyType,
         rooms: parseFloat(formData.rooms),
         surface: parseFloat(formData.surface),
-        status: formData.status as 'available' | 'rented' | 'sold',
         listingType: formData.listingType as 'sale' | 'rent',
         price: formData.price,
         availabilityDate: formData.availabilityDate,
+        availabilityStatus: formData.availabilityStatus as 'immediate' | 'arranged',
         features: formData.features,
         images: formData.images,
         videoUrl: formData.videoUrl,
@@ -269,7 +269,7 @@ export const PropertyForm: React.FC = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="title">
                         {t('language') === 'fr' ? 'Titre' : 'Title'} *
@@ -284,22 +284,6 @@ export const PropertyForm: React.FC = () => {
                       {errors.title && (
                         <p className="text-sm text-red-500">{errors.title}</p>
                       )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="status">
-                        {t('language') === 'fr' ? 'Statut' : 'Status'} *
-                      </Label>
-                      <Select value={formData.status} onValueChange={(value) => handleInputChange('status', value)}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="available">Available</SelectItem>
-                          <SelectItem value="sold">Sold</SelectItem>
-                          <SelectItem value="rented">Rented</SelectItem>
-                        </SelectContent>
-                      </Select>
                     </div>
 
                     <div className="space-y-2">
@@ -469,16 +453,37 @@ export const PropertyForm: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="availabilityDate">
-                      {t('language') === 'fr' ? 'Disponible à partir de' : 'Available from'}
-                    </Label>
-                    <Input
-                      id="availabilityDate"
-                      type="date"
-                      value={formData.availabilityDate}
-                      onChange={(e) => handleInputChange('availabilityDate', e.target.value)}
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="availabilityDate">
+                        {t('language') === 'fr' ? 'Disponible à partir de' : 'Available from'}
+                      </Label>
+                      <Input
+                        id="availabilityDate"
+                        type="date"
+                        value={formData.availabilityDate}
+                        onChange={(e) => handleInputChange('availabilityDate', e.target.value)}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="availabilityStatus">
+                        {t('language') === 'fr' ? 'Statut de disponibilité' : 'Availability Status'}
+                      </Label>
+                      <Select value={formData.availabilityStatus} onValueChange={(value) => handleInputChange('availabilityStatus', value)}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="immediate">
+                            {t('language') === 'fr' ? 'Disponible immédiatement' : 'Available immediately'}
+                          </SelectItem>
+                          <SelectItem value="arranged">
+                            {t('language') === 'fr' ? 'À convenir' : 'To be arranged'}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

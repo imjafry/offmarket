@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Send, CheckCircle, AlertCircle, Users, Shield, Star, Home, Video, Key, Search, Lock, Camera, Play, Award } from 'lucide-react';
+import { ArrowLeft, Send, CheckCircle, AlertCircle, Users, Shield, Star, Home, Video, Key, Search, Lock, Camera, Play, Award, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -51,7 +51,7 @@ export const BecomeMemberPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Banner Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <img
@@ -73,34 +73,57 @@ export const BecomeMemberPage: React.FC = () => {
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 text-center text-white max-w-6xl mx-auto px-6">
+        <div className="relative z-10 text-center text-white max-w-6xl mx-auto px-4 sm:px-6">
+          {/* <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="mb-4"
+          >
+            <h2 className="text-lg sm:text-xl md:text-2xl font-medium text-white/90 mb-2">
+              {t('language') === 'fr' ? 'Devenir Membre' : 'Become a Member'}
+            </h2>
+          </motion.div> */}
           <motion.h1 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-5xl md:text-7xl font-heading font-bold leading-tight mb-6"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-heading font-bold leading-tight mb-4 sm:mb-6"
           >
-            {t('becomeMember.title')}
+              {t('language') === 'fr' ? 'Devenir Membre' : 'Become a Member'}
+            {/* {t('becomeMember.title')} */}
           </motion.h1>
           
           <motion.p 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl md:text-2xl mb-8 leading-relaxed max-w-4xl mx-auto"
+            className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 leading-relaxed max-w-4xl mx-auto px-2"
           >
             {t('becomeMember.subtitle')}
           </motion.p>
+          
+          {/* <motion.p 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="text-sm sm:text-base text-white/80 mb-6 sm:mb-8 leading-relaxed max-w-3xl mx-auto px-2"
+          >
+            {t('language') === 'fr' 
+              ? 'Rejoignez notre cercle exclusif et accédez aux propriétés les plus prestigieuses du marché'
+              : 'Join our exclusive circle and access the most prestigious properties on the market'
+            }
+          </motion.p> */}
 
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4"
           >
             <Button 
               size="lg" 
-              className="bg-primary hover:bg-primary-hover text-primary-foreground group px-8 py-4 text-lg"
+              className="bg-primary hover:bg-primary-hover text-primary-foreground group px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg w-full sm:w-auto"
               onClick={() => {
                 document.getElementById('membership-form')?.scrollIntoView({ 
                   behavior: 'smooth',
@@ -109,7 +132,7 @@ export const BecomeMemberPage: React.FC = () => {
               }}
             >
               {t('becomeMember.cta')}
-              <Users className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              <Users className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
           </motion.div>
         </div>
@@ -136,24 +159,24 @@ export const BecomeMemberPage: React.FC = () => {
       </section>
 
       {/* Process Steps Section */}
-      <section className="py-20 bg-background">
+      <section className="py-12 sm:py-16 lg:py-20 bg-background">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-center space-y-4 mb-16"
+            className="text-center space-y-3 sm:space-y-4 mb-12 sm:mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold text-foreground px-4">
               {t('language') === 'fr' ? 'Comment Devenir Membre' : 'How to Become a Member'}
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
               {t('language') === 'fr' ? 'Rejoignez notre réseau exclusif en quelques étapes simples' : 'Join our exclusive network in just a few simple steps'}
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -196,13 +219,13 @@ export const BecomeMemberPage: React.FC = () => {
               className="text-center group"
             >
               <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
-                <Key className="h-8 w-8 text-primary" />
+                <Phone className="h-8 w-8 text-primary" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">
-                {t('language') === 'fr' ? '3. Accès Exclusif' : '3. Exclusive Access'}
+                {t('language') === 'fr' ? '3. Appel' : '3. Call'}
               </h3>
               <p className="text-sm text-muted-foreground">
-                {t('language') === 'fr' ? 'Accédez aux propriétés hors-marché les plus exclusives' : 'Access the most exclusive off-market properties'}
+                {t('language') === 'fr' ? 'Un de nos agents vous contactera en fonction de votre profil' : 'One of our agents will contact you based on your profile'}
               </p>
             </motion.div>
           </div>
@@ -210,147 +233,10 @@ export const BecomeMemberPage: React.FC = () => {
       </section>
 
 
-      {/* Off-Market Services Section */}
-      <section className="py-8 bg-background">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center space-y-2 mb-8"
-          >
-            <h2 className="text-xl md:text-2xl font-heading font-bold text-foreground">
-              {t('becomeMember.services.title')}
-            </h2>
-            <p className="text-sm text-muted-foreground max-w-xl mx-auto">
-              {t('becomeMember.services.subtitle')}
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Private Property Sales */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-              viewport={{ once: true }}
-              className="group"
-            >
-              <Card className="h-full hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 border border-border/50 bg-gradient-to-br from-card to-card/80 overflow-hidden hover:border-primary/30 hover:-translate-y-1">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-red-500/10 to-pink-500/10 rounded-full -translate-y-12 translate-x-12 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500"></div>
-                <CardContent className="p-6 h-full flex flex-col">
-                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                    <Lock className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-heading font-bold text-foreground mb-3">
-                    {t('becomeMember.services.privateSales.title')}
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-grow">
-                    {t('becomeMember.services.privateSales.description')}
-                  </p>
-                  <Link to="/private-sales">
-                    <Button variant="outline" size="sm" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
-                      {t('becomeMember.services.privateSales.cta')}
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Property Showcase Videos */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="group"
-            >
-              <Card className="h-full hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 border border-border/50 bg-gradient-to-br from-card to-card/80 overflow-hidden hover:border-primary/30 hover:-translate-y-1">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-full -translate-y-12 translate-x-12 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500"></div>
-                <CardContent className="p-6 h-full flex flex-col">
-                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                    <Video className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-heading font-bold text-foreground mb-3">
-                    {t('becomeMember.services.videos.title')}
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-grow">
-                    {t('becomeMember.services.videos.description')}
-                  </p>
-                  <Link to="/property-videos">
-                    <Button variant="outline" size="sm" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
-                      {t('becomeMember.services.videos.cta')}
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Exclusive Access */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              viewport={{ once: true }}
-              className="group"
-            >
-              <Card className="h-full hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 border border-border/50 bg-gradient-to-br from-card to-card/80 overflow-hidden hover:border-primary/30 hover:-translate-y-1">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-full -translate-y-12 translate-x-12 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500"></div>
-                <CardContent className="p-6 h-full flex flex-col">
-                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                    <Key className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-heading font-bold text-foreground mb-3">
-                    {t('becomeMember.services.exclusiveAccess.title')}
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-grow">
-                    {t('becomeMember.services.exclusiveAccess.description')}
-                  </p>
-                  <Link to="/exclusive-access">
-                    <Button variant="outline" size="sm" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
-                      {t('becomeMember.services.exclusiveAccess.cta')}
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Personalized Assistance */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              viewport={{ once: true }}
-              className="group"
-            >
-              <Card className="h-full hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 border border-border/50 bg-gradient-to-br from-card to-card/80 overflow-hidden hover:border-primary/30 hover:-translate-y-1">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-full -translate-y-12 translate-x-12 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500"></div>
-                <CardContent className="p-6 h-full flex flex-col">
-                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                    <Search className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-heading font-bold text-foreground mb-3">
-                    {t('becomeMember.services.personalized.title')}
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-grow">
-                    {t('becomeMember.services.personalized.description')}
-                  </p>
-                  <Link to="/property-finder">
-                    <Button variant="outline" size="sm" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
-                      {t('becomeMember.services.personalized.cta')}
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
-        </div>
-      </section>
 
       {/* Membership Form Section */}
-      <section id="membership-form" className="py-8 bg-muted/20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50" />
+      <section id="membership-form" className="py-8 sm:py-12 lg:py-16 bg-muted/20 relative overflow-hidden">
+        <div className="hidden md:absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50" />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -363,17 +249,17 @@ export const BecomeMemberPage: React.FC = () => {
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-primary/80 to-primary" />
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50" />
               
-              <CardHeader className="text-center py-6 px-4">
+              <CardHeader className="text-center py-4 sm:py-6 px-4 sm:px-6">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
                   viewport={{ once: true }}
                 >
-                  <CardTitle className="text-xl md:text-2xl font-heading font-bold text-foreground mb-2">
+                  <CardTitle className="text-lg sm:text-xl md:text-2xl font-heading font-bold text-foreground mb-2">
                     {t('becomeMember.form.title')}
                   </CardTitle>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-muted-foreground text-xs sm:text-sm px-2">
                     {t('language') === 'fr' 
                       ? 'Rejoignez notre cercle exclusif en quelques étapes simples'
                       : 'Join our exclusive circle in just a few simple steps'
@@ -382,7 +268,7 @@ export const BecomeMemberPage: React.FC = () => {
                 </motion.div>
               </CardHeader>
 
-              <CardContent className="px-4 pb-6">
+              <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
                 <motion.form
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
@@ -391,7 +277,7 @@ export const BecomeMemberPage: React.FC = () => {
                   onSubmit={handleSubmit}
                   className="space-y-4"
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                     {/* Full Name */}
                     <div className="space-y-1">
                       <Label htmlFor="fullName" className="text-xs font-semibold text-foreground flex items-center">
@@ -518,7 +404,7 @@ export const BecomeMemberPage: React.FC = () => {
       </section>
 
       {/* Contact Info Footer */}
-      <section className="py-6 bg-background border-t">
+      <section className="py-6 sm:py-8 bg-background border-t">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -527,16 +413,16 @@ export const BecomeMemberPage: React.FC = () => {
             viewport={{ once: true }}
             className="text-center max-w-xl mx-auto"
           >
-            <h3 className="text-lg font-heading font-bold text-foreground mb-2">
+            <h3 className="text-base sm:text-lg font-heading font-bold text-foreground mb-2 px-4">
               {t('contact.title')}
             </h3>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-xs sm:text-sm text-muted-foreground mb-4 px-4">
               {t('language') === 'fr' 
                 ? 'Notre équipe est disponible pour répondre à vos questions et vous accompagner dans votre démarche'
                 : 'Our team is available to answer your questions and guide you through the process'
               }
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-md mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-md mx-auto px-4">
               <div className="p-3 rounded-lg bg-card border border-border/50 hover:shadow-lg hover:shadow-primary/10 hover:border-primary/30 hover:-translate-y-0.5 transition-all duration-300 group">
                 <div className="text-sm font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
                   {t('language') === 'fr' ? 'Email' : 'Email'}

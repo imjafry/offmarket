@@ -18,10 +18,10 @@ export interface Property {
   propertyType: 'apartment' | 'house' | 'loft' | 'penthouse' | 'studio' | 'duplex' | 'villa' | 'chalet' | 'castle';
   rooms: number;
   surface: number;
-  status: 'available' | 'rented' | 'sold';
   listingType?: 'sale' | 'rent';
   price?: string;
   availabilityDate?: string; // Available from date
+  availabilityStatus: 'immediate' | 'arranged'; // Required field for availability text
   images: string[];
   videoUrl?: string; // Video URL or upload
   features: string[];
@@ -54,20 +54,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 
   const priceText = (property.price || '').trim();
   const isOnRequest = !priceText || /on\s*request|sur\s*demande/i.test(priceText);
-  const listingType = property.listingType || (property.status === 'rented' ? 'rent' : 'sale');
-
-  const getStatusBadgeClass = (status: Property['status']) => {
-    switch (status) {
-      case 'available':
-        return 'bg-available text-available-foreground';
-      case 'rented':
-        return 'bg-rented text-rented-foreground';
-      case 'sold':
-        return 'bg-sold text-sold-foreground';
-      default:
-        return 'bg-available text-available-foreground';
-    }
-  };
+  const listingType = property.listingType || 'sale';
 
   return (
     <Link to={`/property/${property.id}`} className="block">
@@ -99,7 +86,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
         
         {/* Listing Type Badge (Sale / Rent) */}
-        <Badge className={`absolute top-4 left-4 ${getStatusBadgeClass(property.status)} px-3 py-1`}>
+        <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground px-3 py-1">
           {listingType === 'rent' ? t('property.listing.rent') : t('property.listing.sale')}
         </Badge>
 
@@ -182,6 +169,23 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 
       {/* Property Content */}
       <div className="p-6 space-y-4">
+
+        {/* Availability Status */}
+        <div className="mb-2">
+          <Badge 
+            variant={property.availabilityStatus === 'immediate' ? 'default' : 'secondary'}
+            className={`text-xs px-2 py-1 ${
+              property.availabilityStatus === 'immediate' 
+                ? 'bg-green-100 text-green-800 border-green-200' 
+                : 'bg-orange-100 text-orange-800 border-orange-200'
+            }`}
+          >
+            {property.availabilityStatus === 'immediate' 
+              ? (t('language') === 'fr' ? 'Disponible immédiatement' : 'Available immediately')
+              : (t('language') === 'fr' ? 'À convenir' : 'To be arranged')
+            }
+          </Badge>
+        </div>
 
         {/* Title & Location */}
         <div className="space-y-2">

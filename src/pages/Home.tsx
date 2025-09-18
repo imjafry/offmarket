@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Play, Home, Users, Award } from 'lucide-react';
+import { ArrowRight, Play, Home, Users, Award, Lock, Video, Key, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
@@ -234,6 +234,159 @@ export const HomePage: React.FC = () => {
                 </div>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Off-Market Services Section */}
+      <section className="section-padding bg-background">
+        <div className="container-custom">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center space-y-4 mb-16"
+          >
+            <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground">
+              {t('language') === 'fr' ? 'Nos Services Hors-Marché' : 'Our Off-Market Services'}
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              {t('language') === 'fr' 
+                ? 'Solutions complètes pour tous vos besoins immobiliers'
+                : 'Comprehensive solutions for all your real estate needs'
+              }
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Private Property Sales */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              viewport={{ once: true }}
+              className="group"
+            >
+              <div className="h-full hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 border border-border/50 bg-gradient-to-br from-card to-card/80 overflow-hidden hover:border-primary/30 hover:-translate-y-1 rounded-2xl p-8">
+                <div className="hidden md:block absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-red-500/10 to-pink-500/10 rounded-full -translate-y-12 translate-x-12 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500"></div>
+                <div className="relative">
+                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                    <Lock className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-heading font-bold text-foreground mb-3">
+                    {t('language') === 'fr' ? 'Ventes Privées de Propriétés' : 'Private Property Sales'}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed mb-6">
+                    {t('language') === 'fr' 
+                      ? 'Pour les propriétaires souhaitant vendre avec une discrétion totale. Connexion avec des acheteurs qualifiés sans mise en ligne publique.'
+                      : 'For owners wishing to sell with complete discretion. Connection with qualified buyers without public listing.'
+                    }
+                  </p>
+                  <Link to="/private-sales">
+                    <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
+                      {t('language') === 'fr' ? 'Contactez-nous pour votre vente privée' : 'Contact us for your private sale'}
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Property Showcase Videos */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="group"
+            >
+              <div className="h-full hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 border border-border/50 bg-gradient-to-br from-card to-card/80 overflow-hidden hover:border-primary/30 hover:-translate-y-1 rounded-2xl p-8">
+                <div className="hidden md:block absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-full -translate-y-12 translate-x-12 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500"></div>
+                <div className="relative">
+                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                    <Video className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-heading font-bold text-foreground mb-3">
+                    {t('language') === 'fr' ? 'Vidéos de Présentation de Propriétés' : 'Property Showcase Videos'}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed mb-6">
+                    {t('language') === 'fr' 
+                      ? 'Création de vidéos professionnelles : visite guidée, prises de vue drone, ambiance. Mise en valeur des caractéristiques clés de la propriété pour attirer les acheteurs sérieux.'
+                      : 'Creation of professional videos: guided tour, drone shots, ambiance. Highlighting the key features of the property to attract serious buyers.'
+                    }
+                  </p>
+                  <Link to="/property-videos">
+                    <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
+                      {t('language') === 'fr' ? 'Demandez votre vidéo professionnelle' : 'Request your professional video'}
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Exclusive Access */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="group"
+            >
+              <div className="h-full hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 border border-border/50 bg-gradient-to-br from-card to-card/80 overflow-hidden hover:border-primary/30 hover:-translate-y-1 rounded-2xl p-8">
+                <div className="hidden md:block absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-full -translate-y-12 translate-x-12 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500"></div>
+                <div className="relative">
+                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                    <Key className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-heading font-bold text-foreground mb-3">
+                    {t('language') === 'fr' ? 'Accès Exclusif' : 'Exclusive Access'}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed mb-6">
+                    {t('language') === 'fr' 
+                      ? 'Accédez aux propriétés hors-marché les plus exclusives et confidentielles. Un accès privilégié réservé à nos membres les plus fidèles.'
+                      : 'Access the most exclusive and confidential off-market properties. Privileged access reserved for our most loyal members.'
+                    }
+                  </p>
+                  <Link to="/exclusive-access">
+                    <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
+                      {t('language') === 'fr' ? 'Découvrir l\'accès exclusif' : 'Discover exclusive access'}
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Personalized Assistance */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="group"
+            >
+              <div className="h-full hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 border border-border/50 bg-gradient-to-br from-card to-card/80 overflow-hidden hover:border-primary/30 hover:-translate-y-1 rounded-2xl p-8">
+                <div className="hidden md:block absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-full -translate-y-12 translate-x-12 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500"></div>
+                <div className="relative">
+                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                    <Search className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-heading font-bold text-foreground mb-3">
+                    {t('language') === 'fr' ? 'Assistance Personnalisée' : 'Personalized Assistance'}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed mb-6">
+                    {t('language') === 'fr' 
+                      ? 'Un accompagnement sur mesure pour trouver la propriété parfaite selon vos critères spécifiques. Notre équipe d\'experts vous guide à chaque étape.'
+                      : 'Tailored support to find the perfect property according to your specific criteria. Our team of experts guides you through every step.'
+                    }
+                  </p>
+                  <Link to="/property-finder">
+                    <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
+                      {t('language') === 'fr' ? 'Trouver ma propriété idéale' : 'Find my ideal property'}
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>

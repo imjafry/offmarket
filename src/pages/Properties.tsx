@@ -17,7 +17,6 @@ export const PropertiesPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCity, setSelectedCity] = useState('all');
   const [selectedRooms, setSelectedRooms] = useState('all');
-  const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedType, setSelectedType] = useState('all');
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [surfaceRange, setSurfaceRange] = useState({ min: '', max: '' });
@@ -39,7 +38,6 @@ export const PropertiesPage: React.FC = () => {
                         (selectedRooms === '1-2' && property.rooms <= 2) ||
                         (selectedRooms === '3-4' && property.rooms >= 3 && property.rooms <= 4) ||
                         (selectedRooms === '5+' && property.rooms >= 5);
-    const matchesStatus = !selectedStatus || selectedStatus === 'all' || property.status === selectedStatus;
     const matchesType = !selectedType || selectedType === 'all' || property.propertyType === selectedType;
     
     // Price range filter
@@ -62,7 +60,7 @@ export const PropertiesPage: React.FC = () => {
     const matchesFeatures = selectedFeatures.length === 0 || 
                            selectedFeatures.every(feature => property.features.includes(feature));
     
-    return matchesSearch && matchesCity && matchesRooms && matchesStatus && matchesType && matchesPrice && matchesSurface && matchesFeatures;
+    return matchesSearch && matchesCity && matchesRooms && matchesType && matchesPrice && matchesSurface && matchesFeatures;
   });
 
   return (
@@ -157,17 +155,6 @@ export const PropertiesPage: React.FC = () => {
                   </SelectContent>
                 </Select>
 
-                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                  <SelectTrigger className="w-[150px]">
-                    <SelectValue placeholder={t('properties.filters.status')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t('properties.filters.allStatus')}</SelectItem>
-                    <SelectItem value="available">{t('properties.status.available')}</SelectItem>
-                    <SelectItem value="rented">{t('properties.status.rented')}</SelectItem>
-                    <SelectItem value="sold">{t('properties.status.sold')}</SelectItem>
-                  </SelectContent>
-                </Select>
 
                 <Select value={selectedType} onValueChange={setSelectedType}>
                   <SelectTrigger className="w-[150px]">
