@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserPlus, ArrowLeft, AlertCircle } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 export const RegisterPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { signup } = useAuth();
+  const { signup, isAuthenticated, user } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,6 +19,14 @@ export const RegisterPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Redirect if user is already logged in
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      console.log('User already logged in, redirecting to home page');
+      navigate('/');
+    }
+  }, [isAuthenticated, user, navigate]);
 
   // Password strength indicator
   const getPasswordStrength = (password: string) => {

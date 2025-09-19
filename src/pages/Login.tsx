@@ -12,19 +12,27 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export const LoginPage: React.FC = () => {
   const { t } = useTranslation();
-  const { login } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { loginSuccess, redirectPath } = useAppSelector((state) => state.auth);
+  const { loginSuccess, redirectPath, user: reduxUser } = useAppSelector((state) => state.auth);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Redirect if user is already logged in
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      console.log('User already logged in, redirecting to home page');
+      navigate('/');
+    }
+  }, [isAuthenticated, user, navigate]);
+
   // Handle redirect after successful login
   useEffect(() => {
     if (loginSuccess) {
-      const targetPath = redirectPath || '/properties';
+      const targetPath = redirectPath || '/dashboard';
       console.log('Login successful, redirecting to:', targetPath);
       navigate(targetPath);
       dispatch(clearLoginSuccess());
@@ -54,7 +62,7 @@ export const LoginPage: React.FC = () => {
     
     try {
       console.log('Starting login with:', { email, passwordLength: password.length });
-      const result = await login(email, password, '/properties');
+      const result = await login(email, password, '/dashboard');
       console.log('Login result:', result);
       
       if (result.success) {

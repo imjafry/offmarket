@@ -1,12 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
+import { useAuth } from '@/contexts/AuthContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 export const ForgotPasswordPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState('');
+
+  // Redirect if user is already logged in
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      console.log('User already logged in, redirecting to home page');
+      navigate('/');
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();

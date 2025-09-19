@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Globe, LogOut, User, Menu, X, Phone, Mail, MapPin } from 'lucide-react';
+import { Globe, LogOut, User, Menu, X, Phone, Mail, MapPin, Settings, Heart, Bell, BarChart3 } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -98,15 +98,58 @@ export const Navbar: React.FC = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="flex items-center space-x-2 px-4 py-2 border-border text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-200">
                     <User className="h-4 w-4" />
-                    <span className="font-medium">{user?.username}</span>
+                    <span className="font-medium uppercase">{user?.username ? user?.username : user?.email?.split('@')[0]}</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem className="px-4 py-2">
-                    <User className="mr-3 h-4 w-4" />
-                    {t('language') === 'fr' ? 'Profil' : 'Profile'}
-                  </DropdownMenuItem>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="px-3 py-2 border-b">
+                    <p className="text-sm font-medium text-foreground uppercase">
+                      {user?.username ? user?.username : user?.email?.split('@')[0] || 'User'}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {user?.email}
+                    </p>
+                  </div>
+                  
+                  <Link to="/dashboard">
+                    <DropdownMenuItem className="px-4 py-2">
+                      <BarChart3 className="mr-3 h-4 w-4" />
+                      {t('language') === 'fr' ? 'Tableau de bord' : 'Dashboard'}
+                    </DropdownMenuItem>
+                  </Link>
+                  
+                  <Link to="/profile">
+                    <DropdownMenuItem className="px-4 py-2">
+                      <User className="mr-3 h-4 w-4" />
+                      {t('language') === 'fr' ? 'Mon Profil' : 'My Profile'}
+                    </DropdownMenuItem>
+                  </Link>
+                  
+                  <Link to="/favorites">
+                    <DropdownMenuItem className="px-4 py-2">
+                      <Heart className="mr-3 h-4 w-4" />
+                      {t('language') === 'fr' ? 'Mes Favoris' : 'My Favorites'}
+                    </DropdownMenuItem>
+                  </Link>
+                  
+                  <Link to="/alerts">
+                    <DropdownMenuItem className="px-4 py-2">
+                      <Bell className="mr-3 h-4 w-4" />
+                      {t('language') === 'fr' ? 'Mes Alertes' : 'My Alerts'}
+                    </DropdownMenuItem>
+                  </Link>
+                  
                   <DropdownMenuSeparator />
+                  
+                  <Link to="/settings">
+                    <DropdownMenuItem className="px-4 py-2">
+                      <Settings className="mr-3 h-4 w-4" />
+                      {t('language') === 'fr' ? 'Paramètres' : 'Settings'}
+                    </DropdownMenuItem>
+                  </Link>
+                  
+                  <DropdownMenuSeparator />
+                  
                   <DropdownMenuItem onClick={logout} className="px-4 py-2 text-destructive hover:bg-destructive/10">
                     <LogOut className="mr-3 h-4 w-4" />
                     {t('language') === 'fr' ? 'Déconnexion' : 'Logout'}

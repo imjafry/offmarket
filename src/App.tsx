@@ -4,7 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Provider } from 'react-redux';
-import { store } from '@/store';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from '@/store';
 import { TranslationProvider } from "@/components/TranslationProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { PropertyProvider } from "@/contexts/PropertyContext";
@@ -24,6 +25,10 @@ import { PrivateSalesPage } from "@/pages/PrivateSales";
 import { PropertyVideosPage } from "@/pages/PropertyVideos";
 import { ExclusiveAccessPage } from "@/pages/ExclusiveAccess";
 import { AccessExpiredPage } from "@/pages/AccessExpired";
+import { UserDashboard } from "@/pages/UserDashboard";
+import { UserProfilePage } from "@/pages/UserProfile";
+import { UserSettings } from "@/pages/UserSettings";
+import PropertyAlertsPage from "@/pages/PropertyAlerts";
 import { TermsPage } from "@/pages/legal/Terms";
 import { PrivacyPage } from "@/pages/legal/Privacy";
 import { NoticesPage } from "@/pages/legal/Notices";
@@ -53,14 +58,20 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <Provider store={store}>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <TranslationProvider>
-          <AuthProvider>
-            <PropertyProvider>
-              <FavoritesProvider>
-                <NotificationProvider>
-                  <BrowserRouter>
+    <PersistGate loading={<div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-center">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-muted-foreground">Restoring your session...</p>
+      </div>
+    </div>} persistor={persistor}>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <TranslationProvider>
+            <AuthProvider>
+              <PropertyProvider>
+                <FavoritesProvider>
+                  <NotificationProvider>
+                    <BrowserRouter>
               <ScrollToTop />
               <Routes>
                 {/* Admin Routes - No main layout wrapper */}
@@ -101,6 +112,12 @@ const App = () => (
                         <Route path="/reset-password" element={<ResetPasswordPage />} />
                         <Route path="/confirm-email" element={<EmailConfirmationHandler />} />
                         <Route path="/access-expired" element={<AccessExpiredPage />} />
+                        
+                        {/* User Panel Routes */}
+                        <Route path="/dashboard" element={<UserDashboard />} />
+                        <Route path="/profile" element={<UserProfilePage />} />
+                        <Route path="/settings" element={<UserSettings />} />
+                        <Route path="/alerts" element={<PropertyAlertsPage />} />
                         <Route path="/legal/terms" element={<TermsPage />} />
                         <Route path="/legal/privacy" element={<PrivacyPage />} />
                         <Route path="/legal/notices" element={<NoticesPage />} />
@@ -114,14 +131,15 @@ const App = () => (
               </Routes>
               <Toaster />
               <Sonner />
-                  </BrowserRouter>
-                </NotificationProvider>
-              </FavoritesProvider>
-            </PropertyProvider>
-          </AuthProvider>
-        </TranslationProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
+                    </BrowserRouter>
+                  </NotificationProvider>
+                </FavoritesProvider>
+              </PropertyProvider>
+            </AuthProvider>
+          </TranslationProvider>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </PersistGate>
   </Provider>
 );
 

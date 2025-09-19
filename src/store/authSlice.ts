@@ -8,6 +8,7 @@ export interface UserProfile {
   subscriptionExpiry: string; // ISO date string
   isActive: boolean;
   isAdmin?: boolean;
+  avatar_url?: string | null;
 }
 
 interface AuthState {
@@ -54,6 +55,14 @@ const authSlice = createSlice({
       state.loginSuccess = false;
       state.redirectPath = null;
     },
+    clearAuth: (state) => {
+      state.user = null;
+      state.isAuthenticated = false;
+      state.isAdmin = false;
+      state.isLoading = false;
+      state.loginSuccess = false;
+      state.redirectPath = null;
+    },
     clearLoginSuccess: (state) => {
       state.loginSuccess = false;
       state.redirectPath = null;
@@ -62,6 +71,24 @@ const authSlice = createSlice({
       state.redirectPath = action.payload;
     },
   },
+  extraReducers: (builder) => {
+    // Handle rehydration from Redux Persist
+    builder.addCase('persist/REHYDRATE', (state, action: any) => {
+      console.log('Auth slice: Rehydrating from storage:', action.payload);
+      if (action.payload?.auth) {
+        const persistedAuth = action.payload.auth;
+        console.log('Auth slice: Restored auth state:', persistedAuth);
+        // Don't override if we already have data
+        if (!state.user && persistedAuth.user) {
+          state.user = persistedAuth.user;
+          state.isAuthenticated = persistedAuth.isAuthenticated;
+          state.isAdmin = persistedAuth.isAdmin;
+          state.loginSuccess = false; // Reset login success on rehydration
+          state.redirectPath = null; // Reset redirect path on rehydration
+        }
+      }
+    });
+  },
 });
 
 export const { 
@@ -69,6 +96,7 @@ export const {
   setLoading, 
   loginSuccess, 
   logout, 
+  clearAuth,
   clearLoginSuccess, 
   setRedirectPath 
 } = authSlice.actions;

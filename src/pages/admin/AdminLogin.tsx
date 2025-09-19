@@ -15,7 +15,7 @@ export const AdminLoginPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { login, user: ctxUser } = useAuth();
+  const { login, user: ctxUser, isAuthenticated } = useAuth();
   const { loginSuccess, redirectPath, isAdmin } = useAppSelector((state) => state.auth);
   const [formData, setFormData] = useState({
     email: '',
@@ -24,6 +24,14 @@ export const AdminLoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Redirect if user is already logged in
+  useEffect(() => {
+    if (isAuthenticated && ctxUser) {
+      console.log('User already logged in, redirecting to home page');
+      navigate('/');
+    }
+  }, [isAuthenticated, ctxUser, navigate]);
 
   // Handle redirect after successful login
   useEffect(() => {

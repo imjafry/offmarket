@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { setUser, setLoading, loginSuccess, logout as logoutAction, clearLoginSuccess } from '@/store/authSlice';
+import { setUser, setLoading, loginSuccess, logout as logoutAction, clearAuth, clearLoginSuccess } from '@/store/authSlice';
 
 interface ProfileRow {
   id: string;
@@ -11,6 +11,7 @@ interface ProfileRow {
   subscription_expiry: string;
   is_active: boolean;
   is_admin: boolean;
+  avatar_url: string | null;
 }
 
 interface UserProfile {
@@ -49,7 +50,7 @@ async function fetchUserProfile(userId: string): Promise<UserProfile | null> {
     // Add timeout to prevent hanging
     const queryPromise = supabase
       .from('profiles')
-      .select('id, username, email, subscription_type, subscription_expiry, is_active, is_admin')
+      .select('id, username, email, subscription_type, subscription_expiry, is_active, is_admin, avatar_url')
       .eq('id', userId)
       .maybeSingle();
     
@@ -80,6 +81,7 @@ async function fetchUserProfile(userId: string): Promise<UserProfile | null> {
       subscriptionExpiry: profile.subscription_expiry ?? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 1 year from now
       isActive: Boolean(profile.is_active ?? true),
       isAdmin: Boolean(profile.is_admin ?? false),
+      avatar_url: profile.avatar_url ?? null,
     };
     console.log('Profile processed:', result);
     return result;
@@ -92,14 +94,82 @@ async function fetchUserProfile(userId: string): Promise<UserProfile | null> {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const dispatch = useAppDispatch();
   const { user, isAuthenticated, isAdmin, isLoading } = useAppSelector((state) => state.auth);
+  
+  // Check if Redux Persist has rehydrated
+  const isRehydrated = useAppSelector((state) => state._persist?.rehydrated);
+  
+  // Debug logging
+  useEffect(() => {
+    console.log('AuthProvider: State changed:', { 
+      user: user?.id, 
+      isAuthenticated, 
+      isAdmin, 
+      isLoading, 
+      isRehydrated 
+    });
+  }, [user, isAuthenticated, isAdmin, isLoading, isRehydrated]);
+
+  // Debug logging for user data changes
+  useEffect(() => {
+    console.log('AuthProvider: User data changed:', { 
+      userId: user?.id,
+      username: user?.username,
+      email: user?.email,
+      isAuthenticated,
+      isAdmin
+    });
+  }, [user?.id, user?.username, user?.email, isAuthenticated, isAdmin]);
 
   // Initialize session and subscribe to auth changes
   useEffect(() => {
+    // Don't run until Redux Persist has rehydrated
+    if (!isRehydrated) {
+      console.log('AuthProvider: Waiting for Redux Persist rehydration...');
+      return;
+    }
+
     let mounted = true;
+    let validationTimeout: NodeJS.Timeout;
 
     const init = async () => {
       console.log('AuthProvider: Initializing...');
+      console.log('AuthProvider: Current user from Redux:', user);
+      console.log('AuthProvider: isRehydrated:', isRehydrated);
+      
+      // If we already have a user from persistence, just validate the session
+      if (user) {
+        console.log('AuthProvider: User already exists from persistence, validating session...');
+        
+        // Add a small delay to prevent race conditions
+        validationTimeout = setTimeout(async () => {
+          try {
+            const { data: sessionResult } = await supabase.auth.getSession();
+            const session = sessionResult?.session ?? null;
+            
+            // Only clear user if session is completely invalid or user ID doesn't match
+            // Don't clear on temporary session issues
+            if (session?.user?.id && session.user.id !== user.id) {
+              console.log('AuthProvider: Session user ID mismatch, clearing user');
+              dispatch(setUser(null));
+            } else if (!session?.user?.id) {
+              console.log('AuthProvider: No active session, but keeping user for now (may be temporary)');
+              // Don't clear user immediately - let the auth state change handler deal with it
+            } else {
+              console.log('AuthProvider: Session valid, keeping user');
+            }
+          } catch (error) {
+            console.error('AuthProvider: Session validation error:', error);
+            // Don't clear user on validation errors - might be temporary network issues
+            console.log('AuthProvider: Keeping user despite validation error');
+          }
+        }, 1000); // 1 second delay
+        
+        return;
+      }
+      
+      // No user from persistence, try to get session
       dispatch(setLoading(true));
+      
       try {
         const { data: sessionResult } = await supabase.auth.getSession();
         const session = sessionResult?.session ?? null;
@@ -114,11 +184,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         } else {
           console.log('AuthProvider: No user session');
-          if (mounted) dispatch(setUser(null));
         }
       } catch (error) {
         console.error('AuthProvider: Initialization error:', error);
-        if (mounted) dispatch(setUser(null));
       } finally {
         if (mounted) {
           console.log('AuthProvider: Initialization complete');
@@ -130,23 +198,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     init();
 
     const { data: subscription } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.id);
+      
       if (!session?.user?.id) {
-        dispatch(setUser(null));
+        // Only clear if we had a user before
+        if (user) {
+          dispatch(clearAuth());
+        }
         return;
       }
       
-      // Handle email confirmation
+      // Handle email confirmation and token refresh
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         const profile = await fetchUserProfile(session.user.id);
         dispatch(setUser(profile));
+      }
+      
+      // Handle sign out
+      if (event === 'SIGNED_OUT') {
+        dispatch(clearAuth());
       }
     });
 
     return () => {
       mounted = false;
+      if (validationTimeout) {
+        clearTimeout(validationTimeout);
+      }
       subscription.subscription.unsubscribe();
     };
-  }, []);
+  }, [dispatch, isRehydrated]);
 
   const login = async (usernameOrEmail: string, password: string, redirectPath?: string): Promise<{ success: boolean; error?: string; needsConfirmation?: boolean }> => {
     console.log('AuthContext login called with:', { usernameOrEmail, passwordLength: password.length });
@@ -334,7 +415,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       await supabase.auth.signOut();
       // Clear all Redux auth data
-      dispatch(logoutAction());
+      dispatch(clearAuth());
       console.log('User logged out and Redux data cleared');
     } finally {
       dispatch(setLoading(false));
