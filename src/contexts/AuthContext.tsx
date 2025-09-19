@@ -194,9 +194,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           if (error.message?.includes('Invalid login credentials')) {
             return { success: false, error: 'Invalid email or password' };
           }
-          if (error.message?.includes('Too many requests')) {
-            return { success: false, error: 'Too many login attempts. Please try again later.' };
-          }
           return { success: false, error: error.message || 'Login failed. Please check your credentials.' };
         }
 
@@ -236,6 +233,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (!isValid) {
           console.log('Subscription invalid');
           return { success: false, error: 'Subscription expired or account inactive' };
+        }
+
+        // Check if user is admin trying to login to regular user area
+        if (profile.isAdmin && !redirectPath?.includes('/admin')) {
+          console.log('Admin user trying to access regular user area');
+          return { success: false, error: 'User not found' };
         }
 
         console.log('Dispatching login success to Redux');
@@ -330,7 +333,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch(setLoading(true));
     try {
       await supabase.auth.signOut();
+      // Clear all Redux auth data
       dispatch(logoutAction());
+      console.log('User logged out and Redux data cleared');
     } finally {
       dispatch(setLoading(false));
     }

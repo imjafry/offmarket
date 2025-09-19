@@ -28,15 +28,17 @@ export const AdminLoginPage: React.FC = () => {
   // Handle redirect after successful login
   useEffect(() => {
     if (loginSuccess) {
-      const targetPath = redirectPath || '/admin/dashboard';
-      console.log('Admin login successful, redirecting to:', targetPath);
+      console.log('Admin login successful, checking admin status...');
       
       // Check if user is admin
       if (isAdmin) {
+        const targetPath = redirectPath || '/admin/dashboard';
+        console.log('User is admin, redirecting to:', targetPath);
         navigate(targetPath);
         dispatch(clearLoginSuccess());
       } else {
-        setError(t('language') === 'fr' ? "Accès administrateur requis" : 'Administrator access required');
+        console.log('User is not admin, showing error');
+        setError(t('language') === 'fr' ? "Accès administrateur requis. Vous n'êtes pas autorisé à accéder à cette zone." : 'Administrator access required. You are not authorized to access this area.');
         dispatch(clearLoginSuccess());
       }
     }
