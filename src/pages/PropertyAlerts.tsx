@@ -78,20 +78,34 @@ const PropertyAlertsPage: React.FC = () => {
       return;
     }
 
-    if (!isAuthenticated || !currentUser) {
+    // Only redirect to login if we're definitely not authenticated
+    // Don't redirect during state updates or if we have user data
+    if (!isAuthenticated && !currentUser) {
       console.log('PropertyAlerts: Not authenticated, redirecting to login');
       navigate('/login');
       return;
     }
 
-    console.log('PropertyAlerts: User authenticated, fetching alerts');
-    fetchAlerts();
+    // Only fetch alerts if we have a valid user
+    if (currentUser) {
+      console.log('PropertyAlerts: User authenticated, fetching alerts');
+      fetchAlerts();
+    }
   }, [isAuthenticated, currentUser, authLoading, navigate]);
+
+  // Separate effect to handle auth state changes without causing redirects
+  useEffect(() => {
+    // Only fetch alerts when we have a user and are not loading
+    if (currentUser && !authLoading && !isLoading) {
+      fetchAlerts();
+    }
+  }, [currentUser, authLoading]);
 
   const fetchAlerts = async () => {
     if (!currentUser) return;
     
     setIsLoading(true);
+    setError(''); // Clear any previous errors
     try {
       const { data, error } = await supabase
         .from('property_alerts')
@@ -99,7 +113,12 @@ const PropertyAlertsPage: React.FC = () => {
         .eq('user_id', currentUser.id)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching alerts:', error);
+        // Don't throw error, just set it in state to prevent logout
+        setError(t('language') === 'fr' ? 'Erreur lors du chargement des alertes' : 'Error loading alerts');
+        return;
+      }
       setAlerts(data || []);
     } catch (err: any) {
       console.error('Error fetching alerts:', err);

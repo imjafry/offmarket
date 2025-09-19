@@ -200,23 +200,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const { data: subscription } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, session?.user?.id);
       
+      // Handle sign out explicitly
+      if (event === 'SIGNED_OUT') {
+        dispatch(clearAuth());
+        return;
+      }
+      
       if (!session?.user?.id) {
-        // Only clear if we had a user before
-        if (user) {
-          dispatch(clearAuth());
+        // Only clear if we had a user before and this is not a temporary session issue
+        if (user && event !== 'TOKEN_REFRESHED') {
+          console.log('No session user, but keeping user for now to prevent logout');
+          // Don't clear immediately - might be temporary network issue
         }
         return;
       }
       
       // Handle email confirmation and token refresh
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        const profile = await fetchUserProfile(session.user.id);
-        dispatch(setUser(profile));
-      }
-      
-      // Handle sign out
-      if (event === 'SIGNED_OUT') {
-        dispatch(clearAuth());
+        try {
+          const profile = await fetchUserProfile(session.user.id);
+          if (profile) {
+            dispatch(setUser(profile));
+          }
+        } catch (error) {
+          console.error('Error fetching profile on auth state change:', error);
+          // Don't clear user on profile fetch errors
+        }
       }
     });
 

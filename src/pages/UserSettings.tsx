@@ -62,19 +62,24 @@ export const UserSettings: React.FC = () => {
   const [deletePassword, setDeletePassword] = useState('');
 
   useEffect(() => {
-    if (!isAuthenticated || !user) {
+    // Only redirect to login if we're definitely not authenticated
+    // Don't redirect during state updates or if we have user data
+    if (!isAuthenticated && !user) {
       navigate('/login');
       return;
     }
 
-    // Initialize settings with current language
-    setSettings(prev => ({
-      ...prev,
-      preferences: {
-        ...prev.preferences,
-        language: language
-      }
-    }));
+    // Only initialize settings if we have a valid user
+    if (user) {
+      // Initialize settings with current language
+      setSettings(prev => ({
+        ...prev,
+        preferences: {
+          ...prev.preferences,
+          language: language
+        }
+      }));
+    }
   }, [isAuthenticated, user, navigate, language]);
 
   const handleNotificationChange = (key: string, value: boolean) => {
@@ -207,8 +212,16 @@ export const UserSettings: React.FC = () => {
     }
   };
 
-  if (!isAuthenticated || !user) {
-    return null;
+  // Only show loading or redirect if we truly have no user data
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

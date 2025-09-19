@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  User, 
-  Heart, 
-  Eye, 
-  Search, 
-  Settings, 
-  Bell, 
+import {
+  User,
+  Heart,
+  Eye,
+  Search,
+  Settings,
+  Bell,
   Calendar,
   TrendingUp,
   Star,
@@ -74,24 +74,13 @@ export const UserDashboard: React.FC = () => {
     }
   }, [isAuthenticated, user]);
 
-  if (!isAuthenticated || !user) {
+  // Only show loading or redirect if we truly have no user data
+  if (!user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">
-            {t('language') === 'fr' ? 'Accès non autorisé' : 'Unauthorized Access'}
-          </h1>
-          <p className="text-muted-foreground mb-6">
-            {t('language') === 'fr' 
-              ? 'Veuillez vous connecter pour accéder à votre tableau de bord.'
-              : 'Please log in to access your dashboard.'
-            }
-          </p>
-          <Link to="/login">
-            <Button>
-              {t('language') === 'fr' ? 'Se connecter' : 'Login'}
-            </Button>
-          </Link>
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
@@ -101,7 +90,7 @@ export const UserDashboard: React.FC = () => {
     const expiryDate = new Date(user.subscriptionExpiry);
     const today = new Date();
     const daysLeft = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    
+
     if (daysLeft < 0) return { status: 'expired', color: 'destructive', days: 0 };
     if (daysLeft < 30) return { status: 'expiring', color: 'warning', days: daysLeft };
     return { status: 'active', color: 'success', days: daysLeft };
@@ -122,20 +111,20 @@ export const UserDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-heading font-bold text-foreground mb-2">
-                {t('language') === 'fr' 
+                {t('language') === 'fr'
                   ? `Bonjour, ${user.username || user.email?.split('@')[0] || 'Utilisateur'} !`
                   : `Welcome back, ${user.username || user.email?.split('@')[0] || 'User'}!`
                 }
               </h1>
               <p className="text-muted-foreground text-lg">
-                {t('language') === 'fr' 
+                {t('language') === 'fr'
                   ? 'Voici un aperçu de votre activité sur OffMarket'
                   : 'Here\'s an overview of your activity on OffMarket'
                 }
               </p>
             </div>
             <div className="flex items-center space-x-3">
-              <Badge 
+              <Badge
                 variant={subscriptionStatus.color as any}
                 className="text-sm px-3 py-1"
               >
@@ -238,7 +227,7 @@ export const UserDashboard: React.FC = () => {
                   {t('language') === 'fr' ? 'Abonnement' : 'Subscription'}
                 </CardTitle>
                 <CardDescription>
-                  {t('language') === 'fr' 
+                  {t('language') === 'fr'
                     ? 'Gérez votre abonnement et vos factures'
                     : 'Manage your subscription and billing'
                   }
@@ -251,7 +240,7 @@ export const UserDashboard: React.FC = () => {
                   </span>
                   <Badge variant="outline">{user.subscriptionType}</Badge>
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
                     <span>
@@ -261,7 +250,7 @@ export const UserDashboard: React.FC = () => {
                       {new Date(user.subscriptionExpiry).toLocaleDateString()}
                     </span>
                   </div>
-                  
+
                   {subscriptionStatus.status === 'expiring' && (
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
@@ -297,7 +286,7 @@ export const UserDashboard: React.FC = () => {
                   {t('language') === 'fr' ? 'Activité récente' : 'Recent Activity'}
                 </CardTitle>
                 <CardDescription>
-                  {t('language') === 'fr' 
+                  {t('language') === 'fr'
                     ? 'Vos dernières actions sur la plateforme'
                     : 'Your latest actions on the platform'
                   }
@@ -328,7 +317,7 @@ export const UserDashboard: React.FC = () => {
                     </motion.div>
                   ))}
                 </div>
-                
+
                 <div className="mt-4 pt-4 border-t">
                   <Link to="/activity">
                     <Button variant="ghost" className="w-full">
@@ -366,7 +355,7 @@ export const UserDashboard: React.FC = () => {
                     </span>
                   </Button>
                 </Link>
-                
+
                 <Link to="/favorites">
                   <Button variant="outline" className="w-full h-20 flex flex-col items-center justify-center space-y-2">
                     <Heart className="h-6 w-6" />
@@ -375,7 +364,7 @@ export const UserDashboard: React.FC = () => {
                     </span>
                   </Button>
                 </Link>
-                
+
                 <Link to="/alerts">
                   <Button variant="outline" className="w-full h-20 flex flex-col items-center justify-center space-y-2">
                     <Bell className="h-6 w-6" />
@@ -384,7 +373,7 @@ export const UserDashboard: React.FC = () => {
                     </span>
                   </Button>
                 </Link>
-                
+
                 <Link to="/settings">
                   <Button variant="outline" className="w-full h-20 flex flex-col items-center justify-center space-y-2">
                     <Settings className="h-6 w-6" />

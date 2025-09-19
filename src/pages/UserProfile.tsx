@@ -56,7 +56,9 @@ export const UserProfilePage: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated || !user) {
+    // Only redirect to login if we're definitely not authenticated
+    // Don't redirect during state updates or if we have user data from either source
+    if (!isAuthenticated && !reduxUser && !user) {
       navigate('/login');
       return;
     }
@@ -64,14 +66,22 @@ export const UserProfilePage: React.FC = () => {
     // Use Redux user data if available, otherwise fall back to AuthContext user
     const currentUser = (reduxUser || user) as UserProfile;
     
-    setFormData({
-      username: currentUser.username || '',
-      email: currentUser.email || '',
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    });
-  }, [isAuthenticated, user, reduxUser, navigate]);
+    // Only update form data if we have a valid user
+    if (currentUser) {
+      setFormData({
+        username: currentUser.username || '',
+        email: currentUser.email || '',
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      });
+      
+      // Load profile picture from database if available
+      if (currentUser.avatar_url && !profilePicture) {
+        setProfilePicture(currentUser.avatar_url);
+      }
+    }
+  }, [isAuthenticated, user, reduxUser, navigate, profilePicture]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -86,6 +96,9 @@ export const UserProfilePage: React.FC = () => {
     const file = event.target.files?.[0];
     const currentUser = (reduxUser || user) as UserProfile;
     if (!file || !currentUser) return;
+
+    // Prevent navigation during upload
+    if (isUploading) return;
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
@@ -153,7 +166,7 @@ export const UserProfilePage: React.FC = () => {
 
       if (updateError) throw updateError;
 
-      // Update Redux state
+      // Update Redux state - only update the avatar_url field to prevent logout
       const updatedUser = {
         ...currentUser,
         avatar_url: publicUrl
@@ -173,6 +186,8 @@ export const UserProfilePage: React.FC = () => {
       });
     } finally {
       setIsUploading(false);
+      // Clear the file input to allow re-uploading the same file
+      event.target.value = '';
     }
   };
 
@@ -304,12 +319,20 @@ export const UserProfilePage: React.FC = () => {
     }
   };
 
-  if (!isAuthenticated || !user) {
-    return null;
-  }
-
   // Use Redux user data if available, otherwise fall back to AuthContext user
   const currentUser = (reduxUser || user) as UserProfile;
+
+  // Only show loading or redirect if we truly have no user data
+  if (!currentUser) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   const getSubscriptionStatus = () => {
     const expiryDate = new Date(currentUser.subscriptionExpiry);
