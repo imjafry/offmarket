@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { supabase } from '@/lib/supabaseClient';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setUser, setLoading, loginSuccess, logout as logoutAction, clearAuth, clearLoginSuccess } from '@/store/authSlice';
+import { persistor } from '@/store';
 
 interface ProfileRow {
   id: string;
@@ -424,10 +425,64 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = async () => {
     dispatch(setLoading(true));
     try {
-      await supabase.auth.signOut();
+      // Sign out from Supabase first
+      const { error: signOutError } = await supabase.auth.signOut();
+      if (signOutError) {
+        console.error('Supabase signOut error:', signOutError);
+      }
+      
       // Clear all Redux auth data
       dispatch(clearAuth());
-      console.log('User logged out and Redux data cleared');
+      
+      // Purge persisted storage to completely clear all cached data
+      await persistor.purge();
+      
+      // Clear all localStorage items that might contain auth data
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (
+          key.includes('supabase') || 
+          key.includes('sb-') || 
+          key.includes('auth') ||
+          key.includes('redux') ||
+          key.includes('persist') ||
+          key.includes('user') ||
+          key.includes('session')
+        )) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      
+      // Clear session storage completely
+      sessionStorage.clear();
+      
+      // Clear any cookies that might contain auth data
+      document.cookie.split(";").forEach((c) => {
+        const eqPos = c.indexOf("=");
+        const name = eqPos > -1 ? c.substr(0, eqPos) : c;
+        if (name.includes('supabase') || name.includes('auth') || name.includes('session')) {
+          document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+          document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=" + window.location.hostname;
+        }
+      });
+      
+      // Force a page reload to ensure all state is completely reset
+      // This is a nuclear option but ensures clean logout
+      setTimeout(() => {
+        // Use replaceState to avoid adding to browser history
+        window.history.replaceState(null, '', '/');
+        window.location.reload();
+      }, 100);
+      
+      console.log('User logged out, all storage cleared, and page will reload');
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // Even if there's an error, try to clear what we can
+      dispatch(clearAuth());
+      localStorage.clear();
+      sessionStorage.clear();
     } finally {
       dispatch(setLoading(false));
     }
@@ -442,6 +497,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     expiryDate.setHours(23, 59, 59, 999); // End of day
     return user.isActive && expiryDate >= today;
   };
+
+  // Debug function to check storage state (available in development)
+  const debugStorage = () => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('=== Storage Debug Info ===');
+      console.log('Redux State:', { user, isAuthenticated, isAdmin, isLoading });
+      console.log('LocalStorage keys:', Object.keys(localStorage));
+      console.log('SessionStorage keys:', Object.keys(sessionStorage));
+      console.log('Supabase session:', supabase.auth.getSession());
+      console.log('========================');
+    }
+  };
+
+  // Expose debug function to window in development
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      (window as any).debugAuth = debugStorage;
+    }
+  }, [user, isAuthenticated, isAdmin, isLoading]);
 
   const extendSubscription = async (days: number) => {
     if (!user) return;
