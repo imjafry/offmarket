@@ -40,11 +40,22 @@ export interface Property {
 interface PropertyCardProps {
   property: Property;
   showContactInfo?: boolean;
+  alertMatch?: boolean;
+  alertCriteria?: {
+    transaction_type?: 'rent' | 'sale';
+    property_type?: 'apartment' | 'house' | 'villa' | 'land';
+    min_budget?: number;
+    max_budget?: number;
+    location?: string;
+    rooms?: number;
+  };
 }
 
 export const PropertyCard: React.FC<PropertyCardProps> = ({ 
   property, 
-  showContactInfo = false 
+  showContactInfo = false,
+  alertMatch = false,
+  alertCriteria
 }) => {
   const { t } = useTranslation();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -61,6 +72,59 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   const priceText = (property.price || '').trim();
   const isOnRequest = !priceText || /on\s*request|sur\s*demande/i.test(priceText);
   const listingType = property.listingType || 'sale';
+
+  // Check if property matches alert criteria
+  const matchesAlertCriteria = (property: Property, criteria?: PropertyCardProps['alertCriteria']) => {
+    if (!criteria) return false;
+    
+    // Check transaction type
+    if (criteria.transaction_type && property.listingType !== criteria.transaction_type) {
+      return false;
+    }
+    
+    // Check property type (convert property type to match alert types)
+    const propertyTypeMap: Record<string, string> = {
+      'apartment': 'apartment',
+      'house': 'house', 
+      'villa': 'villa',
+      'loft': 'apartment',
+      'penthouse': 'apartment',
+      'studio': 'apartment',
+      'duplex': 'apartment',
+      'chalet': 'house',
+      'castle': 'villa'
+    };
+    
+    if (criteria.property_type && propertyTypeMap[property.propertyType] !== criteria.property_type) {
+      return false;
+    }
+    
+    // Check location (basic string matching)
+    if (criteria.location && !property.city.toLowerCase().includes(criteria.location.toLowerCase()) && 
+        !property.neighborhood.toLowerCase().includes(criteria.location.toLowerCase())) {
+      return false;
+    }
+    
+    // Check rooms
+    if (criteria.rooms && property.rooms < criteria.rooms) {
+      return false;
+    }
+    
+    // Check budget (if price is available and not "on request")
+    if (!isOnRequest && property.price) {
+      const price = parseFloat(property.price.replace(/[^0-9.]/g, ''));
+      if (criteria.min_budget && price < criteria.min_budget) {
+        return false;
+      }
+      if (criteria.max_budget && price > criteria.max_budget) {
+        return false;
+      }
+    }
+    
+    return true;
+  };
+
+  const isAlertMatch = alertMatch || (alertCriteria && matchesAlertCriteria(property, alertCriteria));
 
   return (
     <Link to={`/property/${property.id}`} className="block">
@@ -95,6 +159,13 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
         <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground px-3 py-1">
           {listingType === 'rent' ? t('property.listing.rent') : t('property.listing.sale')}
         </Badge>
+
+        {/* Alert Match Badge */}
+        {isAlertMatch && (
+          <Badge className="absolute top-4 right-16 bg-green-500 text-white px-3 py-1 animate-pulse">
+            {t('alerts.matchesAlert')}
+          </Badge>
+        )}
 
         {/* Favorite Button */}
         <button
@@ -223,6 +294,51 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
             <span className="text-xs text-muted-foreground mt-1 block">Sq Ft</span>
           </div>
         </div>
+
+        {/* Alert Criteria Match Info */}
+        {isAlertMatch && alertCriteria && (
+          <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+            <div className="flex items-center space-x-2 mb-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span className="text-sm font-medium text-green-800">
+                {t('alerts.matchesCriteria')}
+              </span>
+            </div>
+            <div className="text-xs text-green-700 space-y-1">
+              {alertCriteria.transaction_type && (
+                <div>
+                  <span className="font-medium">{t('alerts.transactionType')}:</span> {t(`alerts.${alertCriteria.transaction_type}`)}
+                </div>
+              )}
+              {alertCriteria.property_type && (
+                <div>
+                  <span className="font-medium">{t('alerts.propertyType')}:</span> {t(`alerts.${alertCriteria.property_type}`)}
+                </div>
+              )}
+              {alertCriteria.location && (
+                <div>
+                  <span className="font-medium">{t('alerts.location')}:</span> {alertCriteria.location}
+                </div>
+              )}
+              {alertCriteria.rooms && (
+                <div>
+                  <span className="font-medium">{t('alerts.rooms')}:</span> {alertCriteria.rooms}+
+                </div>
+              )}
+              {(alertCriteria.min_budget || alertCriteria.max_budget) && (
+                <div>
+                  <span className="font-medium">{t('property.price')}:</span> 
+                  {alertCriteria.min_budget && alertCriteria.max_budget 
+                    ? ` CHF ${alertCriteria.min_budget.toLocaleString()} - ${alertCriteria.max_budget.toLocaleString()}`
+                    : alertCriteria.min_budget 
+                    ? ` CHF ${alertCriteria.min_budget.toLocaleString()}+`
+                    : ` CHF ${alertCriteria.max_budget.toLocaleString()}-`
+                  }
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Contact Info (only show if showContactInfo is true) */}
         {showContactInfo && property.contactInfo && (

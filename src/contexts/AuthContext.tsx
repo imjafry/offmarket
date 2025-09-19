@@ -22,6 +22,7 @@ interface UserProfile {
   subscriptionExpiry: string; // ISO date string
   isActive: boolean;
   isAdmin?: boolean;
+  avatar_url?: string | null;
 }
 
 interface AuthContextType {
@@ -307,6 +308,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             subscriptionExpiry: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 1 year from now
             isActive: true,
             isAdmin: false,
+            avatar_url: null,
           };
           console.log('Using fallback profile:', fallbackProfile);
           
