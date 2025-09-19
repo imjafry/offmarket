@@ -12,7 +12,9 @@ import {
   Search,
   ChevronDown,
   User,
-  Globe
+  Globe,
+  Inbox,
+  MessageSquare
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -37,6 +39,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     { name: t('admin.dashboard.title'), href: '/admin/dashboard', icon: LayoutDashboard, current: location.pathname === '/admin/dashboard' },
     { name: t('admin.properties.title'), href: '/admin/properties', icon: Building2, current: location.pathname.startsWith('/admin/properties') },
     { name: t('admin.accounts.title'), href: '/admin/accounts', icon: Users, current: location.pathname === '/admin/accounts' },
+    { name: 'Users', href: '/admin/users', icon: User, current: location.pathname === '/admin/users' },
+    { name: 'Inquiries', href: '/admin/inquiries', icon: Inbox, current: location.pathname === '/admin/inquiries' },
+    { name: 'Contacts', href: '/admin/contacts', icon: MessageSquare, current: location.pathname === '/admin/contacts' },
+    { name: 'Memberships', href: '/admin/memberships', icon: Users, current: location.pathname === '/admin/memberships' },
     { name: t('language') === 'fr' ? 'Paramètres' : 'Settings', href: '/admin/settings', icon: Settings, current: location.pathname === '/admin/settings' },
   ];
 

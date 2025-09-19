@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Shield, Eye, EyeOff, Lock, User, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAuth } from '@/contexts/AuthContext';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { clearLoginSuccess } from '@/store/authSlice';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,34 +13,75 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export const AdminLoginPage: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { login, user: ctxUser } = useAuth();
+  const { loginSuccess, redirectPath, isAdmin } = useAppSelector((state) => state.auth);
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Handle redirect after successful login
+  useEffect(() => {
+    if (loginSuccess) {
+      const targetPath = redirectPath || '/admin/dashboard';
+      console.log('Admin login successful, redirecting to:', targetPath);
+      
+      // Check if user is admin
+      if (isAdmin) {
+        navigate(targetPath);
+        dispatch(clearLoginSuccess());
+      } else {
+        setError(t('language') === 'fr' ? "Accès administrateur requis" : 'Administrator access required');
+        dispatch(clearLoginSuccess());
+      }
+    }
+  }, [loginSuccess, redirectPath, isAdmin, navigate, dispatch, t]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-    
-    // Simulate admin login process
-    setTimeout(() => {
+
+    // Basic validation
+    if (!formData.email || !formData.password) {
+      setError(t('language') === 'fr' 
+        ? 'Veuillez remplir tous les champs'
+        : 'Please fill in all fields'
+      );
       setIsLoading(false);
-      if (formData.username === 'admin' && formData.password === 'admin123') {
-        // In real app, handle admin authentication here
-        console.log('Admin login successful');
-        // Redirect to admin dashboard
-        window.location.href = '/admin/dashboard';
-      } else {
-        setError(t('language') === 'fr' 
-          ? 'Nom d\'utilisateur ou mot de passe incorrect'
-          : 'Invalid username or password'
-        );
+      return;
+    }
+
+    try {
+      const result = await login(formData.email, formData.password, '/admin/dashboard');
+      if (!result.success) {
+        if (result.needsConfirmation) {
+          setError(t('language') === 'fr' 
+            ? "Veuillez vérifier votre email et cliquer sur le lien de confirmation avant de vous connecter."
+            : result.error || 'Please check your email and click the confirmation link before logging in.'
+          );
+        } else {
+          setError(t('language') === 'fr' 
+            ? result.error || "Échec de la connexion. Vérifiez vos identifiants ou votre abonnement."
+            : result.error || 'Login failed. Check your credentials or subscription.'
+          );
+        }
+        return;
       }
-    }, 2000);
+      // Redux will handle the redirect via useEffect
+    } catch (err) {
+      setError(t('language') === 'fr' 
+        ? 'Une erreur est survenue lors de la connexion'
+        : 'An error occurred during login'
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,8 +91,8 @@ export const AdminLoginPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center px-4">
-      {/* Background Pattern
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20" /> */}
+      {/* Background Pattern */}
+      {/* <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.1\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"2\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20" /> */}
       
       <div className="relative w-full max-w-md space-y-6">
         {/* Back Link */}
@@ -83,7 +127,7 @@ export const AdminLoginPage: React.FC = () => {
                 </CardTitle>
                 <CardDescription className="text-muted-foreground">
                   {t('language') === 'fr' 
-                    ? 'Accès sécurisé à l\'espace d\'administration'
+                    ? "Accès sécurisé à l'espace d'administration"
                     : 'Secure access to administration panel'
                   }
                 </CardDescription>
@@ -106,18 +150,18 @@ export const AdminLoginPage: React.FC = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <label htmlFor="username" className="text-sm font-medium text-foreground">
-                      {t('language') === 'fr' ? 'Nom d\'utilisateur' : 'Username'}
+                    <label htmlFor="email" className="text-sm font-medium text-foreground">
+                      {t('language') === 'fr' ? 'Email' : 'Email'}
                     </label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
-                        id="username"
-                        name="username"
-                        type="text"
-                        value={formData.username}
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={formData.email}
                         onChange={handleInputChange}
-                        placeholder={t('language') === 'fr' ? 'Entrez votre nom d\'utilisateur' : 'Enter your username'}
+                        placeholder={t('language') === 'fr' ? 'Entrez votre email' : 'Enter your email'}
                         className="pl-10 h-12 border-2 focus:border-purple-500 transition-colors"
                         required
                       />
@@ -170,16 +214,6 @@ export const AdminLoginPage: React.FC = () => {
                 </Button>
               </form>
 
-              {/* Demo Credentials */}
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="text-sm font-medium text-blue-900 mb-2">
-                  {t('language') === 'fr' ? 'Identifiants de démonstration' : 'Demo Credentials'}
-                </h4>
-                <div className="text-xs text-blue-700 space-y-1">
-                  <p><strong>Username:</strong> admin</p>
-                  <p><strong>Password:</strong> admin123</p>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </motion.div>

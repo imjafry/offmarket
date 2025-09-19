@@ -5,10 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { supabase } from '@/lib/supabaseClient';
+import { toast } from 'sonner';
 
 export const ContactPage: React.FC = () => {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -18,14 +21,19 @@ export const ContactPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate form submission
-    setTimeout(() => {
+    setError('');
+
+    const payload = { name: formData.name, email: formData.email, message: formData.message };
+    const { error } = await supabase.from('contact_messages').insert(payload);
+    if (error) {
+      setError(t('language') === 'fr' ? "Échec de l'envoi. Réessayez." : 'Failed to send. Please try again.');
+      toast.error(error.message);
       setIsSubmitting(false);
-      setFormData({ name: '', email: '', message: '' });
-      // In real app, show success toast
-      console.log('Contact form submitted:', formData);
-    }, 2000);
+      return;
+    }
+    setFormData({ name: '', email: '', message: '' });
+    toast.success(t('language') === 'fr' ? 'Message envoyé' : 'Message sent');
+    setIsSubmitting(false);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -113,6 +121,8 @@ export const ContactPage: React.FC = () => {
                     />
                   </div>
 
+                  {error && <p className="text-sm text-red-600">{error}</p>}
+
                   <Button 
                     type="submit" 
                     className="w-full btn-primary"
@@ -187,7 +197,7 @@ export const ContactPage: React.FC = () => {
               <Card>
                 <CardHeader>
                   <CardTitle>
-                    {t('language') === 'fr' ? 'Horaires d\'ouverture' : 'Business Hours'}
+                    {t('language') === 'fr' ? "Horaires d'ouverture" : 'Business Hours'}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">

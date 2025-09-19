@@ -15,11 +15,13 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { PropertyGallery } from '@/components/PropertyGallery';
 import { PropertyVideoPlayer } from '@/components/PropertyVideoPlayer';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { supabase } from '@/lib/supabaseClient';
+import { toast } from 'sonner';
 
 export const PropertyDetailPage: React.FC = () => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
-  const { getProperty, incrementViews } = useProperties();
+  const { getProperty, incrementViews, incrementInquiries } = useProperties();
   const [isFavorited, setIsFavorited] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [selectedTab, setSelectedTab] = useState('overview');
@@ -38,6 +40,36 @@ export const PropertyDetailPage: React.FC = () => {
       incrementViews(id);
     }
   }, [property, id, incrementViews]);
+
+  const [inqName, setInqName] = useState('');
+  const [inqEmail, setInqEmail] = useState('');
+  const [inqPhone, setInqPhone] = useState('');
+  const [inqMessage, setInqMessage] = useState('');
+  const [inqSubmitting, setInqSubmitting] = useState(false);
+  const [inqError, setInqError] = useState('');
+  const handleInquiry = async () => {
+    if (!id) return;
+    setInqSubmitting(true);
+    setInqError('');
+    const payload = {
+      property_id: id,
+      name: inqName,
+      email: inqEmail,
+      phone: inqPhone,
+      message: inqMessage,
+    };
+    const { error } = await supabase.from('inquiries').insert(payload);
+    if (error) {
+      setInqError(t('language') === 'fr' ? "Échec de l'envoi. Réessayez." : 'Failed to submit inquiry. Please try again.');
+      toast.error(error.message);
+      setInqSubmitting(false);
+      return;
+    }
+    await incrementInquiries(id);
+    setInqName(''); setInqEmail(''); setInqPhone(''); setInqMessage('');
+    toast.success(t('language') === 'fr' ? 'Demande envoyée' : 'Inquiry sent');
+    setInqSubmitting(false);
+  };
 
   if (!property) {
     return (
@@ -498,45 +530,26 @@ export const PropertyDetailPage: React.FC = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6 space-y-6">
-                  <div className="flex space-x-3">
-                    <Link to="/contact" className="flex-1">
-                      <Button className="w-full bg-primary-hover text-primary-foreground">
-                        {t('language') === 'fr' ? 'Demander des infos' : 'Request Info'}
-                      </Button>
-                    </Link>
-                  </div>
-
-                  {/* Agent Info */}
-                  <div className="flex items-center space-x-4 p-4 bg-muted/20 rounded-lg">
-                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-                      <User className="h-6 w-6 text-primary-foreground" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium">Adrian Henriques</h4>
-                      <p className="text-sm text-muted-foreground">Company Agent</p>
-                    </div>
-                  </div>
-
-                  {/* Contact Form */}
                   <div className="space-y-4">
                     <div>
                       <label className="text-sm font-medium mb-2 block">Name</label>
-                      <Input placeholder="Your Name" />
+                      <Input placeholder="Your Name" value={inqName} onChange={(e) => setInqName(e.target.value)} />
                     </div>
                     <div>
                       <label className="text-sm font-medium mb-2 block">Email</label>
-                      <Input placeholder="Your Email" type="email" />
+                      <Input placeholder="Your Email" type="email" value={inqEmail} onChange={(e) => setInqEmail(e.target.value)} />
                     </div>
                     <div>
                       <label className="text-sm font-medium mb-2 block">Phone</label>
-                      <Input placeholder="Your Phone Number" />
+                      <Input placeholder="Your Phone Number" value={inqPhone} onChange={(e) => setInqPhone(e.target.value)} />
                     </div>
                     <div>
                       <label className="text-sm font-medium mb-2 block">Description</label>
-                      <Textarea placeholder="Tell us about your requirements..." rows={4} />
+                      <Textarea placeholder="Tell us about your requirements..." rows={4} value={inqMessage} onChange={(e) => setInqMessage(e.target.value)} />
                     </div>
-                    <Button className="w-full btn-primary">
-                      Submit
+                    {inqError && <p className="text-sm text-red-600">{inqError}</p>}
+                    <Button className="w-full btn-primary" disabled={inqSubmitting} onClick={handleInquiry}>
+                      {inqSubmitting ? (t('common.loading')) : 'Submit'}
                     </Button>
                   </div>
                 </CardContent>

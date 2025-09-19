@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Lock, ArrowLeft, AlertCircle } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { clearLoginSuccess } from '@/store/authSlice';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,25 +14,64 @@ export const LoginPage: React.FC = () => {
   const { t } = useTranslation();
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [username, setUsername] = useState('');
+  const dispatch = useAppDispatch();
+  const { loginSuccess, redirectPath } = useAppSelector((state) => state.auth);
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Handle redirect after successful login
+  useEffect(() => {
+    if (loginSuccess) {
+      const targetPath = redirectPath || '/properties';
+      console.log('Login successful, redirecting to:', targetPath);
+      navigate(targetPath);
+      dispatch(clearLoginSuccess());
+    }
+  }, [loginSuccess, redirectPath, navigate, dispatch]);
+
+  // Debug: Check if login function is available
+  console.log('LoginPage rendered, login function:', typeof login);
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted!', { email, password: password ? '***' : 'empty' });
     setIsLoading(true);
     setError('');
     
+    // Basic validation
+    if (!email || !password) {
+      console.log('Validation failed: missing fields');
+      setError(t('language') === 'fr' 
+        ? 'Veuillez remplir tous les champs'
+        : 'Please fill in all fields'
+      );
+      setIsLoading(false);
+      return;
+    }
+    
     try {
-      const success = await login(username, password);
-      if (success) {
-        navigate('/properties');
+      console.log('Starting login with:', { email, passwordLength: password.length });
+      const result = await login(email, password, '/properties');
+      console.log('Login result:', result);
+      
+      if (result.success) {
+        console.log('Login successful, Redux will handle redirect...');
+        // Redux will handle the redirect via useEffect
       } else {
-        setError(t('language') === 'fr' 
-          ? 'Nom d\'utilisateur ou mot de passe incorrect, ou abonnement expiré'
-          : 'Invalid username or password, or subscription expired'
-        );
+        if (result.needsConfirmation) {
+          setError(t('language') === 'fr' 
+            ? "Veuillez vérifier votre email et cliquer sur le lien de confirmation avant de vous connecter."
+            : result.error || 'Please check your email and click the confirmation link before logging in.'
+          );
+        } else {
+          setError(t('language') === 'fr' 
+            ? result.error || "Email ou mot de passe incorrect, ou abonnement expiré"
+            : result.error || 'Invalid email or password, or subscription expired'
+          );
+        }
       }
     } catch (err) {
       setError(t('language') === 'fr' 
@@ -51,7 +92,7 @@ export const LoginPage: React.FC = () => {
           className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          {t('language') === 'fr' ? 'Retour à l\'accueil' : 'Back to Home'}
+          {t('language') === 'fr' ? "Retour à l'accueil" : 'Back to Home'}
         </Link>
 
         {/* Login Card */}
@@ -81,15 +122,18 @@ export const LoginPage: React.FC = () => {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <label htmlFor="username" className="form-label">
-                  {t('language') === 'fr' ? 'Nom d\'utilisateur' : 'Username'}
+                <label htmlFor="email" className="form-label">
+                  {t('language') === 'fr' ? 'Email' : 'Email'}
                 </label>
                 <Input
-                  id="username"
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder={t('language') === 'fr' ? 'Entrez votre nom d\'utilisateur' : 'Enter your username'}
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => {
+                    console.log('Email changed:', e.target.value);
+                    setEmail(e.target.value);
+                  }}
+                  placeholder={t('language') === 'fr' ? 'Entrez votre email' : 'Enter your email'}
                   className="form-input"
                   required
                 />
@@ -103,7 +147,10 @@ export const LoginPage: React.FC = () => {
                   id="password"
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    console.log('Password changed, length:', e.target.value.length);
+                    setPassword(e.target.value);
+                  }}
                   placeholder={t('language') === 'fr' ? 'Entrez votre mot de passe' : 'Enter your password'}
                   className="form-input"
                   required
@@ -114,41 +161,36 @@ export const LoginPage: React.FC = () => {
                 type="submit" 
                 className="w-full btn-primary"
                 disabled={isLoading}
+                onClick={() => console.log('Button clicked!')}
               >
                 {isLoading 
                   ? t('common.loading') 
                   : t('auth.submit')
                 }
               </Button>
+
             </form>
+
+            <div className="mt-4 text-center">
+              <Link 
+                to="/forgot-password" 
+                className="text-sm text-primary hover:underline"
+              >
+                {t('language') === 'fr' ? 'Mot de passe oublié ?' : 'Forgot password?'}
+              </Link>
+            </div>
 
             <div className="mt-6 text-center">
               <p className="text-xs text-muted-foreground">
                 {t('language') === 'fr' 
-                  ? 'Mot de passe oublié? Contactez votre conseiller.'
-                  : 'Forgotten password? Contact your advisor.'
+                  ? 'Pas de compte ? '
+                  : "Don't have an account? "
                 }
+                <Link to="/register" className="text-primary underline">{t('language') === 'fr' ? 'Créer un compte' : 'Create one'}</Link>
               </p>
             </div>
           </CardContent>
         </Card>
-
-        {/* Demo Info */}
-        <div className="bg-muted/50 border border-border rounded-lg p-4">
-          <h4 className="text-sm font-medium text-foreground mb-2">
-            {t('language') === 'fr' ? 'Identifiants de démonstration' : 'Demo Credentials'}
-          </h4>
-          <div className="text-xs text-muted-foreground space-y-1">
-            <p><strong>Username:</strong> marie.dubois</p>
-            <p><strong>Password:</strong> demo123</p>
-            <p className="text-xs text-success mt-2">
-              {t('language') === 'fr' 
-                ? 'Abonnement test actif (durée illimitée)'
-                : 'Test membership active (lifetime)'
-              }
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   );

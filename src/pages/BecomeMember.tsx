@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabaseClient';
 
 export const BecomeMemberPage: React.FC = () => {
   const { t } = useTranslation();
@@ -30,17 +31,18 @@ export const BecomeMemberPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      const payload = {
+        full_name: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        profile: formData.profile,
+        project: formData.project,
+      };
+      const { error } = await supabase.from('membership_applications').insert(payload);
+      if (error) throw error;
+
       toast.success(t('becomeMember.form.success'));
-      setFormData({
-        fullName: '',
-        email: '',
-        phone: '',
-        profile: '',
-        project: ''
-      });
+      setFormData({ fullName: '', email: '', phone: '', profile: '', project: '' });
     } catch (error) {
       toast.error(t('becomeMember.form.error'));
     } finally {

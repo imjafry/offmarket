@@ -28,6 +28,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { AdminLayout } from '@/components/admin/AdminLayout';
+import { supabase } from '@/lib/supabaseClient';
 
 export const PropertyForm: React.FC = () => {
   const { t } = useTranslation();
@@ -118,14 +119,41 @@ export const PropertyForm: React.FC = () => {
     }));
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadImageFile = async (file: File): Promise<string | null> => {
+    const path = `images/${Date.now()}_${Math.random().toString(36).slice(2)}_${file.name}`;
+    const { error } = await supabase.storage.from('properties-images').upload(path, file);
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error('Image upload error:', error.message);
+      return null;
+    }
+    const { data } = supabase.storage.from('properties-images').getPublicUrl(path);
+    return data.publicUrl || null;
+  };
+
+  const uploadVideoFile = async (file: File): Promise<string | null> => {
+    const path = `videos/${Date.now()}_${Math.random().toString(36).slice(2)}_${file.name}`;
+    const { error } = await supabase.storage.from('properties-videos').upload(path, file);
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error('Video upload error:', error.message);
+      return null;
+    }
+    const { data } = supabase.storage.from('properties-videos').getPublicUrl(path);
+    return data.publicUrl || null;
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (files) {
-      const newImages = Array.from(files).map(file => URL.createObjectURL(file));
-      setFormData(prev => ({
-        ...prev,
-        images: [...prev.images, ...newImages]
-      }));
+    if (files && files.length > 0) {
+      setIsLoading(true);
+      try {
+        const uploads = await Promise.all(Array.from(files).map(uploadImageFile));
+        const urls = uploads.filter((u): u is string => Boolean(u));
+        setFormData(prev => ({ ...prev, images: [...prev.images, ...urls] }));
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -191,16 +219,23 @@ export const PropertyForm: React.FC = () => {
       };
 
       if (isEdit && id) {
-        updateProperty(id, propertyData);
+        await updateProperty(id, propertyData);
       } else {
-        addProperty(propertyData);
-        // Send notification to all users about new property
-        // In a real app, you'd get the list of active users
-        sendNewPropertyNotification('all-users@offmarket.ch', propertyData.title);
+        const created = await addProperty(propertyData);
+        // Process alerts for this new property
+        try {
+          await supabase.rpc('process_property_alerts', { p_property_id: created.id });
+        } catch (rpcErr) {
+          // eslint-disable-next-line no-console
+          console.error('Error processing alerts RPC:', rpcErr);
+        }
+        // Optional local toast demo
+        sendNewPropertyNotification('all-users@offmarket.ch', propertyData.title, { quiet: true });
       }
       
       navigate('/admin/properties');
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error saving property:', error);
     } finally {
       setIsLoading(false);
@@ -610,11 +645,16 @@ export const PropertyForm: React.FC = () => {
                     <input
                       type="file"
                       accept="video/*"
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
-                          const videoUrl = URL.createObjectURL(file);
-                          handleInputChange('videoUrl', videoUrl);
+                          setIsLoading(true);
+                          try {
+                            const url = await uploadVideoFile(file);
+                            if (url) handleInputChange('videoUrl', url);
+                          } finally {
+                            setIsLoading(false);
+                          }
                         }
                       }}
                       className="hidden"

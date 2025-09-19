@@ -3,18 +3,21 @@ import { Search, SlidersHorizontal, Grid3X3, List, Filter, ChevronDown } from 'l
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/contexts/AuthContext';
-import { useProperties } from '@/contexts/PropertyContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PropertyCard } from '@/components/PropertyCard';
 import { PropertyListCard } from '@/components/PropertyListCard';
 import { swissCities, filterCities } from '@/data/swissCities';
+import { supabase } from '@/lib/supabaseClient';
 
 export const PropertiesPage: React.FC = () => {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
-  const { properties } = useProperties();
+  const [properties, setProperties] = useState<any[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRooms, setSelectedRooms] = useState('');
   const [selectedType, setSelectedType] = useState('');
@@ -24,9 +27,11 @@ export const PropertiesPage: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12);
 
   // Generate room options
-  const roomOptions = [];
+  const roomOptions = [] as string[];
   for (let i = 1; i <= 10; i += 0.5) {
     roomOptions.push(i.toString());
   }
@@ -46,40 +51,55 @@ export const PropertiesPage: React.FC = () => {
       )
     : searchSuggestions;
 
-  // Filter properties based on search criteria
-  const filteredProperties = properties.filter(property => {
-    const matchesSearch = !searchTerm || searchTerm === 'all' ||
-                         property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         property.neighborhood.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         property.propertyType.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesRooms = !selectedRooms || 
-                        (selectedRooms === '10+' && property.rooms >= 10) ||
-                        (selectedRooms !== '10+' && selectedRooms !== '' && property.rooms === parseFloat(selectedRooms));
-    
-    const matchesType = !selectedType || selectedType === '' || property.propertyType === selectedType;
-    
-    const matchesStatus = !selectedStatus || selectedStatus === '' || property.listingType === selectedStatus;
-    
-    // Price range filter
-    const matchesPrice = !priceRange.min && !priceRange.max || (() => {
-      if (!property.price) return true;
-      const price = parseFloat(property.price.replace(/[^\d]/g, ''));
-      const min = priceRange.min ? parseFloat(priceRange.min) : 0;
-      const max = priceRange.max ? parseFloat(priceRange.max) : Infinity;
-      return price >= min && price <= max;
-    })();
-    
-    // Surface range filter
-    const matchesSurface = !surfaceRange.min && !surfaceRange.max || (() => {
-      const min = surfaceRange.min ? parseFloat(surfaceRange.min) : 0;
-      const max = surfaceRange.max ? parseFloat(surfaceRange.max) : Infinity;
-      return property.surface >= min && property.surface <= max;
-    })();
-    
-    return matchesSearch && matchesRooms && matchesType && matchesStatus && matchesPrice && matchesSurface;
-  });
+  // Server-side fetch
+  useEffect(() => {
+    const fetchProps = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        let query = supabase
+          .from('properties')
+          .select('*', { count: 'exact' })
+          .order('created_at', { ascending: false });
+
+        const term = searchTerm && searchTerm !== 'all' ? `%${searchTerm.toLowerCase()}%` : '';
+        if (term) {
+          query = query.or(
+            `title.ilike.${term},city.ilike.${term},neighborhood.ilike.${term},property_type.ilike.${term}`
+          );
+        }
+        if (selectedRooms) {
+          if (selectedRooms === '10+') query = query.gte('rooms', 10);
+          else query = query.eq('rooms', parseFloat(selectedRooms));
+        }
+        if (selectedType) {
+          query = query.eq('property_type', selectedType);
+        }
+        if (selectedStatus) {
+          query = query.eq('listing_type', selectedStatus);
+        }
+        if (surfaceRange.min) query = query.gte('surface', parseFloat(surfaceRange.min));
+        if (surfaceRange.max) query = query.lte('surface', parseFloat(surfaceRange.max));
+        // Note: price is a text field; skipping server numeric filtering for price
+
+        const from = (page - 1) * pageSize;
+        const to = from + pageSize - 1;
+        const { data, error, count } = await query.range(from, to);
+        if (error) throw error;
+        setProperties(data || []);
+        setTotalCount(count || 0);
+      } catch (e: any) {
+        setError(e?.message || 'Failed to load properties');
+        setProperties([]);
+        setTotalCount(0);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProps();
+  }, [searchTerm, selectedRooms, selectedType, selectedStatus, surfaceRange.min, surfaceRange.max, page, pageSize]);
+
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 
   return (
     <div className="min-h-screen bg-background">
@@ -113,8 +133,9 @@ export const PropertiesPage: React.FC = () => {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => {
-                  setSearchTerm(e.target.value);
+                  setSearchTerm(e.target.value.toLowerCase());
                   setShowSuggestions(true);
+                  setPage(1);
                 }}
                 onFocus={() => setShowSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
@@ -131,6 +152,7 @@ export const PropertiesPage: React.FC = () => {
                       onClick={() => {
                         setSearchTerm(suggestion === 'All locations' ? 'all' : suggestion.toLowerCase());
                         setShowSuggestions(false);
+                        setPage(1);
                       }}
                       className="w-full px-6 py-4 text-left hover:bg-muted/50 transition-colors first:rounded-t-2xl last:rounded-b-2xl"
                     >
@@ -174,7 +196,7 @@ export const PropertiesPage: React.FC = () => {
               {/* Filters */}
               <div className="flex flex-wrap items-center gap-3">
                 {/* Status Filter */}
-                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                <Select value={selectedStatus} onValueChange={(v) => { setSelectedStatus(v); setPage(1); }}>
                   <SelectTrigger className="w-[120px]">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
@@ -185,7 +207,7 @@ export const PropertiesPage: React.FC = () => {
                 </Select>
 
                 {/* Rooms Filter */}
-                <Select value={selectedRooms} onValueChange={setSelectedRooms}>
+                <Select value={selectedRooms} onValueChange={(v) => { setSelectedRooms(v); setPage(1); }}>
                   <SelectTrigger className="w-[140px]">
                     <SelectValue placeholder="Rooms" />
                   </SelectTrigger>
@@ -199,7 +221,7 @@ export const PropertiesPage: React.FC = () => {
                 </Select>
 
                 {/* Property Type Filter */}
-                <Select value={selectedType} onValueChange={setSelectedType}>
+                <Select value={selectedType} onValueChange={(v) => { setSelectedType(v); setPage(1); }}>
                   <SelectTrigger className="w-[150px]">
                     <SelectValue placeholder="Type" />
                   </SelectTrigger>
@@ -237,7 +259,7 @@ export const PropertiesPage: React.FC = () => {
               className="mt-6 p-6 bg-muted/20 rounded-2xl border border-border"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Price Range */}
+                {/* Price Range (text field in DB; left as client hint only) */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Prix (CHF)</label>
                   <div className="flex space-x-2">
@@ -263,13 +285,13 @@ export const PropertiesPage: React.FC = () => {
                     <Input
                       placeholder="Min"
                       value={surfaceRange.min}
-                      onChange={(e) => setSurfaceRange(prev => ({ ...prev, min: e.target.value }))}
+                      onChange={(e) => { setSurfaceRange(prev => ({ ...prev, min: e.target.value })); setPage(1); }}
                       type="number"
                     />
                     <Input
                       placeholder="Max"
                       value={surfaceRange.max}
-                      onChange={(e) => setSurfaceRange(prev => ({ ...prev, max: e.target.value }))}
+                      onChange={(e) => { setSurfaceRange(prev => ({ ...prev, max: e.target.value })); setPage(1); }}
                       type="number"
                     />
                   </div>
@@ -287,6 +309,7 @@ export const PropertiesPage: React.FC = () => {
                       setSelectedStatus('');
                       setPriceRange({ min: '', max: '' });
                       setSurfaceRange({ min: '', max: '' });
+                      setPage(1);
                     }}
                     className="w-full"
                   >
@@ -307,7 +330,7 @@ export const PropertiesPage: React.FC = () => {
         >
           <div>
             <p className="text-lg text-foreground font-semibold">
-              {filteredProperties.length} {t('properties.results')}
+              {totalCount} {t('properties.results')}
             </p>
             <p className="text-muted-foreground">
               {t('language') === 'fr' ? 'Propriétés exclusives disponibles' : 'Exclusive properties available'}
@@ -319,8 +342,6 @@ export const PropertiesPage: React.FC = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="newest">{t('language') === 'fr' ? 'Plus récent' : 'Newest'}</SelectItem>
-              <SelectItem value="price-low">{t('language') === 'fr' ? 'Prix croissant' : 'Price: Low to High'}</SelectItem>
-              <SelectItem value="price-high">{t('language') === 'fr' ? 'Prix décroissant' : 'Price: High to Low'}</SelectItem>
             </SelectContent>
           </Select>
         </motion.div>
@@ -332,14 +353,17 @@ export const PropertiesPage: React.FC = () => {
           transition={{ delay: 0.5 }}
           className="space-y-6"
         >
-          {viewMode === 'grid' ? (
+          {loading && (
+            <div className="text-center text-muted-foreground">{t('common.loading')}</div>
+          )}
+          {!loading && (viewMode === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-              {filteredProperties.map((property, index) => (
+              {properties.map((property, index) => (
                 <motion.div
                   key={property.id}
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  transition={{ delay: index * 0.05 }}
                 >
                   <PropertyCard 
                     property={property}
@@ -350,12 +374,12 @@ export const PropertiesPage: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-6">
-              {filteredProperties.map((property, index) => (
+              {properties.map((property, index) => (
                 <motion.div
                   key={property.id}
                   initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  transition={{ delay: index * 0.05 }}
                 >
                   <PropertyListCard 
                     property={property}
@@ -364,10 +388,10 @@ export const PropertiesPage: React.FC = () => {
                 </motion.div>
               ))}
             </div>
-          )}
+          ))}
 
           {/* Empty State */}
-          {filteredProperties.length === 0 && (
+          {!loading && properties.length === 0 && (
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -395,6 +419,7 @@ export const PropertiesPage: React.FC = () => {
                     setSelectedType('');
                     setPriceRange({ min: '', max: '' });
                     setSurfaceRange({ min: '', max: '' });
+                    setPage(1);
                   }}
                 >
                   {t('properties.clearFilters')}
@@ -403,6 +428,37 @@ export const PropertiesPage: React.FC = () => {
             </motion.div>
           )}
         </motion.div>
+
+        {/* Pagination */}
+        <div className="flex items-center justify-between mt-6">
+          <div className="text-sm text-gray-500">
+            {t('language') === 'fr' 
+              ? `Affichage de ${(page - 1) * pageSize + 1} à ${Math.min(page * pageSize, totalCount)} sur ${totalCount} résultats`
+              : `Showing ${(page - 1) * pageSize + 1} to ${Math.min(page * pageSize, totalCount)} of ${totalCount} results`
+            }
+          </div>
+          <div className="flex items-center space-x-3">
+            <span className="text-sm text-gray-500">{t('language') === 'fr' ? `Page ${page} sur ${totalPages}` : `Page ${page} of ${totalPages}`}</span>
+            <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(parseInt(v)); setPage(1); }}>
+              <SelectTrigger className="w-24">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="12">12 / page</SelectItem>
+                <SelectItem value="24">24 / page</SelectItem>
+                <SelectItem value="48">48 / page</SelectItem>
+              </SelectContent>
+            </Select>
+            <div className="flex space-x-2">
+              <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(p => Math.max(1, p - 1))}>
+                {t('language') === 'fr' ? 'Précédent' : 'Previous'}
+              </Button>
+              <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))}>
+                {t('language') === 'fr' ? 'Suivant' : 'Next'}
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

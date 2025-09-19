@@ -54,11 +54,11 @@ export const PropertyManagement: React.FC = () => {
   // Properties with additional fields for admin
   const properties = allProperties.map(prop => ({
     ...prop,
-    views: Math.floor(Math.random() * 100),
-    inquiries: Math.floor(Math.random() * 20),
-    createdAt: '2024-01-15',
-    updatedAt: '2024-01-20',
-    featured: Math.random() > 0.7
+    views: prop.views ?? 0,
+    inquiries: prop.inquiries ?? 0,
+    createdAt: prop.createdAt ?? '—',
+    updatedAt: prop.updatedAt ?? '—',
+    featured: (prop as any).featured ?? false
   }));
 
   const filteredProperties = properties.filter(property => {
@@ -114,11 +114,19 @@ export const PropertyManagement: React.FC = () => {
       setShowBulkDeleteDialog(true);
       return;
     }
+    // eslint-disable-next-line no-console
     console.log(`Bulk action: ${action} on properties:`, selectedProperties);
   };
 
-  const confirmBulkDelete = () => {
-    selectedProperties.forEach(id => deleteProperty(id));
+  const confirmBulkDelete = async () => {
+    for (const id of selectedProperties) {
+      try {
+        await deleteProperty(id);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to delete property', id, e);
+      }
+    }
     setSelectedProperties([]);
     setShowBulkDeleteDialog(false);
   };

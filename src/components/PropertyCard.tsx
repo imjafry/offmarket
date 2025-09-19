@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Home, User, Heart, Eye } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -6,6 +6,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
+import { useFavorites } from '@/contexts/FavoritesContext';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 export interface Property {
@@ -51,6 +52,11 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   const [isFavorited, setIsFavorited] = useState(false);
   const [showFavDialog, setShowFavDialog] = useState(false);
   const { isAuthenticated } = useAuth();
+  const { isFavorited: isFav, toggleFavorite } = useFavorites();
+
+  useEffect(() => {
+    setIsFavorited(isFav(property.id));
+  }, [property.id, isFav]);
 
   const priceText = (property.price || '').trim();
   const isOnRequest = !priceText || /on\s*request|sur\s*demande/i.test(priceText);
@@ -90,18 +96,17 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           {listingType === 'rent' ? t('property.listing.rent') : t('property.listing.sale')}
         </Badge>
 
-        {/* Featured Badge removed */}
-
         {/* Favorite Button */}
         <button
-          onClick={(e) => {
+          onClick={async (e) => {
             e.preventDefault();
             e.stopPropagation();
             if (!isAuthenticated) {
               setShowFavDialog(true);
               return;
             }
-            setIsFavorited(!isFavorited);
+            await toggleFavorite(property.id);
+            setIsFavorited(isFav(property.id));
           }}
           className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
         >
@@ -169,7 +174,6 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 
       {/* Property Content */}
       <div className="p-6 space-y-4">
-
         {/* Availability Status */}
         <div className="mb-2">
           <Badge 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Home, User, Heart, Eye, Maximize, Bath } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Property } from './PropertyCard';
 import { useAuth } from '@/contexts/AuthContext';
+import { useFavorites } from '@/contexts/FavoritesContext';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 interface PropertyListCardProps {
@@ -22,9 +23,14 @@ export const PropertyListCard: React.FC<PropertyListCardProps> = ({
   const [isFavorited, setIsFavorited] = useState(false);
   const [showFavDialog, setShowFavDialog] = useState(false);
   const { isAuthenticated } = useAuth();
+  const { isFavorited: isFav, toggleFavorite } = useFavorites();
   const priceText = (property.price || '').trim();
   const isOnRequest = !priceText || /on\s*request|sur\s*demande/i.test(priceText);
   const inferredListing: 'sale' | 'rent' = (property.listingType || 'sale') as 'sale' | 'rent';
+
+  useEffect(() => {
+    setIsFavorited(isFav(property.id));
+  }, [property.id, isFav]);
 
   return (
     <>
@@ -51,13 +57,14 @@ export const PropertyListCard: React.FC<PropertyListCardProps> = ({
 
           {/* Favorite Button */}
           <button
-            onClick={(e) => {
+            onClick={async (e) => {
               e.preventDefault();
               if (!isAuthenticated) {
                 setShowFavDialog(true);
                 return;
               }
-              setIsFavorited(!isFavorited);
+              await toggleFavorite(property.id);
+              setIsFavorited(isFav(property.id));
             }}
             className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
           >
