@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -38,6 +38,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
   const navigation = [
     { name: t('admin.dashboard.title'), href: '/admin/dashboard', icon: LayoutDashboard, current: location.pathname === '/admin/dashboard' },
@@ -61,6 +62,24 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const toggleLanguage = () => {
     setLanguage(language === 'fr' ? 'en' : 'fr');
   };
+
+  useEffect(() => {
+    // Load logo from localStorage
+    const storedLogo = localStorage.getItem('site_logo');
+    if (storedLogo) {
+      setLogoUrl(storedLogo);
+    }
+
+    // Listen for logo updates
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'site_logo') {
+        setLogoUrl(e.newValue);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   return (
     <div className="h-screen bg-gray-50 flex overflow-hidden">
@@ -89,13 +108,22 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           {/* Logo */}
           <div className="flex h-16 items-center justify-between px-6 border-b border-slate-700/50">
             <Link to="/admin/dashboard" className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                <Building2 className="h-6 w-6 text-white" />
-              </div>
-              <div>
+              {logoUrl ? (
+                <img 
+                  src={logoUrl} 
+                  alt="OffMarket" 
+                  className="h-10 w-auto object-contain"
+                  data-logo
+                />
+              ) : (
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Building2 className="h-6 w-6 text-white" />
+                </div>
+              )}
+              {/* <div>
                 <span className="text-xl font-bold text-white">OffMarket</span>
                 <p className="text-xs text-slate-400">Admin Panel</p>
-              </div>
+              </div> */}
             </Link>
             <Button
               variant="ghost"

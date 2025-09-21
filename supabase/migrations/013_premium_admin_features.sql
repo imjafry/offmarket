@@ -271,7 +271,8 @@ INSERT INTO public.system_settings (key, value, description) VALUES
 ('backup_enabled', 'true', 'Enable automatic backups'),
 ('backup_frequency', '"daily"', 'Backup frequency'),
 ('max_login_attempts', '5', 'Maximum login attempts before lockout'),
-('session_timeout', '3600', 'Session timeout in seconds')
+('session_timeout', '3600', 'Session timeout in seconds'),
+('logo_url', 'null', 'Site logo URL')
 ON CONFLICT (key) DO UPDATE SET
   value = EXCLUDED.value,
   description = EXCLUDED.description,

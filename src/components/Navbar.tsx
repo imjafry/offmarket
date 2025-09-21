@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Globe, LogOut, User, Menu, X, Phone, Mail, MapPin, Settings, Heart, Bell, BarChart3 } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -12,10 +12,29 @@ export const Navbar: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
   const toggleLanguage = () => {
     setLanguage(language === 'fr' ? 'en' : 'fr');
   };
+
+  useEffect(() => {
+    // Load logo from localStorage
+    const storedLogo = localStorage.getItem('site_logo');
+    if (storedLogo) {
+      setLogoUrl(storedLogo);
+    }
+
+    // Listen for logo updates
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'site_logo') {
+        setLogoUrl(e.newValue);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const handleNavClick = (item: any) => {
     if (item.scrollTo) {
@@ -52,12 +71,21 @@ export const Navbar: React.FC = () => {
       <div className="container-custom">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link 
-            to="/" 
-            className="text-2xl font-heading font-bold text-foreground hover:text-primary transition-all duration-300"
-          >
-            OffMarket
-          </Link>
+        <Link 
+          to="/" 
+          className="flex items-center space-x-3 text-2xl font-heading font-bold text-foreground hover:text-primary transition-all duration-300"
+        >
+          {logoUrl ? (
+            <img 
+              src={logoUrl} 
+              alt="OffMarket" 
+              className="h-12 w-auto object-contain"
+              data-logo
+            />
+          ) : (
+            <span>OffMarket</span>
+          )}
+        </Link>
 
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center space-x-1">
@@ -191,8 +219,17 @@ export const Navbar: React.FC = () => {
               </SheetTrigger>
               <SheetContent side="right" className="w-80 sm:w-96">
                 <SheetHeader className="pb-4">
-                  <SheetTitle className="text-left text-xl font-heading font-bold text-foreground">
-                    OffMarket
+                  <SheetTitle className="text-left text-xl font-heading font-bold text-foreground flex items-center space-x-3">
+                    {logoUrl ? (
+                      <img 
+                        src={logoUrl} 
+                        alt="OffMarket" 
+                        className="h-6 w-auto object-contain"
+                        data-logo
+                      />
+                    ) : (
+                      <span>OffMarket</span>
+                    )}
                   </SheetTitle>
                 </SheetHeader>
                 
