@@ -48,7 +48,10 @@ import { FavoritesProvider } from "@/contexts/FavoritesContext";
 import AdminInquiriesPage from "@/pages/admin/Inquiries";
 import AdminContactsPage from "@/pages/admin/Contacts";
 import AdminMembershipsPage from "@/pages/admin/Memberships";
-import AdminUsersPage from "@/pages/admin/Users";
+import { Analytics } from "@/pages/admin/Analytics";
+import { SystemManagement } from "@/pages/admin/SystemManagement";
+import { EmailTemplates } from "@/pages/admin/EmailTemplates";
+import { MediaLibrary } from "@/pages/admin/MediaLibrary";
 import FavoritesPage from "@/pages/Favorites";
 import ForgotPasswordPage from "@/pages/ForgotPassword";
 import ResetPasswordPage from "@/pages/ResetPassword";
@@ -83,10 +86,13 @@ const App = () => (
                 <Route path="/admin/properties/:id" element={<RequireAdmin><AdminPropertyDetailPage /></RequireAdmin>} />
                 <Route path="/admin/accounts" element={<RequireAdmin><AccountManagement /></RequireAdmin>} />
                 <Route path="/admin/accounts/:id" element={<RequireAdmin><AdminUserProfilePage /></RequireAdmin>} />
-                <Route path="/admin/users" element={<RequireAdmin><AdminUsersPage /></RequireAdmin>} />
+                <Route path="/admin/analytics" element={<RequireAdmin><Analytics /></RequireAdmin>} />
                 <Route path="/admin/inquiries" element={<RequireAdmin><AdminInquiriesPage /></RequireAdmin>} />
                 <Route path="/admin/contacts" element={<RequireAdmin><AdminContactsPage /></RequireAdmin>} />
                 <Route path="/admin/memberships" element={<RequireAdmin><AdminMembershipsPage /></RequireAdmin>} />
+                <Route path="/admin/email-templates" element={<RequireAdmin><EmailTemplates /></RequireAdmin>} />
+                <Route path="/admin/media" element={<RequireAdmin><MediaLibrary /></RequireAdmin>} />
+                <Route path="/admin/system" element={<RequireAdmin><SystemManagement /></RequireAdmin>} />
                 <Route path="/admin/settings" element={<RequireAdmin><AdminSettingsPage /></RequireAdmin>} />
                 
                 {/* Public Routes - With main layout wrapper */}

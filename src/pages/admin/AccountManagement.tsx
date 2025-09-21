@@ -33,70 +33,30 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { supabase } from '@/lib/supabaseClient';
+import { useToast } from '@/hooks/use-toast';
 
-// Mock data
-const users = [
-  {
-    id: '1',
-    name: 'Marie Dubois',
-    email: 'marie.dubois@example.ch',
-    phone: '+41 79 123 45 67',
-    status: 'active',
-    subscriptionType: 'premium',
-    joinDate: '2024-01-10',
-    lastActive: '2024-01-20',
-    propertiesViewed: 12,
-    inquiries: 3,
-    subscriptionExpiry: '2024-07-10',
-    avatar: '/user-avatar-1.jpg'
-  },
-  {
-    id: '2',
-    name: 'Pierre Martin',
-    email: 'pierre.martin@example.ch',
-    phone: '+41 78 987 65 43',
-    status: 'active',
-    subscriptionType: 'basic',
-    joinDate: '2024-01-08',
-    lastActive: '2024-01-19',
-    propertiesViewed: 8,
-    inquiries: 1,
-    subscriptionExpiry: '2024-04-08',
-    avatar: '/user-avatar-2.jpg'
-  },
-  {
-    id: '3',
-    name: 'Sophie Laurent',
-    email: 'sophie.laurent@example.ch',
-    phone: '+41 76 555 44 33',
-    status: 'expired',
-    subscriptionType: 'premium',
-    joinDate: '2023-12-15',
-    lastActive: '2024-01-05',
-    propertiesViewed: 25,
-    inquiries: 7,
-    subscriptionExpiry: '2024-01-15',
-    avatar: '/user-avatar-3.jpg'
-  },
-  {
-    id: '4',
-    name: 'Jean-Claude Favre',
-    email: 'jc.favre@example.ch',
-    phone: '+41 79 444 33 22',
-    status: 'suspended',
-    subscriptionType: 'premium',
-    joinDate: '2023-11-20',
-    lastActive: '2024-01-10',
-    propertiesViewed: 45,
-    inquiries: 12,
-    subscriptionExpiry: '2024-05-20',
-    avatar: '/user-avatar-4.jpg'
-  }
-];
+interface User {
+  id: string;
+  username: string | null;
+  email: string | null;
+  subscription_type: 'basic' | 'premium';
+  subscription_expiry: string;
+  is_active: boolean;
+  is_admin: boolean;
+  avatar_url: string | null;
+  created_at: string;
+  updated_at: string;
+  properties_viewed?: number;
+  inquiries_count?: number;
+}
 
 export const AccountManagement: React.FC = () => {
   const { t } = useTranslation();
   const { sendSubscriptionExpiryNotification, sendSubscriptionExpiredNotification } = useNotifications();
+  const { toast } = useToast();
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -106,14 +66,67 @@ export const AccountManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
-  const [sortKey, setSortKey] = useState<'name' | 'status' | 'subscriptionType' | 'lastActive' | 'subscriptionExpiry'>('lastActive');
+  const [sortKey, setSortKey] = useState<'username' | 'email' | 'subscription_type' | 'is_active' | 'subscription_expiry' | 'created_at'>('created_at');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
+  // Load users from Supabase
+  const loadUsers = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('profiles')
+        .select(`
+          id,
+          username,
+          email,
+          subscription_type,
+          subscription_expiry,
+          is_active,
+          is_admin,
+          avatar_url,
+          created_at,
+          updated_at
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error loading users:', error);
+        toast({
+          title: t('language') === 'fr' ? 'Erreur' : 'Error',
+          description: t('language') === 'fr' ? 'Impossible de charger les utilisateurs' : 'Failed to load users',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      setUsers(data || []);
+    } catch (error) {
+      console.error('Error loading users:', error);
+      toast({
+        title: t('language') === 'fr' ? 'Erreur' : 'Error',
+        description: t('language') === 'fr' ? 'Erreur lors du chargement des utilisateurs' : 'Error loading users',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
   const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
-    const matchesSubscription = subscriptionFilter === 'all' || user.subscriptionType === subscriptionFilter;
+    const searchTerm = searchQuery.toLowerCase();
+    const matchesSearch = 
+      (user.username?.toLowerCase().includes(searchTerm) || false) ||
+      (user.email?.toLowerCase().includes(searchTerm) || false);
+    
+    const matchesStatus = statusFilter === 'all' || 
+      (statusFilter === 'active' && user.is_active) ||
+      (statusFilter === 'inactive' && !user.is_active);
+    
+    const matchesSubscription = subscriptionFilter === 'all' || user.subscription_type === subscriptionFilter;
     
     return matchesSearch && matchesStatus && matchesSubscription;
   });
@@ -126,10 +139,10 @@ export const AccountManagement: React.FC = () => {
 
   const sortedUsers = React.useMemo(() => {
     const arr = [...filteredUsers];
-    arr.sort((a: any, b: any) => {
+    arr.sort((a: User, b: User) => {
       const aVal = (a as any)[sortKey] ?? '';
       const bVal = (b as any)[sortKey] ?? '';
-      if (sortKey === 'lastActive' || sortKey === 'subscriptionExpiry') {
+      if (sortKey === 'created_at' || sortKey === 'subscription_expiry') {
         const aDate = new Date(aVal).getTime();
         const bDate = new Date(bVal).getTime();
         return sortDir === 'asc' ? aDate - bDate : bDate - aDate;
@@ -170,17 +183,18 @@ export const AccountManagement: React.FC = () => {
     // Implement bulk actions
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <Badge className="bg-green-100 text-green-800 flex items-center"><CheckCircle className="h-3 w-3 mr-1" />Active</Badge>;
-      case 'expired':
-        return <Badge className="bg-red-100 text-red-800 flex items-center"><XCircle className="h-3 w-3 mr-1" />Expired</Badge>;
-      case 'suspended':
-        return <Badge className="bg-orange-100 text-orange-800 flex items-center"><AlertTriangle className="h-3 w-3 mr-1" />Suspended</Badge>;
-      default:
-        return <Badge variant="secondary">{status}</Badge>;
+  const getStatusBadge = (isActive: boolean, subscriptionExpiry: string) => {
+    const isExpired = new Date(subscriptionExpiry) < new Date();
+    
+    if (!isActive) {
+      return <Badge className="bg-orange-100 text-orange-800 flex items-center"><AlertTriangle className="h-3 w-3 mr-1" />Suspended</Badge>;
     }
+    
+    if (isExpired) {
+      return <Badge className="bg-red-100 text-red-800 flex items-center"><XCircle className="h-3 w-3 mr-1" />Expired</Badge>;
+    }
+    
+    return <Badge className="bg-green-100 text-green-800 flex items-center"><CheckCircle className="h-3 w-3 mr-1" />Active</Badge>;
   };
 
   const getSubscriptionBadge = (type: string) => {
@@ -191,6 +205,84 @@ export const AccountManagement: React.FC = () => {
         return <Badge className="bg-blue-100 text-blue-800">Basic</Badge>;
       default:
         return <Badge variant="secondary">{type}</Badge>;
+    }
+  };
+
+  // User management functions
+  const toggleUserStatus = async (userId: string, isActive: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_active: isActive })
+        .eq('id', userId);
+
+      if (error) {
+        console.error('Error updating user status:', error);
+        toast({
+          title: t('language') === 'fr' ? 'Erreur' : 'Error',
+          description: t('language') === 'fr' ? 'Impossible de modifier le statut' : 'Failed to update status',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      setUsers(prev => prev.map(user => 
+        user.id === userId ? { ...user, is_active: isActive } : user
+      ));
+
+      toast({
+        title: t('language') === 'fr' ? 'Succès' : 'Success',
+        description: t('language') === 'fr' ? 'Statut utilisateur mis à jour' : 'User status updated'
+      });
+    } catch (error) {
+      console.error('Error updating user status:', error);
+      toast({
+        title: t('language') === 'fr' ? 'Erreur' : 'Error',
+        description: t('language') === 'fr' ? 'Erreur lors de la mise à jour' : 'Error updating status',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const extendSubscription = async (userId: string, days: number) => {
+    try {
+      const user = users.find(u => u.id === userId);
+      if (!user) return;
+
+      const currentExpiry = new Date(user.subscription_expiry);
+      const newExpiry = new Date(currentExpiry.getTime() + days * 24 * 60 * 60 * 1000);
+      const newExpiryString = newExpiry.toISOString().split('T')[0];
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ subscription_expiry: newExpiryString })
+        .eq('id', userId);
+
+      if (error) {
+        console.error('Error extending subscription:', error);
+        toast({
+          title: t('language') === 'fr' ? 'Erreur' : 'Error',
+          description: t('language') === 'fr' ? 'Impossible de prolonger l\'abonnement' : 'Failed to extend subscription',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      setUsers(prev => prev.map(u => 
+        u.id === userId ? { ...u, subscription_expiry: newExpiryString } : u
+      ));
+
+      toast({
+        title: t('language') === 'fr' ? 'Succès' : 'Success',
+        description: t('language') === 'fr' ? `Abonnement prolongé de ${days} jours` : `Subscription extended by ${days} days`
+      });
+    } catch (error) {
+      console.error('Error extending subscription:', error);
+      toast({
+        title: t('language') === 'fr' ? 'Erreur' : 'Error',
+        description: t('language') === 'fr' ? 'Erreur lors de la prolongation' : 'Error extending subscription',
+        variant: 'destructive'
+      });
     }
   };
 
@@ -205,26 +297,28 @@ export const AccountManagement: React.FC = () => {
     let expired = 0;
     let expiring = 0;
     users.forEach(user => {
-      const expiry = new Date(user.subscriptionExpiry);
+      const expiry = new Date(user.subscription_expiry);
       const now = new Date();
       const daysUntilExpiry = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
       
       if (daysUntilExpiry <= 0) {
         // Subscription expired
         expired += 1;
-        sendSubscriptionExpiredNotification(user.email, { quiet: true });
+        if (user.email) {
+          sendSubscriptionExpiredNotification(user.email, { quiet: true });
+        }
       } else if (daysUntilExpiry <= 7) {
         // Expiring in 7 days or less
         expiring += 1;
-        sendSubscriptionExpiryNotification(user.email, daysUntilExpiry, { quiet: true });
+        if (user.email) {
+          sendSubscriptionExpiryNotification(user.email, daysUntilExpiry, { quiet: true });
+        }
       }
     });
     // Show a single summary toast
     const message = t('language') === 'fr' 
       ? `Notifications envoyées: ${expired} expirées, ${expiring} expirant bientôt`
       : `Notifications sent: ${expired} expired, ${expiring} expiring soon`;
-    // Use the same app toast utility
-    const { toast } = require('@/hooks/use-toast');
     toast({ title: t('language') === 'fr' ? 'Vérification terminée' : 'Check complete', description: message });
   };
 
@@ -284,7 +378,7 @@ export const AccountManagement: React.FC = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Active Users</p>
                   <p className="text-2xl font-bold text-green-600">
-                    {users.filter(u => u.status === 'active').length}
+                    {users.filter(u => u.is_active).length}
                   </p>
                 </div>
                 <CheckCircle className="h-8 w-8 text-green-600" />
@@ -297,7 +391,7 @@ export const AccountManagement: React.FC = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Premium Users</p>
                   <p className="text-2xl font-bold text-purple-600">
-                    {users.filter(u => u.subscriptionType === 'premium').length}
+                    {users.filter(u => u.subscription_type === 'premium').length}
                   </p>
                 </div>
                 <Shield className="h-8 w-8 text-purple-600" />
@@ -310,7 +404,7 @@ export const AccountManagement: React.FC = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Expiring Soon</p>
                   <p className="text-2xl font-bold text-orange-600">
-                    {users.filter(u => isSubscriptionExpiring(u.subscriptionExpiry)).length}
+                    {users.filter(u => isSubscriptionExpiring(u.subscription_expiry)).length}
                   </p>
                 </div>
                 <Clock className="h-8 w-8 text-orange-600" />
@@ -345,8 +439,7 @@ export const AccountManagement: React.FC = () => {
                   <SelectContent>
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="expired">Expired</SelectItem>
-                    <SelectItem value="suspended">Suspended</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
                   </SelectContent>
                 </Select>
 
@@ -435,16 +528,29 @@ export const AccountManagement: React.FC = () => {
                         onCheckedChange={handleSelectAll}
                       />
                     </th>
-                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('name'); setSortDir(prev => sortKey === 'name' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>User</th>
-                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('status'); setSortDir(prev => sortKey === 'status' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Status</th>
-                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('subscriptionType'); setSortDir(prev => sortKey === 'subscriptionType' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Subscription</th>
-                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('lastActive'); setSortDir(prev => sortKey === 'lastActive' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Activity</th>
-                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('subscriptionExpiry'); setSortDir(prev => sortKey === 'subscriptionExpiry' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Expiry</th>
+                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('username'); setSortDir(prev => sortKey === 'username' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>User</th>
+                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('is_active'); setSortDir(prev => sortKey === 'is_active' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Status</th>
+                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('subscription_type'); setSortDir(prev => sortKey === 'subscription_type' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Subscription</th>
+                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('created_at'); setSortDir(prev => sortKey === 'created_at' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Joined</th>
+                    <th className="text-left p-4 font-medium cursor-pointer" onClick={() => { setSortKey('subscription_expiry'); setSortDir(prev => sortKey === 'subscription_expiry' ? (prev === 'asc' ? 'desc' : 'asc') : 'asc'); }}>Expiry</th>
                     <th className="text-left p-4 font-medium">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {paginatedUsers.map((user) => (
+                  {loading ? (
+                    <tr>
+                      <td colSpan={7} className="p-8 text-center text-gray-500">
+                        {t('language') === 'fr' ? 'Chargement des utilisateurs...' : 'Loading users...'}
+                      </td>
+                    </tr>
+                  ) : paginatedUsers.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="p-8 text-center text-gray-500">
+                        {t('language') === 'fr' ? 'Aucun utilisateur trouvé' : 'No users found'}
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedUsers.map((user) => (
                     <motion.tr
                       key={user.id}
                       initial={{ opacity: 0 }}
@@ -460,47 +566,46 @@ export const AccountManagement: React.FC = () => {
                       <td className="p-4">
                         <div className="flex items-center space-x-3">
                           <Avatar className="h-10 w-10">
-                            <AvatarImage src={user.avatar} />
-                            <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                            <AvatarImage src={user.avatar_url || undefined} />
+                            <AvatarFallback>
+                              {user.username ? user.username.charAt(0).toUpperCase() : 
+                               user.email ? user.email.charAt(0).toUpperCase() : 'U'}
+                            </AvatarFallback>
                           </Avatar>
                           <div className="min-w-0 flex-1">
                             <p className="text-sm font-medium text-gray-900 truncate">
-                              {user.name}
+                              {user.username || 'No username'}
                             </p>
                             <p className="text-sm text-gray-500 truncate">
                               {user.email}
                             </p>
                             <div className="flex items-center text-xs text-gray-500">
-                              <Phone className="h-3 w-3 mr-1" />
-                              {user.phone}
+                              <Shield className="h-3 w-3 mr-1" />
+                              {user.is_admin ? 'Admin' : 'User'}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="p-4">
-                        {getStatusBadge(user.status)}
+                        {getStatusBadge(user.is_active, user.subscription_expiry)}
                       </td>
                       <td className="p-4">
-                        {getSubscriptionBadge(user.subscriptionType)}
+                        {getSubscriptionBadge(user.subscription_type)}
                       </td>
                       <td className="p-4">
-                        <div className="space-y-1">
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Eye className="h-3 w-3 mr-1" />
-                            {user.propertiesViewed} {t('language') === 'fr' ? 'vues' : 'views'}
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Mail className="h-3 w-3 mr-1" />
-                            {user.inquiries} {t('language') === 'fr' ? 'demandes' : 'inquiries'}
-                          </div>
+                        <div className="text-sm text-gray-900">
+                          {new Date(user.created_at).toLocaleDateString()}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {new Date(user.created_at).toLocaleTimeString()}
                         </div>
                       </td>
                       <td className="p-4">
                         <div className="space-y-1">
                           <div className="text-sm text-gray-900">
-                            {user.subscriptionExpiry}
+                            {new Date(user.subscription_expiry).toLocaleDateString()}
                           </div>
-                          {isSubscriptionExpiring(user.subscriptionExpiry) && (
+                          {isSubscriptionExpiring(user.subscription_expiry) && (
                             <Badge className="bg-orange-100 text-orange-800 text-xs">
                               {t('language') === 'fr' ? 'Expire bientôt' : 'Expires soon'}
                             </Badge>
@@ -521,28 +626,38 @@ export const AccountManagement: React.FC = () => {
                                 {t('language') === 'fr' ? 'Voir le profil' : 'View Profile'}
                               </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => toggleUserStatus(user.id, !user.is_active)}>
                               <Edit className="h-4 w-4 mr-2" />
-                              {t('language') === 'fr' ? 'Modifier' : 'Edit'}
+                              {user.is_active 
+                                ? (t('language') === 'fr' ? 'Suspendre' : 'Suspend')
+                                : (t('language') === 'fr' ? 'Activer' : 'Activate')
+                              }
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                               <Mail className="h-4 w-4 mr-2" />
                               {t('language') === 'fr' ? 'Envoyer un email' : 'Send Email'}
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-orange-600">
+                            <DropdownMenuItem 
+                              className="text-orange-600"
+                              onClick={() => extendSubscription(user.id, 30)}
+                            >
                               <Clock className="h-4 w-4 mr-2" />
-                              {t('language') === 'fr' ? 'Prolonger l\'abonnement' : 'Extend Subscription'}
+                              {t('language') === 'fr' ? 'Prolonger 30 jours' : 'Extend 30 days'}
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-600">
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              {t('language') === 'fr' ? 'Supprimer' : 'Delete'}
+                            <DropdownMenuItem 
+                              className="text-orange-600"
+                              onClick={() => extendSubscription(user.id, 90)}
+                            >
+                              <Clock className="h-4 w-4 mr-2" />
+                              {t('language') === 'fr' ? 'Prolonger 90 jours' : 'Extend 90 days'}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </td>
                     </motion.tr>
-                  ))}
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

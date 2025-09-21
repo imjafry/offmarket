@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Building2, 
@@ -20,6 +20,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AdminLayout } from '@/components/admin/AdminLayout';
+import { supabase } from '@/lib/supabaseClient';
+import { useProperties } from '@/contexts/PropertyContext';
 
 // Properties Chart Component
 const PropertiesChart: React.FC = () => {
@@ -77,92 +79,7 @@ const PropertiesChart: React.FC = () => {
   );
 };
 
-// Mock data
-const stats = [
-  {
-    title: 'Total Properties',
-    value: '30',
-    change: '+12%',
-    changeType: 'positive' as const,
-    icon: Building2,
-    color: 'from-blue-500 to-blue-600'
-  },
-  {
-    title: 'Active Users',
-    value: '1,234',
-    change: '+8%',
-    changeType: 'positive' as const,
-    icon: Users,
-    color: 'from-green-500 to-green-600'
-  },
-  {
-    title: 'Total Views',
-    value: '45,678',
-    change: '+23%',
-    changeType: 'positive' as const,
-    icon: Eye,
-    color: 'from-purple-500 to-purple-600'
-  },
-  {
-    title: 'Revenue',
-    value: 'CHF 2.4M',
-    change: '+15%',
-    changeType: 'positive' as const,
-    icon: DollarSign,
-    color: 'from-orange-500 to-orange-600'
-  }
-];
 
-const recentProperties = [
-  {
-    id: '1',
-    title: 'Appartement 4.5 pièces - Lausanne Centre',
-    price: 'CHF 2\'800\'000',
-    views: 45,
-    date: '2024-01-15'
-  },
-  {
-    id: '2',
-    title: 'Villa individuelle - Cologny',
-    price: 'CHF 4\'200\'000',
-    views: 78,
-    date: '2024-01-14'
-  },
-  {
-    id: '3',
-    title: 'Loft moderne - Genève',
-    price: 'CHF 1\'950\'000',
-    views: 32,
-    date: '2024-01-13'
-  }
-];
-
-const recentUsers = [
-  {
-    id: '1',
-    name: 'Marie Dubois',
-    email: 'marie.dubois@example.ch',
-    status: 'active',
-    joinDate: '2024-01-10',
-    propertiesViewed: 12
-  },
-  {
-    id: '2',
-    name: 'Pierre Martin',
-    email: 'pierre.martin@example.ch',
-    status: 'active',
-    joinDate: '2024-01-08',
-    propertiesViewed: 8
-  },
-  {
-    id: '3',
-    name: 'Sophie Laurent',
-    email: 'sophie.laurent@example.ch',
-    status: 'expired',
-    joinDate: '2023-12-15',
-    propertiesViewed: 25
-  }
-];
 
 const getUserStatusBadge = (status: string) => {
   switch (status) {
@@ -175,8 +92,123 @@ const getUserStatusBadge = (status: string) => {
   }
 };
 
+interface DashboardStats {
+  totalProperties: number;
+  totalUsers: number;
+  totalViews: number;
+  totalInquiries: number;
+  recentProperties: any[];
+  recentUsers: any[];
+}
+
 export const AdminDashboard: React.FC = () => {
   const { t } = useTranslation();
+  const { properties } = useProperties();
+  const [stats, setStats] = useState<DashboardStats>({
+    totalProperties: 0,
+    totalUsers: 0,
+    totalViews: 0,
+    totalInquiries: 0,
+    recentProperties: [],
+    recentUsers: []
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        setLoading(true);
+        
+        // Load properties data
+        const totalProperties = properties.length;
+        const totalViews = properties.reduce((sum, p) => sum + (p.views || 0), 0);
+        const totalInquiries = properties.reduce((sum, p) => sum + (p.inquiries || 0), 0);
+        
+        // Load users data
+        const { data: usersData, error: usersError } = await supabase
+          .from('profiles')
+          .select('id, username, email, subscription_type, subscription_expiry, is_active, created_at')
+          .order('created_at', { ascending: false })
+          .limit(5);
+
+        if (usersError) {
+          console.error('Error loading users:', usersError);
+        }
+
+        // Load recent properties
+        const recentProperties = properties
+          .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
+          .slice(0, 3)
+          .map(prop => ({
+            id: prop.id,
+            title: prop.title,
+            price: prop.price,
+            views: prop.views || 0,
+            date: prop.createdAt ? new Date(prop.createdAt).toLocaleDateString() : '—'
+          }));
+
+        // Load recent users
+        const recentUsers = (usersData || []).map(user => ({
+          id: user.id,
+          name: user.username || 'No username',
+          email: user.email,
+          status: user.is_active ? 'active' : 'inactive',
+          joinDate: new Date(user.created_at).toLocaleDateString(),
+          propertiesViewed: 0 // This would need to be calculated from user activity
+        }));
+
+        setStats({
+          totalProperties,
+          totalUsers: usersData?.length || 0,
+          totalViews,
+          totalInquiries,
+          recentProperties,
+          recentUsers
+        });
+      } catch (error) {
+        console.error('Error loading dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboardData();
+  }, [properties]);
+
+  const statsData = [
+    {
+      title: 'Total Properties',
+      value: stats.totalProperties.toString(),
+      change: '+12%',
+      changeType: 'positive' as const,
+      icon: Building2,
+      color: 'from-blue-500 to-blue-600'
+    },
+    {
+      title: 'Active Users',
+      value: stats.totalUsers.toString(),
+      change: '+8%',
+      changeType: 'positive' as const,
+      icon: Users,
+      color: 'from-green-500 to-green-600'
+    },
+    {
+      title: 'Total Views',
+      value: stats.totalViews.toString(),
+      change: '+23%',
+      changeType: 'positive' as const,
+      icon: Eye,
+      color: 'from-purple-500 to-purple-600'
+    },
+    {
+      title: 'Total Inquiries',
+      value: stats.totalInquiries.toString(),
+      change: '+15%',
+      changeType: 'positive' as const,
+      icon: DollarSign,
+      color: 'from-orange-500 to-orange-600'
+    }
+  ];
 
   return (
     <AdminLayout>
@@ -206,7 +238,7 @@ export const AdminDashboard: React.FC = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, index) => (
+          {statsData.map((stat, index) => (
             <motion.div
               key={stat.title}
               initial={{ opacity: 0, y: 20 }}
@@ -324,7 +356,7 @@ export const AdminDashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {recentProperties.map((property) => (
+                {stats.recentProperties.map((property) => (
                   <div key={property.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">
@@ -370,7 +402,7 @@ export const AdminDashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {recentUsers.map((user) => (
+                {stats.recentUsers.map((user) => (
                   <div key={user.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">

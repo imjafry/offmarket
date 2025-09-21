@@ -14,7 +14,11 @@ import {
   User,
   Globe,
   Inbox,
-  MessageSquare
+  MessageSquare,
+  BarChart3,
+  Server,
+  Mail,
+  Image as ImageIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -39,10 +43,13 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     { name: t('admin.dashboard.title'), href: '/admin/dashboard', icon: LayoutDashboard, current: location.pathname === '/admin/dashboard' },
     { name: t('admin.properties.title'), href: '/admin/properties', icon: Building2, current: location.pathname.startsWith('/admin/properties') },
     { name: t('admin.accounts.title'), href: '/admin/accounts', icon: Users, current: location.pathname === '/admin/accounts' },
-    { name: 'Users', href: '/admin/users', icon: User, current: location.pathname === '/admin/users' },
+    { name: 'Analytics', href: '/admin/analytics', icon: BarChart3, current: location.pathname === '/admin/analytics' },
     { name: 'Inquiries', href: '/admin/inquiries', icon: Inbox, current: location.pathname === '/admin/inquiries' },
     { name: 'Contacts', href: '/admin/contacts', icon: MessageSquare, current: location.pathname === '/admin/contacts' },
     { name: 'Memberships', href: '/admin/memberships', icon: Users, current: location.pathname === '/admin/memberships' },
+    { name: 'Email Templates', href: '/admin/email-templates', icon: Mail, current: location.pathname === '/admin/email-templates' },
+    { name: 'Media Library', href: '/admin/media', icon: ImageIcon, current: location.pathname === '/admin/media' },
+    { name: 'System', href: '/admin/system', icon: Server, current: location.pathname === '/admin/system' },
     { name: t('language') === 'fr' ? 'Paramètres' : 'Settings', href: '/admin/settings', icon: Settings, current: location.pathname === '/admin/settings' },
   ];
 
