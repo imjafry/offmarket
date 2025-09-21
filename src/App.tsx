@@ -46,8 +46,8 @@ import RequireAdmin from "@/components/admin/RequireAdmin";
 import { RegisterPage } from "./pages/Register";
 import { FavoritesProvider } from "@/contexts/FavoritesContext";
 import AdminInquiriesPage from "@/pages/admin/Inquiries";
-import AdminContactsPage from "@/pages/admin/Contacts";
-import AdminMembershipsPage from "@/pages/admin/Memberships";
+import ContactsPage from "@/pages/admin/Contacts";
+import MembershipsPage from "@/pages/admin/Memberships";
 import { Analytics } from "@/pages/admin/Analytics";
 import { SystemManagement } from "@/pages/admin/SystemManagement";
 import { EmailTemplates } from "@/pages/admin/EmailTemplates";
@@ -56,6 +56,7 @@ import FavoritesPage from "@/pages/Favorites";
 import ForgotPasswordPage from "@/pages/ForgotPassword";
 import ResetPasswordPage from "@/pages/ResetPassword";
 import { EmailConfirmationHandler } from "@/components/EmailConfirmationHandler";
+import FormSubmissionsPage from "@/pages/admin/FormSubmissions";
 
 const queryClient = new QueryClient();
 
@@ -87,9 +88,10 @@ const App = () => (
                 <Route path="/admin/accounts" element={<RequireAdmin><AccountManagement /></RequireAdmin>} />
                 <Route path="/admin/accounts/:id" element={<RequireAdmin><AdminUserProfilePage /></RequireAdmin>} />
                 <Route path="/admin/analytics" element={<RequireAdmin><Analytics /></RequireAdmin>} />
+                <Route path="/admin/form-submissions" element={<RequireAdmin><FormSubmissionsPage /></RequireAdmin>} />
                 <Route path="/admin/inquiries" element={<RequireAdmin><AdminInquiriesPage /></RequireAdmin>} />
-                <Route path="/admin/contacts" element={<RequireAdmin><AdminContactsPage /></RequireAdmin>} />
-                <Route path="/admin/memberships" element={<RequireAdmin><AdminMembershipsPage /></RequireAdmin>} />
+                <Route path="/admin/contacts" element={<RequireAdmin><ContactsPage /></RequireAdmin>} />
+                <Route path="/admin/memberships" element={<RequireAdmin><MembershipsPage /></RequireAdmin>} />
                 <Route path="/admin/email-templates" element={<RequireAdmin><EmailTemplates /></RequireAdmin>} />
                 <Route path="/admin/media" element={<RequireAdmin><MediaLibrary /></RequireAdmin>} />
                 <Route path="/admin/system" element={<RequireAdmin><SystemManagement /></RequireAdmin>} />

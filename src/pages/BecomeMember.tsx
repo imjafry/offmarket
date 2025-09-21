@@ -32,13 +32,14 @@ export const BecomeMemberPage: React.FC = () => {
 
     try {
       const payload = {
+        form_type: 'membership',
         full_name: formData.fullName,
         email: formData.email,
         phone: formData.phone,
         profile: formData.profile,
         project: formData.project,
       };
-      const { error } = await supabase.from('membership_applications').insert(payload);
+      const { error } = await supabase.from('form_submissions').insert(payload);
       if (error) throw error;
 
       toast.success(t('becomeMember.form.success'));

@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabaseClient';
 
 export const PropertyVideosPage: React.FC = () => {
     const { t } = useTranslation();
@@ -33,8 +34,18 @@ export const PropertyVideosPage: React.FC = () => {
         setIsSubmitting(true);
 
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            const payload = {
+                form_type: 'property_videos',
+                first_name: formData.firstName,
+                last_name: formData.lastName,
+                email: formData.email,
+                phone: formData.phone,
+                property_type: formData.propertyType,
+                location: formData.location,
+                message: formData.message,
+            };
+            const { error } = await supabase.from('form_submissions').insert(payload);
+            if (error) throw error;
 
             toast.success(t('propertyVideos.form.success'));
             setFormData({

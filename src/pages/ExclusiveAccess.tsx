@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabaseClient';
 
 export const ExclusiveAccessPage: React.FC = () => {
     const { t } = useTranslation();
@@ -33,8 +34,18 @@ export const ExclusiveAccessPage: React.FC = () => {
         setIsSubmitting(true);
 
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            const payload = {
+                form_type: 'exclusive_access',
+                first_name: formData.firstName,
+                last_name: formData.lastName,
+                email: formData.email,
+                phone: formData.phone,
+                interest: formData.interest,
+                location: formData.location,
+                message: formData.message,
+            };
+            const { error } = await supabase.from('form_submissions').insert(payload);
+            if (error) throw error;
 
             toast.success(t('exclusiveAccess.form.success'));
             setFormData({

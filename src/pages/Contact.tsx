@@ -23,8 +23,13 @@ export const ContactPage: React.FC = () => {
     setIsSubmitting(true);
     setError('');
 
-    const payload = { name: formData.name, email: formData.email, message: formData.message };
-    const { error } = await supabase.from('contact_messages').insert(payload);
+    const payload = { 
+      form_type: 'contact',
+      full_name: formData.name, 
+      email: formData.email, 
+      message: formData.message 
+    };
+    const { error } = await supabase.from('form_submissions').insert(payload);
     if (error) {
       setError(t('language') === 'fr' ? "Échec de l'envoi. Réessayez." : 'Failed to send. Please try again.');
       toast.error(error.message);
