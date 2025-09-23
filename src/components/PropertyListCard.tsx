@@ -93,7 +93,7 @@ export const PropertyListCard: React.FC<PropertyListCardProps> = ({
             {/* Views Counter */}
             <div className="flex items-center space-x-1 text-muted-foreground text-sm">
               <Eye className="h-4 w-4" />
-              <span>45</span>
+              <span>{property.views || 0}</span>
             </div>
 
             {/* Availability Status */}

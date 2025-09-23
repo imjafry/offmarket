@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { Property } from '@/components/PropertyCard';
 import { supabase } from '@/lib/supabaseClient';
 
@@ -32,7 +32,7 @@ function mapDbToProperty(row: any): Property {
     listingType: row.listing_type ?? undefined,
     price: row.price ?? undefined,
     availabilityDate: row.availability_date ?? undefined,
-    availabilityStatus: row.availability_status,
+    availabilityStatus: row.availability_status || 'immediate', // Fallback to 'immediate' if null/undefined
     images: Array.isArray(row.images) ? row.images : (row.images ? JSON.parse(row.images) : []),
     videoUrl: row.video_url ?? undefined,
     features: Array.isArray(row.features) ? row.features : (row.features ? JSON.parse(row.features) : []),
@@ -41,6 +41,7 @@ function mapDbToProperty(row: any): Property {
     inquiries: row.inquiries ?? 0,
     createdAt: row.created_at ?? undefined,
     updatedAt: row.updated_at ?? undefined,
+    featured: row.featured ?? false,
   };
 }
 
@@ -51,6 +52,7 @@ function mapPropertyToDb(prop: Omit<Property, 'id'> | Partial<Property>) {
   if ('availabilityDate' in base) base.availability_date = base.availabilityDate; delete base.availabilityDate;
   if ('availabilityStatus' in base) base.availability_status = base.availabilityStatus; delete base.availabilityStatus;
   if ('videoUrl' in base) base.video_url = base.videoUrl; delete base.videoUrl;
+  if ('contactInfo' in base) base.contact_info = base.contactInfo; delete base.contactInfo;
   if ('createdAt' in base) base.created_at = base.createdAt; delete base.createdAt;
   if ('updatedAt' in base) base.updated_at = base.updatedAt; delete base.updatedAt;
 
@@ -73,12 +75,13 @@ export const PropertyProvider: React.FC<PropertyProviderProps> = ({ children }) 
         .order('created_at', { ascending: false });
 
       if (error) {
-        // eslint-disable-next-line no-console
         console.error('Error fetching properties:', error.message);
         setProperties([]);
         return;
       }
-      setProperties((data || []).map(mapDbToProperty));
+      
+      const mappedProperties = (data || []).map(mapDbToProperty);
+      setProperties(mappedProperties);
     };
 
     load();
@@ -87,41 +90,85 @@ export const PropertyProvider: React.FC<PropertyProviderProps> = ({ children }) 
   const addProperty = async (propertyData: Omit<Property, 'id'>) => {
     const nowIso = new Date().toISOString();
     const dbPayload = mapPropertyToDb({ ...propertyData, createdAt: nowIso, updatedAt: nowIso });
-    const { data, error } = await supabase
-      .from('properties')
-      .insert(dbPayload)
-      .select('*')
-      .single();
+    
+    // Remove featured field if it doesn't exist in database yet
+    if ('featured' in dbPayload) {
+      delete dbPayload.featured;
+    }
+    
+    try {
+      const { data, error } = await supabase
+        .from('properties')
+        .insert(dbPayload)
+        .select('*')
+        .single();
 
-    if (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error adding property:', error.message);
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error adding property:', error.message);
+        
+        // Check if it's an authentication error
+        if (error.message?.includes('JWT') || 
+            error.message?.includes('token') || 
+            error.message?.includes('unauthorized') ||
+            error.message?.includes('permission') ||
+            error.code === 'PGRST301') {
+          console.error('Authentication error during property add:', error);
+          throw new Error('Authentication error. Please log in again.');
+        }
+        
+        throw error;
+      }
+
+      const newProp = mapDbToProperty(data);
+      setProperties(prev => [newProp, ...prev]);
+      return newProp;
+    } catch (error) {
+      console.error('PropertyContext addProperty error:', error);
       throw error;
     }
-
-    const newProp = mapDbToProperty(data);
-    setProperties(prev => [newProp, ...prev]);
-    return newProp;
   };
 
   const updateProperty = async (id: string, propertyData: Partial<Property>) => {
     const nowIso = new Date().toISOString();
     const dbPayload = mapPropertyToDb({ ...propertyData, updatedAt: nowIso });
-    const { data, error } = await supabase
-      .from('properties')
-      .update(dbPayload)
-      .eq('id', id)
-      .select('*')
-      .single();
+    
+    // Remove featured field if it doesn't exist in database yet
+    if ('featured' in dbPayload) {
+      delete dbPayload.featured;
+    }
+    
+    try {
+      const { data, error } = await supabase
+        .from('properties')
+        .update(dbPayload)
+        .eq('id', id)
+        .select('*')
+        .single();
 
-    if (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error updating property:', error.message);
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error updating property:', error.message);
+        
+        // Check if it's an authentication error
+        if (error.message?.includes('JWT') || 
+            error.message?.includes('token') || 
+            error.message?.includes('unauthorized') ||
+            error.message?.includes('permission') ||
+            error.code === 'PGRST301') {
+          console.error('Authentication error during property update:', error);
+          throw new Error('Authentication error. Please log in again.');
+        }
+        
+        throw error;
+      }
+
+      const updated = mapDbToProperty(data);
+      setProperties(prev => prev.map(p => (p.id === id ? updated : p)));
+    } catch (error) {
+      console.error('PropertyContext updateProperty error:', error);
       throw error;
     }
-
-    const updated = mapDbToProperty(data);
-    setProperties(prev => prev.map(p => (p.id === id ? updated : p)));
   };
 
   const deleteProperty = async (id: string) => {
@@ -143,7 +190,7 @@ export const PropertyProvider: React.FC<PropertyProviderProps> = ({ children }) 
     return properties.find(property => property.id === id);
   };
 
-  const incrementViews = async (id: string) => {
+  const incrementViews = useCallback(async (id: string) => {
     const { error } = await supabase.rpc('increment_property_views', { p_id: id });
     if (error) {
       // eslint-disable-next-line no-console
@@ -151,9 +198,9 @@ export const PropertyProvider: React.FC<PropertyProviderProps> = ({ children }) 
       return;
     }
     setProperties(prev => prev.map(p => (p.id === id ? { ...p, views: (p.views || 0) + 1 } : p)));
-  };
+  }, []);
 
-  const incrementInquiries = async (id: string) => {
+  const incrementInquiries = useCallback(async (id: string) => {
     const { error } = await supabase.rpc('increment_property_inquiries', { p_id: id });
     if (error) {
       // eslint-disable-next-line no-console
@@ -161,7 +208,7 @@ export const PropertyProvider: React.FC<PropertyProviderProps> = ({ children }) 
       return;
     }
     setProperties(prev => prev.map(p => (p.id === id ? { ...p, inquiries: (p.inquiries || 0) + 1 } : p)));
-  };
+  }, []);
 
   const value: PropertyContextType = {
     properties,

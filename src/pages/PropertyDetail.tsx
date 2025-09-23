@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, MapPin, Home, Maximize, Phone, Mail, User, Heart, Share2, Calendar, Eye, Wifi, Car, Dumbbell, Waves, TreePine, Shield, Snowflake, Camera, Play, MessageCircle, ChevronDown, Bath, FileText, Lock, Award } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -21,22 +21,71 @@ import { toast } from 'sonner';
 export const PropertyDetailPage: React.FC = () => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
-  const { getProperty, incrementViews, incrementInquiries } = useProperties();
+  const { properties, getProperty, incrementViews, incrementInquiries } = useProperties();
   const [isFavorited, setIsFavorited] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [selectedTab, setSelectedTab] = useState('overview');
   const [showFavDialog, setShowFavDialog] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { isAuthenticated } = useAuth();
 
   const property = getProperty(id || '');
+  
+  // Debug logging
+  React.useEffect(() => {
+    console.log('PropertyDetail Debug:', {
+      id,
+      propertiesCount: properties.length,
+      property,
+      isAuthenticated
+    });
+  }, [id, properties.length, property, isAuthenticated]);
+
+  // Fallback: fetch property directly if not found in context
+  React.useEffect(() => {
+    const fetchPropertyDirectly = async () => {
+      if (!property && id && !isLoading) {
+        console.log('Property not found in context, fetching directly...');
+        const { data, error } = await supabase
+          .from('properties')
+          .select('*')
+          .eq('id', id)
+          .single();
+        
+        if (error) {
+          console.error('Error fetching property directly:', error);
+        } else if (data) {
+          console.log('Property fetched directly:', data);
+        }
+      }
+    };
+    
+    fetchPropertyDirectly();
+  }, [property, id, isLoading]);
+
+  // Handle loading state
+  React.useEffect(() => {
+    if (properties.length > 0) {
+      setIsLoading(false);
+    }
+    
+    // Set a timeout to stop loading after 5 seconds
+    const timeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 5000);
+    
+    return () => clearTimeout(timeout);
+  }, [properties.length]);
+
   const priceText = (property?.price || '').trim();
   const isOnRequest = !priceText || /on\s*request|sur\s*demande/i.test(priceText);
   const listingType = property?.listingType || 'sale';
 
-  // Track view when property loads
+  // Track view when property loads (only once per visit)
   React.useEffect(() => {
-    if (property && id) {
+    if (property && id && !hasIncrementedViews.current) {
+      hasIncrementedViews.current = true;
       incrementViews(id);
     }
   }, [property, id, incrementViews]);
@@ -47,6 +96,8 @@ export const PropertyDetailPage: React.FC = () => {
   const [inqMessage, setInqMessage] = useState('');
   const [inqSubmitting, setInqSubmitting] = useState(false);
   const [inqError, setInqError] = useState('');
+  const hasIncrementedViews = useRef(false);
+  
   const handleInquiry = async () => {
     if (!id) return;
     setInqSubmitting(true);
@@ -71,13 +122,34 @@ export const PropertyDetailPage: React.FC = () => {
     setInqSubmitting(false);
   };
 
-  if (!property) {
+  // Show loading state while properties are being fetched
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">
+            {t('language') === 'fr' ? 'Chargement de la propriété...' : 'Loading property...'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show not found if properties are loaded but property doesn't exist
+  if (!property && !isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-heading font-bold text-foreground">
             {t('language') === 'fr' ? 'Propriété non trouvée' : 'Property not found'}
           </h1>
+          <p className="text-muted-foreground">
+            {t('language') === 'fr' 
+              ? 'La propriété que vous recherchez n\'existe pas ou a été supprimée.' 
+              : 'The property you are looking for does not exist or has been removed.'
+            }
+          </p>
           <Link to="/properties">
             <Button variant="outline">
               {t('language') === 'fr' ? 'Retour aux propriétés' : 'Back to Properties'}
@@ -146,7 +218,7 @@ export const PropertyDetailPage: React.FC = () => {
           >
             {/* Stats */}
             <div className="flex items-center space-x-6 text-muted-foreground">
-              <span className="text-sm">{t('language') === 'fr' ? 'Total de visites' : 'Total No of Visits'}: 45</span>
+              <span className="text-sm">{t('language') === 'fr' ? 'Total de visites' : 'Total No of Visits'}: {property.views || 0}</span>
               <div className="flex items-center space-x-2">
                 <Eye className="h-4 w-4" />
                 <span className="text-sm">Last Updated: 24 Feb 2025</span>

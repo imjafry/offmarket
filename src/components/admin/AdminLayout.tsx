@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -35,6 +36,7 @@ interface AdminLayoutProps {
 
 export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const { t, language, setLanguage } = useTranslation();
+  const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -52,9 +54,15 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     { name: t('language') === 'fr' ? 'Paramètres' : 'Settings', href: '/admin/settings', icon: Settings, current: location.pathname === '/admin/settings' },
   ];
 
-  const handleLogout = () => {
-    // Implement logout logic
-    navigate('/admin/login');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/admin/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Force navigation even if logout fails
+      navigate('/admin/login');
+    }
   };
 
   const toggleLanguage = () => {
@@ -163,7 +171,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-600 text-white font-semibold">AD</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-white truncate">Admin User</p>
+                <p className="text-sm font-semibold text-white truncate">
+                  {user?.username || user?.email || 'Admin User'}
+                </p>
                 <p className="text-xs text-slate-400">Administrator</p>
               </div>
             </div>

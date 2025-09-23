@@ -234,9 +234,22 @@ export const PropertyForm: React.FC = () => {
       }
       
       navigate('/admin/properties');
-    } catch (error) {
+    } catch (error: any) {
       // eslint-disable-next-line no-console
       console.error('Error saving property:', error);
+      
+      // Check if error is related to authentication
+      if (error?.message?.includes('JWT') || 
+          error?.message?.includes('token') || 
+          error?.message?.includes('unauthorized') ||
+          error?.message?.includes('permission') ||
+          error?.status === 401) {
+        console.error('Authentication error during property save:', error);
+        // Don't navigate away immediately, let the auth context handle it
+        setErrors({ general: t('language') === 'fr' ? 'Erreur d\'authentification. Veuillez vous reconnecter.' : 'Authentication error. Please log in again.' });
+      } else {
+        setErrors({ general: t('language') === 'fr' ? 'Erreur lors de la sauvegarde. Veuillez réessayer.' : 'Error saving property. Please try again.' });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -244,7 +257,7 @@ export const PropertyForm: React.FC = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 relative min-h-screen">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -292,6 +305,13 @@ export const PropertyForm: React.FC = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* General Error Display */}
+          {errors.general && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-sm text-red-600">{errors.general}</p>
+            </div>
+          )}
+          
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Main Form */}
             <div className="lg:col-span-2 space-y-6">

@@ -3,13 +3,15 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Play, Home, Users, Award, Lock, Video, Key, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useProperties } from '@/contexts/PropertyContext';
 import { Button } from '@/components/ui/button';
 import { PropertyCard } from '@/components/PropertyCard';
-import { featuredProperties } from '@/data/mockProperties';
 
 export const HomePage: React.FC = () => {
   const { t } = useTranslation();
+  const { properties } = useProperties();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isLoadingProperties, setIsLoadingProperties] = useState(true);
 
   // Handle hash navigation for smooth scrolling
   React.useEffect(() => {
@@ -49,6 +51,29 @@ export const HomePage: React.FC = () => {
 
     return () => clearInterval(interval);
   }, [heroImages.length]);
+
+  // Handle loading state for properties
+  React.useEffect(() => {
+    if (properties && properties.length >= 0) {
+      setIsLoadingProperties(false);
+    }
+  }, [properties]);
+
+  // Get latest off-market properties (featured properties or latest 3)
+  const latestOffMarketProperties = React.useMemo(() => {
+    if (!properties || properties.length === 0) return [];
+    
+    // First try to get featured properties, then fall back to latest properties
+    const featuredProps = properties.filter(prop => prop.featured === true);
+    if (featuredProps.length >= 3) {
+      return featuredProps.slice(0, 3);
+    }
+    
+    // If not enough featured properties, get the latest properties
+    return properties
+      .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
+      .slice(0, 3);
+  }, [properties]);
 
 
   return (
@@ -154,15 +179,50 @@ export const HomePage: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProperties.map((property) => (
-              <PropertyCard 
-                key={property.id} 
-                property={property}
-                showContactInfo={false}
-              />
-            ))}
-          </div>
+          {isLoadingProperties ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-muted rounded-lg aspect-[4/3] mb-4"></div>
+                  <div className="space-y-3">
+                    <div className="h-4 bg-muted rounded w-3/4"></div>
+                    <div className="h-3 bg-muted rounded w-1/2"></div>
+                    <div className="h-3 bg-muted rounded w-2/3"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : latestOffMarketProperties.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {latestOffMarketProperties.map((property) => (
+                <PropertyCard 
+                  key={property.id} 
+                  property={property}
+                  showContactInfo={false}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                <Home className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h3 className="text-xl font-heading font-semibold text-foreground mb-2">
+                {t('language') === 'fr' ? 'Aucune propriété disponible' : 'No properties available'}
+              </h3>
+              <p className="text-muted-foreground mb-6">
+                {t('language') === 'fr' 
+                  ? 'Nous travaillons actuellement sur de nouvelles offres exclusives. Revenez bientôt !'
+                  : 'We are currently working on new exclusive offers. Check back soon!'
+                }
+              </p>
+              <Link to="/properties">
+                <Button variant="outline">
+                  {t('language') === 'fr' ? 'Voir toutes les propriétés' : 'View all properties'}
+                </Button>
+              </Link>
+            </div>
+          )}
 
           <div className="text-center mt-12">
             <Link to="/properties">

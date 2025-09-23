@@ -204,24 +204,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       // Handle sign out explicitly
       if (event === 'SIGNED_OUT') {
+        console.log('AuthProvider: User signed out, clearing auth state');
         dispatch(clearAuth());
+        return;
+      }
+      
+      // Handle token refresh - don't clear user on token refresh
+      if (event === 'TOKEN_REFRESHED') {
+        console.log('AuthProvider: Token refreshed, keeping user');
         return;
       }
       
       if (!session?.user?.id) {
         // Only clear if we had a user before and this is not a temporary session issue
-        if (user && event !== 'TOKEN_REFRESHED') {
-          console.log('No session user, but keeping user for now to prevent logout');
+        if (user) {
+          console.log('AuthProvider: No session user, but keeping user for now to prevent logout');
           // Don't clear immediately - might be temporary network issue
         }
         return;
       }
       
-      // Handle email confirmation and token refresh
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      // Handle email confirmation and new sign in
+      if (event === 'SIGNED_IN') {
         try {
           const profile = await fetchUserProfile(session.user.id);
-          if (profile) {
+          if (profile && mounted) {
             dispatch(setUser(profile));
           }
         } catch (error) {

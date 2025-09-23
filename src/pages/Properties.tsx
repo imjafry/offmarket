@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Search, SlidersHorizontal, Grid3X3, List, Filter, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -9,12 +9,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { PropertyCard } from '@/components/PropertyCard';
 import { PropertyListCard } from '@/components/PropertyListCard';
 import { swissCities, filterCities } from '@/data/swissCities';
+import { useProperties } from '@/contexts/PropertyContext';
 import { supabase } from '@/lib/supabaseClient';
 
 export const PropertiesPage: React.FC = () => {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
+  const { properties: contextProperties } = useProperties();
   const [properties, setProperties] = useState<any[]>([]);
+  const [allProperties, setAllProperties] = useState<any[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -29,6 +32,8 @@ export const PropertiesPage: React.FC = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   // Generate room options
   const roomOptions = [] as string[];
@@ -37,6 +42,58 @@ export const PropertiesPage: React.FC = () => {
   }
   roomOptions.push('10+');
 
+  // Direct fetch function for properties
+  const fetchPropertiesDirectly = useCallback(async () => {
+    try {
+      setIsInitialLoading(true);
+      setError('');
+      
+      const { data, error } = await supabase
+        .from('properties')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching properties:', error);
+        setError('Failed to load properties');
+        return;
+      }
+
+      // Map database properties to frontend format
+      const mappedProperties = (data || []).map((row: any) => ({
+        id: String(row.id),
+        title: row.title,
+        description: row.description,
+        city: row.city,
+        neighborhood: row.neighborhood,
+        address: row.address ?? undefined,
+        propertyType: row.property_type,
+        rooms: Number(row.rooms),
+        surface: Number(row.surface),
+        listingType: row.listing_type ?? undefined,
+        price: row.price ?? undefined,
+        availabilityDate: row.availability_date ?? undefined,
+        availabilityStatus: row.availability_status || 'immediate',
+        images: Array.isArray(row.images) ? row.images : (row.images ? JSON.parse(row.images) : []),
+        videoUrl: row.video_url ?? undefined,
+        features: Array.isArray(row.features) ? row.features : (row.features ? JSON.parse(row.features) : []),
+        contactInfo: row.contact_info ?? undefined,
+        views: row.views ?? 0,
+        inquiries: row.inquiries ?? 0,
+        createdAt: row.created_at ?? undefined,
+        updatedAt: row.updated_at ?? undefined,
+        featured: row.featured ?? false,
+      }));
+
+      setAllProperties(mappedProperties);
+    } catch (err: any) {
+      console.error('Error fetching properties:', err);
+      setError('Failed to load properties');
+    } finally {
+      setIsInitialLoading(false);
+    }
+  }, []);
+
   // Generate search suggestions
   const searchSuggestions = [
     'All locations',
@@ -44,62 +101,156 @@ export const PropertiesPage: React.FC = () => {
     'Appartement', 'Maison', 'Villa', 'Loft', 'Penthouse', 'Studio', 'Duplex', 'Chalet', 'Château'
   ];
 
-  // Filter suggestions based on current search term
-  const filteredSuggestions = searchTerm 
-    ? searchSuggestions.filter(suggestion => 
-        suggestion.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : searchSuggestions;
-
-  // Server-side fetch
+  // Fetch properties immediately when page loads
   useEffect(() => {
-    const fetchProps = async () => {
-      setLoading(true);
-      setError('');
-      try {
-        let query = supabase
-          .from('properties')
-          .select('*', { count: 'exact' })
-          .order('created_at', { ascending: false });
+    fetchPropertiesDirectly();
+  }, [fetchPropertiesDirectly]);
 
-        const term = searchTerm && searchTerm !== 'all' ? `%${searchTerm.toLowerCase()}%` : '';
-        if (term) {
-          query = query.or(
-            `title.ilike.${term},city.ilike.${term},neighborhood.ilike.${term},property_type.ilike.${term}`
-          );
-        }
-        if (selectedRooms) {
-          if (selectedRooms === '10+') query = query.gte('rooms', 10);
-          else query = query.eq('rooms', parseFloat(selectedRooms));
-        }
-        if (selectedType) {
-          query = query.eq('property_type', selectedType);
-        }
-        if (selectedStatus) {
-          query = query.eq('listing_type', selectedStatus);
-        }
-        if (surfaceRange.min) query = query.gte('surface', parseFloat(surfaceRange.min));
-        if (surfaceRange.max) query = query.lte('surface', parseFloat(surfaceRange.max));
-        // Note: price is a text field; skipping server numeric filtering for price
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setPage(1); // Reset to first page when search changes
+    }, 300);
 
-        const from = (page - 1) * pageSize;
-        const to = from + pageSize - 1;
-        const { data, error, count } = await query.range(from, to);
-        if (error) throw error;
-        setProperties(data || []);
-        setTotalCount(count || 0);
-      } catch (e: any) {
-        setError(e?.message || 'Failed to load properties');
-        setProperties([]);
-        setTotalCount(0);
-      } finally {
-        setLoading(false);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Filter suggestions based on current search term
+  const filteredSuggestions = useMemo(() => {
+    return searchTerm 
+      ? searchSuggestions.filter(suggestion => 
+          suggestion.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      : searchSuggestions;
+  }, [searchTerm]);
+
+  // Memoized filtered properties
+  const filteredProperties = useMemo(() => {
+    if (!allProperties || allProperties.length === 0) return [];
+    
+    let filteredProps = [...allProperties];
+    
+    // Apply search filter
+    const term = debouncedSearchTerm && debouncedSearchTerm !== 'all' ? debouncedSearchTerm.toLowerCase() : '';
+    if (term) {
+      filteredProps = filteredProps.filter(prop => 
+        prop.title.toLowerCase().includes(term) ||
+        prop.city.toLowerCase().includes(term) ||
+        prop.neighborhood.toLowerCase().includes(term) ||
+        prop.propertyType.toLowerCase().includes(term)
+      );
+    }
+    
+    // Apply other filters
+    if (selectedRooms) {
+      if (selectedRooms === '10+') {
+        filteredProps = filteredProps.filter(prop => prop.rooms >= 10);
+      } else {
+        filteredProps = filteredProps.filter(prop => prop.rooms === parseFloat(selectedRooms));
       }
-    };
-    fetchProps();
-  }, [searchTerm, selectedRooms, selectedType, selectedStatus, surfaceRange.min, surfaceRange.max, page, pageSize]);
+    }
+    
+    if (selectedType) {
+      filteredProps = filteredProps.filter(prop => prop.propertyType === selectedType);
+    }
+    
+    if (selectedStatus) {
+      filteredProps = filteredProps.filter(prop => prop.listingType === selectedStatus);
+    }
+    
+    if (surfaceRange.min) {
+      filteredProps = filteredProps.filter(prop => prop.surface >= parseFloat(surfaceRange.min));
+    }
+    
+    if (surfaceRange.max) {
+      filteredProps = filteredProps.filter(prop => prop.surface <= parseFloat(surfaceRange.max));
+    }
+    
+    return filteredProps;
+  }, [allProperties, debouncedSearchTerm, selectedRooms, selectedType, selectedStatus, surfaceRange.min, surfaceRange.max]);
+
+  // Memoized paginated properties
+  const paginatedProperties = useMemo(() => {
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize;
+    return filteredProperties.slice(from, to);
+  }, [filteredProperties, page, pageSize]);
+
+  // Remove old context-based loading logic - now using direct fetch
+
+  // Update properties and loading state
+  useEffect(() => {
+    if (isInitialLoading) return;
+    
+    setLoading(true);
+    setError('');
+    
+    try {
+      setProperties(paginatedProperties);
+      setTotalCount(filteredProperties.length);
+    } catch (e: any) {
+      setError(e?.message || 'Failed to filter properties');
+      setProperties([]);
+      setTotalCount(0);
+    } finally {
+      setLoading(false);
+    }
+  }, [paginatedProperties, filteredProperties.length, isInitialLoading]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
+  // Page loader component
+  const PageLoader = () => (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="text-center space-y-6">
+        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <div className="space-y-2">
+          <h3 className="text-xl font-heading font-semibold text-foreground">
+            {t('language') === 'fr' ? 'Chargement des propriétés...' : 'Loading properties...'}
+          </h3>
+          <p className="text-muted-foreground">
+            {t('language') === 'fr' 
+              ? 'Nous récupérons les dernières offres pour vous'
+              : 'We are fetching the latest offers for you'
+            }
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Show page loader during initial loading
+  if (isInitialLoading) {
+    return <PageLoader />;
+  }
+
+  // Show error state if there's an error
+  if (error && allProperties.length === 0) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-6">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+            <Search className="h-8 w-8 text-red-600" />
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-xl font-heading font-semibold text-foreground">
+              {t('language') === 'fr' ? 'Erreur de chargement' : 'Loading Error'}
+            </h3>
+            <p className="text-muted-foreground">
+              {error}
+            </p>
+            <Button 
+              onClick={fetchPropertiesDirectly}
+              className="mt-4"
+            >
+              {t('language') === 'fr' ? 'Réessayer' : 'Retry'}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -133,7 +284,7 @@ export const PropertiesPage: React.FC = () => {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => {
-                  setSearchTerm(e.target.value.toLowerCase());
+                  setSearchTerm(e.target.value);
                   setShowSuggestions(true);
                   setPage(1);
                 }}
@@ -141,6 +292,7 @@ export const PropertiesPage: React.FC = () => {
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 placeholder="Search by city, neighbourhood or type..."
                 className="pl-16 py-8 text-lg rounded-2xl border-2 shadow-lg focus:shadow-2xl transition-all"
+                disabled={isInitialLoading}
               />
               
               {/* Search Suggestions Dropdown */}
@@ -353,10 +505,12 @@ export const PropertiesPage: React.FC = () => {
           transition={{ delay: 0.5 }}
           className="space-y-6"
         >
-          {loading && (
-            <div className="text-center text-muted-foreground">{t('common.loading')}</div>
-          )}
-          {!loading && (viewMode === 'grid' ? (
+          {loading ? (
+            <div className="text-center text-muted-foreground py-8">
+              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              {t('language') === 'fr' ? 'Filtrage des propriétés...' : 'Filtering properties...'}
+            </div>
+          ) : (viewMode === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
               {properties.map((property, index) => (
                 <motion.div
